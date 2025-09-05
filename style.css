@@ -1,0 +1,73 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8f8fa;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+header, footer {
+  background: #e3eafc;
+  padding: 1em;
+  text-align: center;
+}
+main {
+  max-width: 800px;
+  margin: 2em auto;
+  background: white;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+h1, h2 {
+  color: #355c7d;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  margin: 0.5em 0;
+}
+.quick-access-item {
+  margin: 1em 0;
+  padding: 1em;
+  background: #f6f9fc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.hymn-card {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+.hymn-preview-image {
+  margin-right: 1em;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+.hymn-text h3 {
+  margin: 0 0 0.25em 0;
+}
+````markdown name=README.md
+# AI-Based Peace Platform
+
+## Purpose
+A conceptual platform designed to prevent AI-driven warfare and aggression by combining AI safety, multi-modal threat detection, secure oversight mechanisms, and international governance principles.
+
+## Key Features
+- **Aggression Detection:** Multi-modal monitoring of global communications with advanced AI pipelines.
+- **Human-in-the-Loop:** All automated detection escalates to expert human review before action.
+- **Kill Switch Protocol:** Tamper-proof, cryptographically secure oversight and multi-party control for autonomous systems.
+- **Ethical Governance:** Designed for transparency, auditability, and compliance with international law.
+- **Peace Messaging:** Includes cultural/non-violent elements (see SacredHymnCard.html).
+
+## Files
+- `index.html`: Landing page for GitHub Pages.
+- `style.css`: Simple CSS for styling the landing page and cards.
+- `ai_peace_platform.py`: Main module sketching platform integration.
+- `aggression_pipeline.py`: Conceptual multi-modal aggression detection.
+- `kill_switch_protocol.py`: Multi-party secure kill switch protocol.
+- `SacredHymnCard.html`: Peace-themed UI card.
