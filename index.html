@@ -1,6 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Euystacio - Human-AI Collaboration Platform">
+    <title>Euystacio - Human-AI Collaboration</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #pulseButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .state-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
+
+    <label for="emotion">Emotion:</label>
+    <select id="emotion">
+        <option value="love">Love</option>
+        <option value="anger">Anger</option>
+    </select>
+
+    <label for="context">Context:</label>
+    <select id="context">
+        <option value="calm">Calm</option>
+        <option value="stress">Stress</option>
+    </select>
+
+    <button id="pulseButton">Send Pulse</button>
+
+    <div class="state-info">
+        <h3>Current Kernel State</h3>
+        <p><strong>Trust:</strong> <span id="trust-value">1.0</span></p>
+        <p><strong>Harmony:</strong> <span id="harmony-value">1.0</span></p>
+    </div>
+
+    <script>
+        // Handle pulse button click event
+        $('#pulseButton').on('click', function() {
+            // Collect inputs
+            const emotion = $('#emotion').val();
+            const context = $('#context').val();
+
+            // Send pulse to backend
+            $.ajax({
+                url: '/api/pulse',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ emotion: emotion, context: context }),
+                success: function(response) {
+                    // Update state on successful pulse
+                    $('#trust-value').text(response.kernel_state.trust.toFixed(2));
+                    $('#harmony-value').text(response.kernel_state.harmony.toFixed(2));
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        });
+
+        // Fetch and display the current kernel state on page load
+        function getKernelState() {
+            $.ajax({
+                url: '/api/reflect',
+                type: 'GET',
+                success: function(response) {
+                    $('#trust-value').text(response.state.trust.toFixed(2));
+                    $('#harmony-value').text(response.state.harmony.toFixed(2));
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        // Fetch the initial state on page load
+        $(document).ready(function() {
+            getKernelState();
+        });
+    </script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>AI-Based Peace Platform</title>
