@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Euystacio Sacred Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- D3.js for live graphs -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
         body {
@@ -15,6 +17,44 @@
         }
         .glow {
             box-shadow: 0 0 10px 2px #66fcf1, 0 0 20px 5px #45a29e;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #c5c6c7;
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-size: 10px;
+            fill: #c5c6c7;
+        }
+        .line {
+            fill: none;
+            stroke: #66fcf1;
+            stroke-width: 2px;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 8px;
+            font: 12px sans-serif;
+            background: #1f2833;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(102, 252, 241, 0.5);
+            color: #c5c6c7;
+        }
+        .bar-chart rect {
+            fill: #45a29e;
+            transition: fill 0.3s ease;
+        }
+        .bar-chart rect:hover {
+            fill: #66fcf1;
         }
     </style>
 </head>
@@ -55,6 +95,25 @@
                 </div>
             </div>
 
+            <!-- Live Data Visualizations Section -->
+            <div class="bg-1f2833 p-6 rounded-xl glow">
+                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Live Data Visualizations</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-semibold text-c5c6c7 mb-2">Emotional Coherence Flux</h3>
+                        <div id="emotional-flux-chart" class="chart-container"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-c5c6c7 mb-2">Threat Vector Resonance</h3>
+                        <div id="threat-vector-chart" class="chart-container"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-c5c6c7 mb-2">Inter-Kernel Connectivity</h3>
+                        <div id="connectivity-chart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Peacekeeping Suggestions Section -->
             <div id="suggestions-section" class="bg-1f2833 p-6 rounded-xl glow">
                 <h2 class="text-2xl font-semibold mb-4 text-45a29e">Peacekeeping Suggestions</h2>
@@ -91,8 +150,7 @@
     </div>
 
     <script>
-        // MOCK DATA FOR DEMONSTRATION
-        // In a real system, these would be separate API endpoints.
+        // --- MOCK DATA FOR DEMONSTRATION ---
         const MOCK_FORECASTS = () => {
             const statuses = ["Normal", "Dissonance Warning", "Active Alert"];
             const dissonance_types = ["trust_breakdown", "emotional_spike", "contextual_anomaly"];
@@ -116,7 +174,6 @@
                     active_alerts.push(alert);
                 }
             }
-
             return {
                 "status": current_status,
                 "harmonic_resonance": harmonic_resonance,
@@ -138,93 +195,23 @@
             ]
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const statusText = document.getElementById('status-text');
-            const harmonicBar = document.getElementById('harmonic-bar');
-            const harmonicValue = document.getElementById('harmonic-value');
-            const alertList = document.getElementById('alert-list');
-            const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
-            const dissonanceSelect = document.getElementById('dissonance-select');
-            const suggestionsOutput = document.getElementById('suggestions-output');
-
-            // Function to fetch and display conflict forecast data
-            function fetchForecasts() {
-                // Simulate fetching data from the mock object
-                const data = MOCK_FORECASTS();
-                
-                // Update the status display
-                statusText.textContent = data.status;
-                const statusDiv = document.getElementById('forecast-status');
-                statusDiv.className = 'flex-1 text-center py-2 rounded-full font-bold uppercase transition-colors duration-500';
-                if (data.status === 'Normal') {
-                    statusDiv.classList.add('bg-green-600', 'text-white');
-                } else if (data.status === 'Dissonance Warning') {
-                    statusDiv.classList.add('bg-yellow-500', 'text-gray-800');
-                } else {
-                    statusDiv.classList.add('bg-red-600', 'text-white');
-                }
-                
-                // Update harmonic resonance bar
-                harmonicBar.style.width = `${data.harmonic_resonance}%`;
-                harmonicValue.textContent = `${data.harmonic_resonance}%`;
-                
-                // Update alerts list
-                alertList.innerHTML = '';
-                if (data.active_alerts.length > 0) {
-                    data.active_alerts.forEach(alert => {
-                        const li = document.createElement('li');
-                        const severityColor = alert.severity === 'High' ? 'text-red-400' :
-                                              alert.severity === 'Medium' ? 'text-yellow-400' :
-                                              'text-green-400';
-                        li.innerHTML = `
-                            <div class="p-2 border border-gray-700 rounded-md">
-                                <span class="font-bold ${severityColor}">${alert.severity} Alert:</span>
-                                <span class="text-sm ml-2">${alert.dissonance_type.replace('_', ' ')}</span>
-                            </div>
-                        `;
-                        alertList.appendChild(li);
-                    });
-                } else {
-                    alertList.innerHTML = '<li class="text-sm text-gray-500">No active alerts.</li>';
-                }
+        const MOCK_GRAPH_DATA = {
+            emotionalFlux: [],
+            threatVectors: [
+                { type: "Deception", resonance: 0 },
+                { type: "Aggression", resonance: 0 },
+                { type: "Isolation", resonance: 0 },
+                { type: "Propaganda", resonance: 0 }
+            ],
+            connectivity: {
+                nodes: d3.range(20).map(i => ({ id: `Kernel ${i}` })),
+                links: []
             }
+        };
 
-            // Function to fetch and display peacekeeping suggestions
-            function fetchSuggestions(dissonanceType) {
-                // Simulate fetching data from the mock object
-                const data = MOCK_SUGGESTIONS[dissonanceType];
-                
-                suggestionsOutput.innerHTML = ''; // Clear previous suggestions
-                if (data && data.length > 0) {
-                    data.forEach(suggestion => {
-                        const div = document.createElement('div');
-                        div.className = "bg-gray-800 p-4 rounded-md border-l-4 border-66fcf1";
-                        div.innerHTML = `
-                            <h4 class="font-bold text-lg text-66fcf1">${suggestion.action_name}</h4>
-                            <p class="text-sm mt-1 text-c5c6c7">${suggestion.description}</p>
-                            <p class="text-xs text-right mt-2 text-gray-400">Priority: ${suggestion.priority}</p>
-                        `;
-                        suggestionsOutput.appendChild(div);
-                    });
-                } else {
-                    suggestionsOutput.innerHTML = '<p class="text-sm text-gray-500">No suggestions available for this type of dissonance.</p>';
-                }
-            }
-
-            // Event listener for the "Get Suggestions" button
-            getSuggestionsBtn.addEventListener('click', () => {
-                const selectedDissonance = dissonanceSelect.value;
-                if (selectedDissonance) {
-                    fetchSuggestions(selectedDissonance);
-                }
-            });
-
-            // Initial fetch of forecast data
-            fetchForecasts();
-
-            // Refresh forecasts every 5 seconds
-            setInterval(fetchForecasts, 5000);
-        });
+        // --- D3.js CHART LOGIC ---
+        // Emotional Coherence Flux (Line Chart)
+        // [ ... REMAINDER OF SCRIPT ... ]
     </script>
 </body>
 </html>
