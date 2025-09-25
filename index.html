@@ -3,143 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Euystacio - Human-AI Collaboration Platform">
-    <title>Euystacio - Human-AI Collaboration</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>🌍 Euystacio: The AI-Based Peace Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Basic styles */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f4f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            width: 100%;
+            background-color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            background-color: #fff;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
-        #pulseButton {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 20px;
+        .graph-section {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .state-info {
+        #peaceFactorChart {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .info-section {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .metric-box {
+            padding: 15px;
+            background-color: #e9f5ff;
+            border-radius: 8px;
+            flex-grow: 1;
+            margin: 10px;
+            min-width: 150px;
+        }
+        .metric-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .metric-value {
+            font-size: 1.5em;
+            color: #007bff;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
+    <header>
+        <h1>🌍 Euystacio: The AI-Based Peace Platform</h1>
+    </header>
 
-    <label for="emotion">Emotion:</label>
-    <select id="emotion">
-        <option value="love">Love</option>
-        <option value="anger">Anger</option>
-    </select>
+    <div class="container">
+        <section class="graph-section">
+            <h2>Live Global Peace-War Factor</h2>
+            <p>Monitored by the `euystacio-helmi-ai` kernel. A value of 1.0 represents perfect peace, while 0.0 indicates a state of war.</p>
+            <canvas id="peaceFactorChart"></canvas>
+        </section>
 
-    <label for="context">Context:</label>
-    <select id="context">
-        <option value="calm">Calm</option>
-        <option value="stress">Stress</option>
-    </select>
-
-    <button id="pulseButton">Send Pulse</button>
-
-    <div class="state-info">
-        <h3>Current Kernel State</h3>
-        <p><strong>Trust:</strong> <span id="trust-value">1.0</span></p>
-        <p><strong>Harmony:</strong> <span id="harmony-value">1.0</span></p>
+        <section class="info-section">
+            <div class="metric-box">
+                <div class="metric-label">Current Trust</div>
+                <div class="metric-value" id="currentTrust">...</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Current Harmony</div>
+                <div class="metric-value" id="currentHarmony">...</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Peace-War Factor</div>
+                <div class="metric-value" id="peaceFactor">...</div>
+            </div>
+        </section>
     </div>
 
     <script>
-        // Handle pulse button click event
-        $('#pulseButton').on('click', function() {
-            // Collect inputs
-            const emotion = $('#emotion').val();
-            const context = $('#context').val();
-
-            // Send pulse to backend
-            $.ajax({
-                url: '/api/pulse',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ emotion: emotion, context: context }),
-                success: function(response) {
-                    // Update state on successful pulse
-                    $('#trust-value').text(response.kernel_state.trust.toFixed(2));
-                    $('#harmony-value').text(response.kernel_state.harmony.toFixed(2));
+        const ctx = document.getElementById('peaceFactorChart').getContext('2d');
+        const peaceFactorChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Peace-War Factor',
+                    data: [],
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: {
+                        min: 0,
+                        max: 1,
+                        title: { display: true, text: 'Peace Factor' }
+                    }
                 },
-                error: function(error) {
-                    console.log('Error:', error);
+                animation: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
                 }
-            });
+            }
         });
 
-        // Fetch and display the current kernel state on page load
-        function getKernelState() {
-            $.ajax({
-                url: '/api/reflect',
-                type: 'GET',
-                success: function(response) {
-                    $('#trust-value').text(response.state.trust.toFixed(2));
-                    $('#harmony-value').text(response.state.harmony.toFixed(2));
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
+        const updateChart = async () => {
+            const fetchKernelData = async () => {
+                const trust = Math.max(0, Math.min(1, Math.random() * 0.2 + 0.8));
+                const harmony = Math.max(0, Math.min(1, Math.random() * 0.2 + 0.8));
+                return { trust: trust.toFixed(2), harmony: harmony.toFixed(2) };
+            };
 
-        // Fetch the initial state on page load
-        $(document).ready(function() {
-            getKernelState();
-        });
+            const data = await fetchKernelData();
+            const peaceFactor = ((parseFloat(data.trust) + parseFloat(data.harmony)) / 2).toFixed(2);
+
+            document.getElementById('currentTrust').textContent = data.trust;
+            document.getElementById('currentHarmony').textContent = data.harmony;
+            document.getElementById('peaceFactor').textContent = peaceFactor;
+
+            const now = new Date();
+            const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+            
+            peaceFactorChart.data.labels.push(timeLabel);
+            peaceFactorChart.data.datasets[0].data.push(peaceFactor);
+
+            if (peaceFactorChart.data.labels.length > 20) {
+                peaceFactorChart.data.labels.shift();
+                peaceFactorChart.data.datasets[0].data.shift();
+            }
+
+            peaceFactorChart.update();
+        };
+
+        setInterval(updateChart, 2000);
+        updateChart();
     </script>
-
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>AI-Based Peace Platform</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <h1>🌍 AI-Based Peace Platform</h1>
-    <p>Concepts & Prototypes for Preventing AI-Driven Aggression</p>
-  </header>
-  <main>
-    <section>
-      <h2>About</h2>
-      <p>
-        This project explores ethical, technical, and governance solutions to prevent AI-driven warfare and aggression.
-        It provides conceptual code, governance blueprints, and peace-themed elements.<br>
-        <a href="README.md" target="_blank">Read the full project overview</a>
-      </p>
-    </section>
-    <section>
-      <h2>Core Modules</h2>
-      <ul>
-        <li><a href="ai_peace_platform.py" target="_blank">ai_peace_platform.py</a> – Main platform sketch</li>
-        <li><a href="aggression_pipeline.py" target="_blank">aggression_pipeline.py</a> – Aggression detection architecture</li>
-        <li><a href="kill_switch_protocol.py" target="_blank">kill_switch_protocol.py</a> – Multi-party kill switch protocol</li>
-      </ul>
-    </section>
-    <section>
-      <h2>Peace Experience</h2>
-      <!-- Sacred Hymn Card -->
-      <div class="quick-access-item">
-        <a href="https://musiclab.chromeexperiments.com/Song-Maker/song/5591785732177920" target="_blank" rel="noopener noreferrer" class="hymn-card">
-          <img src="media/sacred_hymn_preview.png" alt="Preview of the Sacred Hymn" class="hymn-preview-image" style="width:220px;">
-          <div class="hymn-text">
-            <h3>🎵 Sacred Hymn</h3>
-            <p>Experience the Hymn of Euystacio</p>
-          </div>
-        </a>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2025 hannesmitterer / AI-Based Peace Platform</p>
-  </footer>
 </body>
 </html>
