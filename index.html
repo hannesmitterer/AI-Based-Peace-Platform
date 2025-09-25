@@ -2,6 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Pulse Dashboard</title>
+    <style>
+        body { margin: 0; height: 100vh; overflow: hidden; font-family: sans-serif; }
+        canvas { display: block; }
+        #pulse-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #pulse-controls label, #pulse-controls button {
+            display: block;
+            margin-bottom: 10px;
+        }
+        #pulse-controls input[type="range"] {
+            width: 200px;
+        }
+        #pulse-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #pulse-controls button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="pulse-controls">
+        <label for="emotion-intensity">Emotion Intensity (0-1):</label>
+        <input type="range" id="emotion-intensity" min="0" max="1" step="0.01" value="0.5">
+        <button onclick="sendPulse()">Send Pulse</button>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create a rotating sphere (Kernel)
+        const geometry = new THREE.SphereGeometry(5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0x0077ff, transparent: true, opacity: 0.8 });
+        const kernel = new THREE.Mesh(geometry, material);
+        scene.add(kernel);
+
+        // Add a simple ambient light
+        const light = new THREE.AmbientLight(0x404040); // Soft white light
+        scene.add(light);
+        
+        // Add a directional light for better lighting
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(0, 1, 1);
+        scene.add(directionalLight);
+
+        // Set up camera position
+        camera.position.z = 20;
+
+        // Pulse function to trigger changes based on intensity
+        function sendPulse() {
+            // Get the intensity value from the slider
+            const intensity = parseFloat(document.getElementById('emotion-intensity').value);
+            
+            // Create pulse effect based on intensity
+            const pulse = new THREE.SphereGeometry(intensity * 3 + 0.5, 20, 20);
+            const color = intensity > 0.7 ? 0xff0000 : (intensity > 0.3 ? 0xffff00 : 0x00ff00);
+            const pulseMaterial = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
+            const pulseObject = new THREE.Mesh(pulse, pulseMaterial);
+            
+            pulseObject.position.set(0, 0, 0); // Center of the kernel
+            scene.add(pulseObject);
+
+            // Animate the pulse expanding
+            let scale = 1;
+            const scaleInterval = setInterval(() => {
+                if (scale < 15) {
+                    pulseObject.scale.set(scale, scale, scale);
+                    pulseObject.material.opacity = 0.5 - (scale / 30);
+                    scale += 0.5;
+                } else {
+                    clearInterval(scaleInterval);
+                    scene.remove(pulseObject); // Remove pulse after it expands
+                }
+            }, 50);
+        }
+
+        // Render Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate the kernel for dynamic effect
+            kernel.rotation.x += 0.005;
+            kernel.rotation.y += 0.005;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <title>Sentimento Pulse Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
