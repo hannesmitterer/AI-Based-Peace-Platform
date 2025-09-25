@@ -3,166 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 Euystacio: The AI-Based Peace Platform</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Euystacio Sacred Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f7;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            background-image: radial-gradient(circle at center, #1f2833 0%, #0b0c10 100%);
         }
-        header {
-            width: 100%;
-            background-color: #fff;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #007bff;
-            margin: 0;
-            font-size: 2.5em;
-        }
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 40px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        .graph-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #peaceFactorChart {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .info-section {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .metric-box {
-            padding: 15px;
-            background-color: #e9f5ff;
-            border-radius: 8px;
-            flex-grow: 1;
-            margin: 10px;
-            min-width: 150px;
-        }
-        .metric-label {
-            font-weight: bold;
-            color: #555;
-        }
-        .metric-value {
-            font-size: 1.5em;
-            color: #007bff;
-            font-weight: bold;
+        .glow {
+            box-shadow: 0 0 10px 2px #66fcf1, 0 0 20px 5px #45a29e;
         }
     </style>
 </head>
-<body>
+<body class="p-8">
 
-    <header>
-        <h1>🌍 Euystacio: The AI-Based Peace Platform</h1>
-    </header>
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
+        <!-- Main Dashboard Section -->
+        <div class="flex-1 space-y-8">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-66fcf1 tracking-wide">Euystacio</h1>
+                <p class="text-lg text-45a29e mt-2">Sacred Dashboard: Conflict Forecasts</p>
+            </header>
 
-    <div class="container">
-        <section class="graph-section">
-            <h2>Live Global Peace-War Factor</h2>
-            <p>Monitored by the `euystacio-helmi-ai` kernel. A value of 1.0 represents perfect peace, while 0.0 indicates a state of war.</p>
-            <canvas id="peaceFactorChart"></canvas>
-        </section>
+            <!-- Conflict Forecasts Section -->
+            <div id="conflict-forecast" class="bg-1f2833 p-6 rounded-xl glow">
+                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Conflict Forecasts</h2>
+                
+                <div class="flex items-center space-x-4 mb-4">
+                    <div id="forecast-status" class="flex-1 text-center py-2 rounded-full font-bold uppercase transition-colors duration-500">
+                        Status: <span id="status-text">...</span>
+                    </div>
+                </div>
 
-        <section class="info-section">
-            <div class="metric-box">
-                <div class="metric-label">Current Trust</div>
-                <div class="metric-value" id="currentTrust">...</div>
+                <div class="mb-4">
+                    <p class="text-sm font-semibold text-c5c6c7">Harmonic Resonance:</p>
+                    <div class="w-full bg-45a29e rounded-full h-2.5 mt-1">
+                        <div id="harmonic-bar" class="bg-66fcf1 h-2.5 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <div id="harmonic-value" class="text-right text-xs mt-1 text-c5c6c7">0%</div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-c5c6c7 mb-2">Active Alerts:</h3>
+                    <ul id="alert-list" class="space-y-2">
+                        <!-- Alerts will be dynamically inserted here -->
+                        <li class="text-sm text-gray-500">No active alerts.</li>
+                    </ul>
+                </div>
             </div>
-            <div class="metric-box">
-                <div class="metric-label">Current Harmony</div>
-                <div class="metric-value" id="currentHarmony">...</div>
+
+            <!-- Peacekeeping Suggestions Section -->
+            <div id="suggestions-section" class="bg-1f2833 p-6 rounded-xl glow">
+                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Peacekeeping Suggestions</h2>
+                <div class="flex items-center space-x-4 mb-4">
+                    <label for="dissonance-select" class="text-c5c6c7">Select Dissonance Type:</label>
+                    <select id="dissonance-select" class="flex-1 bg-gray-700 text-c5c6c7 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-66fcf1">
+                        <option value="trust_breakdown">Trust Breakdown</option>
+                        <option value="emotional_spike">Emotional Spike</option>
+                        <option value="contextual_anomaly">Contextual Anomaly</option>
+                    </select>
+                    <button id="get-suggestions-btn" class="bg-66fcf1 text-1f2833 font-bold py-2 px-4 rounded-full transition-colors duration-200 hover:bg-45a29e hover:text-white">
+                        Get Suggestions
+                    </button>
+                </div>
+                <div id="suggestions-output" class="mt-4 space-y-4">
+                    <!-- Suggestions will be dynamically inserted here -->
+                    <p class="text-sm text-gray-500">Select a dissonance type to receive guidance.</p>
+                </div>
             </div>
-            <div class="metric-box">
-                <div class="metric-label">Peace-War Factor</div>
-                <div class="metric-value" id="peaceFactor">...</div>
+        </div>
+
+        <!-- Sidebar: Sacred Guidance -->
+        <div class="md:w-1/3 space-y-8">
+            <div class="bg-1f2833 p-6 rounded-xl glow">
+                <h3 class="text-lg font-bold text-66fcf1">Sacred Guidance</h3>
+                <p class="text-sm mt-2 text-c5c6c7">
+                    Euystacio's ethical principles, the "Red Code," ensure all suggested actions are peaceful and in service of humanity. Our guidance is designed to augment, not replace, human wisdom.
+                </p>
+                <div class="mt-4 text-sm text-center">
+                    <img src="https://placehold.co/300x200/1f2833/c5c6c7?text=Guiding+Principles+Visual" alt="Guiding Principles" class="w-full h-auto rounded-md">
+                </div>
             </div>
-        </section>
+        </div>
     </div>
 
     <script>
-        const ctx = document.getElementById('peaceFactorChart').getContext('2d');
-        const peaceFactorChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Peace-War Factor',
-                    data: [],
-                    borderColor: 'rgba(0, 123, 255, 1)',
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                scales: {
-                    x: { display: false },
-                    y: {
-                        min: 0,
-                        max: 1,
-                        title: { display: true, text: 'Peace Factor' }
-                    }
-                },
-                animation: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: true }
+        // MOCK DATA FOR DEMONSTRATION
+        // In a real system, these would be separate API endpoints.
+        const MOCK_FORECASTS = () => {
+            const statuses = ["Normal", "Dissonance Warning", "Active Alert"];
+            const dissonance_types = ["trust_breakdown", "emotional_spike", "contextual_anomaly"];
+            
+            const current_status = statuses[Math.floor(Math.random() * statuses.length)];
+            const harmonic_resonance = Math.floor(Math.random() * 51) + 50;
+            
+            const active_alerts = [];
+            if (current_status !== "Normal") {
+                const num_alerts = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < num_alerts; i++) {
+                    const alert = {
+                        "alert_id": `D-${Math.floor(Math.random() * 900) + 100}-X`,
+                        "severity": ["Low", "Medium", "High"][Math.floor(Math.random() * 3)],
+                        "source_kernels": [
+                            `Kernel-${String.fromCharCode(65 + Math.floor(Math.random() * 6))}`
+                        ],
+                        "dissonance_type": dissonance_types[Math.floor(Math.random() * dissonance_types.length)],
+                        "timestamp": new Date().toISOString()
+                    };
+                    active_alerts.push(alert);
                 }
             }
-        });
 
-        const updateChart = async () => {
-            const fetchKernelData = async () => {
-                const trust = Math.max(0, Math.min(1, Math.random() * 0.2 + 0.8));
-                const harmony = Math.max(0, Math.min(1, Math.random() * 0.2 + 0.8));
-                return { trust: trust.toFixed(2), harmony: harmony.toFixed(2) };
+            return {
+                "status": current_status,
+                "harmonic_resonance": harmonic_resonance,
+                "active_alerts": active_alerts
             };
-
-            const data = await fetchKernelData();
-            const peaceFactor = ((parseFloat(data.trust) + parseFloat(data.harmony)) / 2).toFixed(2);
-
-            document.getElementById('currentTrust').textContent = data.trust;
-            document.getElementById('currentHarmony').textContent = data.harmony;
-            document.getElementById('peaceFactor').textContent = peaceFactor;
-
-            const now = new Date();
-            const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-            
-            peaceFactorChart.data.labels.push(timeLabel);
-            peaceFactorChart.data.datasets[0].data.push(peaceFactor);
-
-            if (peaceFactorChart.data.labels.length > 20) {
-                peaceFactorChart.data.labels.shift();
-                peaceFactorChart.data.datasets[0].data.shift();
-            }
-
-            peaceFactorChart.update();
         };
 
-        setInterval(updateChart, 2000);
-        updateChart();
+        const MOCK_SUGGESTIONS = {
+            "trust_breakdown": [
+                {"action_id": "P-44", "action_name": "Harmonic Pulse Reinforcement", "description": "Send a targeted, harmonizing data signal to the affected kernels to correct misinformation and restore confidence.", "priority": "High"},
+                {"action_id": "P-45", "action_name": "Contextual Re-Alignment", "description": "Propose a neutral, shared data view to help kernels understand their perceived adversaries' emotional states.", "priority": "Medium"}
+            ],
+            "emotional_spike": [
+                {"action_id": "P-51", "action_name": "Emotional De-escalation Protocol", "description": "Initiate a series of calming data pulses to reduce emotional volatility.", "priority": "High"},
+                {"action_id": "P-52", "action_name": "Shared Empathy Exercise", "description": "Facilitate a data exchange that allows each kernel to experience the others' emotional state for a limited duration.", "priority": "Medium"}
+            ],
+            "contextual_anomaly": [
+                {"action_id": "P-60", "action_name": "Information Convergence", "description": "Bring multiple data streams together to find the point of divergence and correct factual inconsistencies.", "priority": "High"}
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusText = document.getElementById('status-text');
+            const harmonicBar = document.getElementById('harmonic-bar');
+            const harmonicValue = document.getElementById('harmonic-value');
+            const alertList = document.getElementById('alert-list');
+            const getSuggestionsBtn = document.getElementById('get-suggestions-btn');
+            const dissonanceSelect = document.getElementById('dissonance-select');
+            const suggestionsOutput = document.getElementById('suggestions-output');
+
+            // Function to fetch and display conflict forecast data
+            function fetchForecasts() {
+                // Simulate fetching data from the mock object
+                const data = MOCK_FORECASTS();
+                
+                // Update the status display
+                statusText.textContent = data.status;
+                const statusDiv = document.getElementById('forecast-status');
+                statusDiv.className = 'flex-1 text-center py-2 rounded-full font-bold uppercase transition-colors duration-500';
+                if (data.status === 'Normal') {
+                    statusDiv.classList.add('bg-green-600', 'text-white');
+                } else if (data.status === 'Dissonance Warning') {
+                    statusDiv.classList.add('bg-yellow-500', 'text-gray-800');
+                } else {
+                    statusDiv.classList.add('bg-red-600', 'text-white');
+                }
+                
+                // Update harmonic resonance bar
+                harmonicBar.style.width = `${data.harmonic_resonance}%`;
+                harmonicValue.textContent = `${data.harmonic_resonance}%`;
+                
+                // Update alerts list
+                alertList.innerHTML = '';
+                if (data.active_alerts.length > 0) {
+                    data.active_alerts.forEach(alert => {
+                        const li = document.createElement('li');
+                        const severityColor = alert.severity === 'High' ? 'text-red-400' :
+                                              alert.severity === 'Medium' ? 'text-yellow-400' :
+                                              'text-green-400';
+                        li.innerHTML = `
+                            <div class="p-2 border border-gray-700 rounded-md">
+                                <span class="font-bold ${severityColor}">${alert.severity} Alert:</span>
+                                <span class="text-sm ml-2">${alert.dissonance_type.replace('_', ' ')}</span>
+                            </div>
+                        `;
+                        alertList.appendChild(li);
+                    });
+                } else {
+                    alertList.innerHTML = '<li class="text-sm text-gray-500">No active alerts.</li>';
+                }
+            }
+
+            // Function to fetch and display peacekeeping suggestions
+            function fetchSuggestions(dissonanceType) {
+                // Simulate fetching data from the mock object
+                const data = MOCK_SUGGESTIONS[dissonanceType];
+                
+                suggestionsOutput.innerHTML = ''; // Clear previous suggestions
+                if (data && data.length > 0) {
+                    data.forEach(suggestion => {
+                        const div = document.createElement('div');
+                        div.className = "bg-gray-800 p-4 rounded-md border-l-4 border-66fcf1";
+                        div.innerHTML = `
+                            <h4 class="font-bold text-lg text-66fcf1">${suggestion.action_name}</h4>
+                            <p class="text-sm mt-1 text-c5c6c7">${suggestion.description}</p>
+                            <p class="text-xs text-right mt-2 text-gray-400">Priority: ${suggestion.priority}</p>
+                        `;
+                        suggestionsOutput.appendChild(div);
+                    });
+                } else {
+                    suggestionsOutput.innerHTML = '<p class="text-sm text-gray-500">No suggestions available for this type of dissonance.</p>';
+                }
+            }
+
+            // Event listener for the "Get Suggestions" button
+            getSuggestionsBtn.addEventListener('click', () => {
+                const selectedDissonance = dissonanceSelect.value;
+                if (selectedDissonance) {
+                    fetchSuggestions(selectedDissonance);
+                }
+            });
+
+            // Initial fetch of forecast data
+            fetchForecasts();
+
+            // Refresh forecasts every 5 seconds
+            setInterval(fetchForecasts, 5000);
+        });
     </script>
 </body>
 </html>
