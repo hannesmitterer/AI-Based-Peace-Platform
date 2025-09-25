@@ -1,49 +1,20 @@
-function fetchForecastData() {
-    fetch('/api/forecast')  // Your backend URL
-        .then(response => response.json())
-        .then(data => {
-            // Forecasted trust and harmony data
-            const trustForecastData = data.trust_forecast.map(item => ({
-                x: new Date(item.ds),
-                y: item.yhat
-            }));
-
-            const harmonyForecastData = data.harmony_forecast.map(item => ({
-                x: new Date(item.ds),
-                y: item.yhat
-            }));
-
-            updateGraphs(trustForecastData, harmonyForecastData);
-        })
-        .catch(error => console.error('Error fetching forecast data:', error));
-}
-
-function updateGraphs(trustForecastData, harmonyForecastData) {
-    // Trust Graph with forecast data
-    const trustData = {
-        type: 'scatter',
-        mode: 'lines',
-        x: trustForecastData.map(item => item.x),
-        y: trustForecastData.map(item => item.y),
-        name: "Forecasted Trust",
-        line: { color: 'green' }
-    };
-
-    // Harmony Graph with forecast data
-    const harmonyData = {
-        type: 'scatter',
-        mode: 'lines',
-        x: harmonyForecastData.map(item => item.x),
-        y: harmonyForecastData.map(item => item.y),
-        name: "Forecasted Harmony",
-        line: { color: 'blue' }
-    };
-
-    // Plot the Trust and Harmony forecast data
-    Plotly.newPlot('kernel-state-graph-trust', [trustData]);
-    Plotly.newPlot('kernel-state-graph-harmony', [harmonyData]);
-}
-
-// Fetch the forecast every 30 seconds
-setInterval(fetchForecastData, 30000); // Update every 30 seconds
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trust & Harmony Forecast Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Trust & Harmony Forecast Dashboard</h1>
+    <div>
+        <h2>Trust Forecast</h2>
+        <div id="kernel-state-graph-trust" style="width:100%;height:400px;"></div>
+    </div>
+    <div>
+        <h2>Harmony Forecast</h2>
+        <div id="kernel-state-graph-harmony" style="width:100%;height:400px;"></div>
+    </div>
+    <script src="forecast.js"></script>
+</body>
+</html>
