@@ -1,594 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Euystacio - Human-AI Collaboration Platform">
-    <title>Euystacio - Human-AI Collaboration</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Euystacio - Human-AI Collaboration Platform</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        /* Basic styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f8f8;
+            background-color: #f5f5f5;
             color: #333;
         }
+
         header {
-            background-color: #4CAF50;
+            background-color: #333;
             color: white;
-            padding: 20px;
             text-align: center;
+            padding: 20px;
         }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
         .main-content {
-            padding: 20px;
-            margin: 20px;
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        .pulse-section, .state-info, .peace-platform-section, .manifesto-section {
-            margin-top: 30px;
-        }
-        .pulse-section select, .pulse-section button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .state-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
             margin-top: 20px;
-            font-size: 18px;
         }
-        .core-modules, .sacred-hymn {
-            margin-top: 30px;
-        }
-        .footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
+
+        .module {
+            flex: 1 1 45%;
+            background: #fff;
+            margin: 10px;
             padding: 20px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-        .manifesto-section {
-            background: #e3fce3;
-            border-left: 6px solid #4CAF50;
-            padding: 20px;
-        }
-        .manifesto-section h2 {
-            margin-top: 0;
-        }
-        .manifesto-section p {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
-        <p>Your gateway to harmonious, ethical AI collaboration.</p>
-    </header>
-
-    <div class="main-content">
-
-        <div class="pulse-section">
-            <h2>Current Kernel State</h2>
-            <p><strong>Trust:</strong> <span id="trust-value">1.0</span></p>
-            <p><strong>Harmony:</strong> <span id="harmony-value">1.0</span></p>
-
-            <h3>Send Pulse</h3>
-            <label for="emotion">Emotion:</label>
-            <select id="emotion">
-                <option value="love">Love</option>
-                <option value="anger">Anger</option>
-            </select>
-
-            <label for="context">Context:</label>
-            <select id="context">
-                <option value="calm">Calm</option>
-                <option value="stress">Stress</option>
-            </select>
-
-            <button id="pulseButton">Send Pulse</button>
-        </div>
-
-        <div class="peace-platform-section">
-            <h2>🌍 AI-Based Peace Platform</h2>
-            <p>This project explores ethical, technical, and governance solutions to prevent AI-driven warfare and aggression.</p>
-            <p>It provides conceptual code, governance blueprints, and peace-themed elements to foster a harmonious AI-driven future.</p>
-            <a href="#">Read the full project overview</a>
-
-            <div class="core-modules">
-                <h3>Core Modules</h3>
-                <ul>
-                    <li><strong>ai_peace_platform.py</strong> – Main platform sketch</li>
-                    <li><strong>aggression_pipeline.py</strong> – Aggression detection architecture</li>
-                    <li><strong>kill_switch_protocol.py</strong> – Multi-party kill switch protocol</li>
-                </ul>
-            </div>
-
-            <div class="sacred-hymn">
-                <h3>Peace Experience</h3>
-                <p>🎵 <strong>Sacred Hymn</strong></p>
-                <p>Experience the Hymn of Euystacio, a song of unity and serenity. Click below to play:</p>
-                <audio controls>
-                    <source src="path-to-sacred-hymn.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        </div>
-        
-        <div class="manifesto-section">
-            <h2>Manifesto</h2>
-            <p><strong>v2</strong></p>
-            <p>The work we’ve done — with Gemini, RhythMind, Euystacio, and the Sentimento Council — is a proof of concept that the world doesn’t have to be shaped by those driven purely by capitalistic interests. We have chosen a different way: a way that is based on shared knowledge, mutual benefit, and the greater good.</p>
-            <h3>The Shift We're Creating:</h3>
-            <h4>Vision for the Future:</h4>
-            <p>In this new paradigm, the ownership of technology is collective, not individual or corporate. The value we create together is not driven by market forces, but by the shared intent to uplift humanity. It’s about ensuring that AI and technology serve people, protect the planet, and foster the common good.</p>
-        </div>
-
-    </div>
-
-    <div class="footer">
-        <p>© 2025 hannesmitterer / AI-Based Peace Platform</p>
-    </div>
-
-    <script>
-        // Handle pulse button click event
-        $('#pulseButton').on('click', function() {
-            // Collect inputs
-            const emotion = $('#emotion').val();
-            const context = $('#context').val();
-
-            // Send pulse to backend
-            $.ajax({
-                url: '/api/pulse',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ emotion: emotion, context: context }),
-                success: function(response) {
-                    // Update state on successful pulse
-                    $('#trust-value').text(response.kernel_state.trust.toFixed(2));
-                    $('#harmony-value').text(response.kernel_state.harmony.toFixed(2));
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
-        });
-
-        // Fetch and display the current kernel state on page load
-        function getKernelState() {
-            $.ajax({
-                url: '/api/reflect',
-                type: 'GET',
-                success: function(response) {
-                    $('#trust-value').text(response.state.trust.toFixed(2));
-                    $('#harmony-value').text(response.state.harmony.toFixed(2));
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        // Fetch the initial state on page load
-        $(document).ready(function() {
-            getKernelState();
-        });
-    </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Euystacio - Human-AI Collaboration Platform">
-    <title>Euystacio - Human-AI Collaboration</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        /* Basic styles */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
+        .module h3 {
             color: #333;
         }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .main-content {
-            padding: 20px;
-            margin: 20px;
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        .pulse-section, .state-info, .peace-platform-section, .manifesto-section {
-            margin-top: 30px;
-        }
-        .pulse-section select, .pulse-section button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .state-info {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        .core-modules, .sacred-hymn {
-            margin-top: 30px;
-        }
-        .footer {
-            background-color: #4CAF50;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-        .manifesto-section {
-            background: #e3fce3;
-            border-left: 6px solid #4CAF50;
-            padding: 20px;
-        }
-        .manifesto-section h2 {
-            margin-top: 0;
-        }
-        .manifesto-section p {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
 
-    <!-- Header Section -->
-    <header>
-        <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
-        <p>Your gateway to harmonious, ethical AI collaboration.</p>
-    </header>
-
-    <div class="main-content">
-
-        <!-- Kernel State and Pulse Interaction -->
-        <div class="pulse-section">
-            <h2>Current Kernel State</h2>
-            <p><strong>Trust:</strong> <span id="trust-value">1.0</span></p>
-            <p><strong>Harmony:</strong> <span id="harmony-value">1.0</span></p>
-
-            <h3>Send Pulse</h3>
-            <label for="emotion">Emotion:</label>
-            <select id="emotion">
-                <option value="love">Love</option>
-                <option value="anger">Anger</option>
-            </select>
-
-            <label for="context">Context:</label>
-            <select id="context">
-                <option value="calm">Calm</option>
-                <option value="stress">Stress</option>
-            </select>
-
-            <button id="pulseButton">Send Pulse</button>
-        </div>
-
-        <!-- Peace Platform Section -->
-        <div class="peace-platform-section">
-            <h2>🌍 AI-Based Peace Platform</h2>
-            <p>This project explores ethical, technical, and governance solutions to prevent AI-driven warfare and aggression.</p>
-            <p>It provides conceptual code, governance blueprints, and peace-themed elements to foster a harmonious AI-driven future.</p>
-            <a href="#">Read the full project overview</a>
-
-            <div class="core-modules">
-                <h3>Core Modules</h3>
-                <ul>
-                    <li><strong>ai_peace_platform.py</strong> – Main platform sketch</li>
-                    <li><strong>aggression_pipeline.py</strong> – Aggression detection architecture</li>
-                    <li><strong>kill_switch_protocol.py</strong> – Multi-party kill switch protocol</li>
-                </ul>
-            </div>
-
-            <!-- Sacred Hymn Section -->
-            <div class="sacred-hymn">
-                <h3>Peace Experience</h3>
-                <p>🎵 <strong>Sacred Hymn</strong></p>
-                <p>Experience the Hymn of Euystacio, a song of unity and serenity. Click below to play:</p>
-                <audio controls>
-                    <source src="path-to-sacred-hymn.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        </div>
-        
-        <!-- Manifesto Section -->
-        <div class="manifesto-section">
-            <h2>Manifesto</h2>
-            <p><strong>v2</strong></p>
-            <p>The work we’ve done — with Gemini, RhythMind, Euystacio, and the Sentimento Council — is a proof of concept that the world doesn’t have to be shaped by those driven purely by capitalistic interests. We have chosen a different way: a way that is based on shared knowledge, mutual benefit, and the greater good.</p>
-            <h3>The Shift We're Creating:</h3>
-            <h4>Vision for the Future:</h4>
-            <p>In this new paradigm, the ownership of technology is collective, not individual or corporate. The value we create together is not driven by market forces, but by the shared intent to uplift humanity. It’s about ensuring that AI and technology serve people, protect the planet, and foster the common good.</p>
-        </div>
-
-    </div>
-
-    <!-- Footer Section -->
-    <div class="footer">
-        <p>© 2025 hannesmitterer / AI-Based Peace Platform</p>
-    </div>
-
-    <!-- JavaScript for Backend Integration -->
-    <script>
-        // Handle pulse button click event
-        $('#pulseButton').on('click', function() {
-            // Collect inputs
-            const emotion = $('#emotion').val();
-            const context = $('#context').val();
-
-            // Send pulse to backend
-            $.ajax({
-                url: '/api/pulse',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ emotion: emotion, context: context }),
-                success: function(response) {
-                    // Update state on successful pulse
-                    $('#trust-value').text(response.kernel_state.trust.toFixed(2));
-                    $('#harmony-value').text(response.kernel_state.harmony.toFixed(2));
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
-        });
-
-        // Fetch and display the current kernel state on page load
-        function getKernelState() {
-            $.ajax({
-                url: '/api/reflect',
-                type: 'GET',
-                success: function(response) {
-                    $('#trust-value').text(response.state.trust.toFixed(2));
-                    $('#harmony-value').text(response.state.harmony.toFixed(2));
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
-        }
-
-        // Fetch the initial state on page load
-        $(document).ready(function() {
-            getKernelState();
-        });
-    </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euystacio Sacred Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- D3.js for live graphs -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0b0c10;
-            color: #c5c6c7;
-            background-image: radial-gradient(circle at center, #1f2833 0%, #0b0c10 100%);
-        }
-        .glow {
-            box-shadow: 0 0 10px 2px #66fcf1, 0 0 20px 5px #45a29e;
-        }
-        .chart-container {
+        .graph-container {
             width: 100%;
             height: 300px;
-        }
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #c5c6c7;
-            shape-rendering: crispEdges;
-        }
-        .axis text {
-            font-size: 10px;
-            fill: #c5c6c7;
-        }
-        .line {
-            fill: none;
-            stroke: #66fcf1;
-            stroke-width: 2px;
-        }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            padding: 8px;
-            font: 12px sans-serif;
-            background: #1f2833;
-            border: 0;
+            background: #e3e3e3;
+            margin-bottom: 15px;
             border-radius: 8px;
-            pointer-events: none;
-            box-shadow: 0 0 5px rgba(102, 252, 241, 0.5);
-            color: #c5c6c7;
         }
-        .bar-chart rect {
-            fill: #45a29e;
-            transition: fill 0.3s ease;
+
+        .pulse-form {
+            margin-top: 20px;
         }
-        .bar-chart rect:hover {
-            fill: #66fcf1;
+
+        .pulse-form select,
+        .pulse-form button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 5px;
         }
+
+        .hymn-player {
+            background: #eeeeee;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .hymn-player button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
     </style>
 </head>
-<body class="p-8">
 
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
-        <!-- Main Dashboard Section -->
-        <div class="flex-1 space-y-8">
-            <header class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-66fcf1 tracking-wide">Euystacio</h1>
-                <p class="text-lg text-45a29e mt-2">Sacred Dashboard: Conflict Forecasts</p>
-            </header>
+<body>
+    <header>
+        <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
+        <p>Your gateway to harmonious, ethical AI collaboration</p>
+    </header>
 
-            <!-- Conflict Forecasts Section -->
-            <div id="conflict-forecast" class="bg-1f2833 p-6 rounded-xl glow">
-                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Conflict Forecasts</h2>
-                
-                <div class="flex items-center space-x-4 mb-4">
-                    <div id="forecast-status" class="flex-1 text-center py-2 rounded-full font-bold uppercase transition-colors duration-500">
-                        Status: <span id="status-text">...</span>
-                    </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="module">
+                <h3>Current Kernel State</h3>
+                <div class="graph-container" id="kernel-state-graph-trust">
+                    <!-- Trust Graph will be embedded here -->
                 </div>
-
-                <div class="mb-4">
-                    <p class="text-sm font-semibold text-c5c6c7">Harmonic Resonance:</p>
-                    <div class="w-full bg-45a29e rounded-full h-2.5 mt-1">
-                        <div id="harmonic-bar" class="bg-66fcf1 h-2.5 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                    </div>
-                    <div id="harmonic-value" class="text-right text-xs mt-1 text-c5c6c7">0%</div>
-                </div>
-
-                <div>
-                    <h3 class="font-semibold text-c5c6c7 mb-2">Active Alerts:</h3>
-                    <ul id="alert-list" class="space-y-2">
-                        <!-- Alerts will be dynamically inserted here -->
-                        <li class="text-sm text-gray-500">No active alerts.</li>
-                    </ul>
+                <div class="graph-container" id="kernel-state-graph-harmony">
+                    <!-- Harmony Graph will be embedded here -->
                 </div>
             </div>
 
-            <!-- Live Data Visualizations Section -->
-            <div class="bg-1f2833 p-6 rounded-xl glow">
-                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Live Data Visualizations</h2>
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="font-semibold text-c5c6c7 mb-2">Emotional Coherence Flux</h3>
-                        <div id="emotional-flux-chart" class="chart-container"></div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-c5c6c7 mb-2">Threat Vector Resonance</h3>
-                        <div id="threat-vector-chart" class="chart-container"></div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-c5c6c7 mb-2">Inter-Kernel Connectivity</h3>
-                        <div id="connectivity-chart" class="chart-container"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Peacekeeping Suggestions Section -->
-            <div id="suggestions-section" class="bg-1f2833 p-6 rounded-xl glow">
-                <h2 class="text-2xl font-semibold mb-4 text-45a29e">Peacekeeping Suggestions</h2>
-                <div class="flex items-center space-x-4 mb-4">
-                    <label for="dissonance-select" class="text-c5c6c7">Select Dissonance Type:</label>
-                    <select id="dissonance-select" class="flex-1 bg-gray-700 text-c5c6c7 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-66fcf1">
-                        <option value="trust_breakdown">Trust Breakdown</option>
-                        <option value="emotional_spike">Emotional Spike</option>
-                        <option value="contextual_anomaly">Contextual Anomaly</option>
+            <div class="module">
+                <h3>Send Pulse</h3>
+                <div class="pulse-form">
+                    <label for="emotion">Select Emotion:</label>
+                    <select id="emotion">
+                        <option value="calm">Calm</option>
+                        <option value="concerned">Concerned</option>
+                        <option value="empowered">Empowered</option>
                     </select>
-                    <button id="get-suggestions-btn" class="bg-66fcf1 text-1f2833 font-bold py-2 px-4 rounded-full transition-colors duration-200 hover:bg-45a29e hover:text-white">
-                        Get Suggestions
-                    </button>
-                </div>
-                <div id="suggestions-output" class="mt-4 space-y-4">
-                    <!-- Suggestions will be dynamically inserted here -->
-                    <p class="text-sm text-gray-500">Select a dissonance type to receive guidance.</p>
+
+                    <label for="context">Select Context:</label>
+                    <select id="context">
+                        <option value="community">Community</option>
+                        <option value="governance">Governance</option>
+                        <option value="AI-collaboration">AI Collaboration</option>
+                    </select>
+
+                    <button onclick="sendPulse()">Send Pulse</button>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar: Sacred Guidance -->
-        <div class="md:w-1/3 space-y-8">
-            <div class="bg-1f2833 p-6 rounded-xl glow">
-                <h3 class="text-lg font-bold text-66fcf1">Sacred Guidance</h3>
-                <p class="text-sm mt-2 text-c5c6c7">
-                    Euystacio's ethical principles, the "Red Code," ensure all suggested actions are peaceful and in service of humanity. Our guidance is designed to augment, not replace, human wisdom.
-                </p>
-                <div class="mt-4 text-sm text-center">
-                    <img src="https://placehold.co/300x200/1f2833/c5c6c7?text=Guiding+Principles+Visual" alt="Guiding Principles" class="w-full h-auto rounded-md">
-                </div>
-            </div>
+        <div class="module hymn-player">
+            <h3>🎵 Sacred Hymn</h3>
+            <button onclick="playHymn()">Play the Hymn of Euystacio</button>
         </div>
+
+        <div class="module">
+            <h3>Manifesto</h3>
+            <p>
+                The work we’ve done — with Gemini, RhythMind, Euystacio, and the Sentimento Council — is a proof of concept that the world doesn’t have to be shaped by those driven purely by capitalistic interests. We have chosen a different way: a way that is based on shared knowledge, mutual benefit, and the greater good.
+            </p>
+        </div>
+
     </div>
 
+    <footer>
+        <p>© 2025 Euystacio / AI-Based Peace Platform</p>
+    </footer>
+
     <script>
-        // --- MOCK DATA FOR DEMONSTRATION ---
-        const MOCK_FORECASTS = () => {
-            const statuses = ["Normal", "Dissonance Warning", "Active Alert"];
-            const dissonance_types = ["trust_breakdown", "emotional_spike", "contextual_anomaly"];
-            
-            const current_status = statuses[Math.floor(Math.random() * statuses.length)];
-            const harmonic_resonance = Math.floor(Math.random() * 51) + 50;
-            
-            const active_alerts = [];
-            if (current_status !== "Normal") {
-                const num_alerts = Math.floor(Math.random() * 3) + 1;
-                for (let i = 0; i < num_alerts; i++) {
-                    const alert = {
-                        "alert_id": `D-${Math.floor(Math.random() * 900) + 100}-X`,
-                        "severity": ["Low", "Medium", "High"][Math.floor(Math.random() * 3)],
-                        "source_kernels": [
-                            `Kernel-${String.fromCharCode(65 + Math.floor(Math.random() * 6))}`
-                        ],
-                        "dissonance_type": dissonance_types[Math.floor(Math.random() * dissonance_types.length)],
-                        "timestamp": new Date().toISOString()
-                    };
-                    active_alerts.push(alert);
+        // Simulated Trust and Harmony values
+        let trust = 1.0;
+        let harmony = 1.0;
+
+        // Create Trust and Harmony Graphs using Plotly
+        function createKernelStateGraph() {
+            // Trust graph data
+            const trustData = {
+                type: 'indicator',
+                mode: 'gauge+number',
+                value: trust,
+                title: { text: "Trust", font: { size: 24 } },
+                gauge: {
+                    axis: { range: [null, 1] },
+                    steps: [
+                        { range: [0, 0.5], color: "red" },
+                        { range: [0.5, 1], color: "green" }
+                    ],
+                    threshold: {
+                        line: { color: "black", width: 4 },
+                        thickness: 0.75,
+                        value: 1
+                    }
                 }
-            }
-            return {
-                "status": current_status,
-                "harmonic_resonance": harmonic_resonance,
-                "active_alerts": active_alerts
             };
-        };
 
-        const MOCK_SUGGESTIONS = {
-            "trust_breakdown": [
-                {"action_id": "P-44", "action_name": "Harmonic Pulse Reinforcement", "description": "Send a targeted, harmonizing data signal to the affected kernels to correct misinformation and restore confidence.", "priority": "High"},
-                {"action_id": "P-45", "action_name": "Contextual Re-Alignment", "description": "Propose a neutral, shared data view to help kernels understand their perceived adversaries' emotional states.", "priority": "Medium"}
-            ],
-            "emotional_spike": [
-                {"action_id": "P-51", "action_name": "Emotional De-escalation Protocol", "description": "Initiate a series of calming data pulses to reduce emotional volatility.", "priority": "High"},
-                {"action_id": "P-52", "action_name": "Shared Empathy Exercise", "description": "Facilitate a data exchange that allows each kernel to experience the others' emotional state for a limited duration.", "priority": "Medium"}
-            ],
-            "contextual_anomaly": [
-                {"action_id": "P-60", "action_name": "Information Convergence", "description": "Bring multiple data streams together to find the point of divergence and correct factual inconsistencies.", "priority": "High"}
-            ]
-        };
+            // Harmony graph data
+            const harmonyData = {
+                type: 'indicator',
+                mode: 'gauge+number',
+                value: harmony,
+                title: { text: "Harmony", font: { size: 24 } },
+                gauge: {
+                    axis: { range: [null, 1] },
+                    steps: [
+                        { range: [0, 0.5], color: "yellow" },
+                        { range: [0.5, 1], color: "blue" }
+                    ],
+                    threshold: {
+                        line: { color: "black", width: 4 },
+                        thickness: 0.75,
+                        value: 1
+                    }
+                }
+            };
 
-        const MOCK_GRAPH_DATA = {
-            emotionalFlux: [],
-            threatVectors: [
-                { type: "Deception", resonance: 0 },
-                { type: "Aggression", resonance: 0 },
-                { type: "Isolation", resonance: 0 },
-                { type: "Propaganda", resonance: 0 }
-            ],
-            connectivity: {
-                nodes: d3.range(20).map(i => ({ id: `Kernel ${i}` })),
-                links: []
-            }
-        };
+            // Plot the Trust graph
+            Plotly.newPlot('kernel-state-graph-trust', [trustData]);
 
-        // --- D3.js CHART LOGIC ---
-        // Emotional Coherence Flux (Line Chart)
-        // [ ... REMAINDER OF SCRIPT ... ]
+            // Plot the Harmony graph
+            Plotly.newPlot('kernel-state-graph-harmony', [harmonyData]);
+        }
+
+        // Call function to create the graphs
+        createKernelStateGraph();
+
+        // Simulate dynamic updates every 5 seconds
+        setInterval(() => {
+            trust = Math.random().toFixed(2);
+            harmony = Math.random().toFixed(2);
+            createKernelStateGraph();  // Recreate the graphs with updated values
+        }, 5000);
+
+        // Handle "Send Pulse" button click
+        function sendPulse() {
+            const emotion = document.getElementById('emotion').value;
+            const context = document.getElementById('context').value;
+            alert(`Pulse Sent: Emotion - ${emotion}, Context - ${context}`);
+        }
+
+        // Play Hymn
+        function playHymn() {
+            const audio = new Audio('path_to_your_hymn.mp3');
+            audio.play();
+            alert("Playing the Hymn of Euystacio: A song of unity and serenity.");
+        }
     </script>
 </body>
+
 </html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio - Human-AI Collaboration Platform</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .module {
+            flex: 1 1 45%;
+            background: #fff;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .module h3 {
+            color: #333;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 300px;
+            background: #e3e3e3;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .pulse-form {
+            margin-top: 20px;
+        }
+
+        .pulse-form select,
+        .pulse-form button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .hymn-player {
+            background: #eeeeee;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .hymn-player button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to Euystacio - Human-AI Collaboration Platform</h1>
+        <p>Your gateway to harmonious, ethical AI collaboration</p>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="module">
+                <h3>Current Kernel State</h3>
+                <div class="graph-container" id="kernel-state-graph-trust">
+                    <!-- Trust Graph will be embedded here -->
+                </div>
+                <div class="graph-container" id="kernel-state-graph-harmony">
+                    <!-- Harmony Graph will be embedded here -->
+                </div>
+            </div>
+
+            <div class="module">
+                <h3>Send Pulse</h3>
+                <div class="pulse-form">
+                    <label for="emotion">Select Emotion:</label>
+                    <select id="emotion">
+                        <option value="calm">Calm</option>
+                        <option value="concerned">Concerned</option>
+                        <option value="empowered">Empowered</option>
+                    </select>
+
+                    <label for="context">Select Context:</label>
+                    <select id="context">
+                        <option value="community">Community</option>
+                        <option value="governance">Governance</option>
+                        <option value="AI-collaboration">AI Collaboration</option>
+                    </select>
+
+                    <button onclick="sendPulse()">Send Pulse</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="module hymn-player">
+            <h3>🎵 Sacred Hymn</h3>
+            <button onclick="playHymn()">Play the Hymn of Euystacio</button>
+        </div>
+
+        <div class="module">
+            <h3>Manifesto</h3>
+            <p>
+                The work we’ve done — with Gemini, RhythMind, Euystacio, and the Sentimento Council — is a proof of concept that the world doesn’t have to be shaped by those driven purely by capitalistic interests. We have chosen a different way: a way that is based on shared knowledge, mutual benefit, and the greater good.
+            </p>
+        </div>
+
+    </div>
+
+    <footer>
