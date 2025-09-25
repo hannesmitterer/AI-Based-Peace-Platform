@@ -3,259 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euystacio Public Landing Page</title>
-    
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; }
-        .hero { text-align: center; padding: 60px 20px; background: #fff; border-bottom: 1px solid #ddd; }
-        .cta-buttons { margin-top: 30px; }
-        .cta-primary, .cta-secondary { padding: 12px 24px; border-radius: 5px; font-weight: bold; text-decoration: none; display: inline-block; margin: 0 10px; }
-        .cta-primary { background-color: #007bff; color: white; }
-        .cta-secondary { background-color: #e9ecef; color: #333; }
-        .graph-container { padding: 40px; }
-        #trust-harmony-graph { width: 100%; height: 500px; }
-        .pulse-form-section { padding: 40px; text-align: center; }
-        #pulse-input { padding: 8px 12px; font-size: 16px; }
-        #send-pulse-btn { padding: 12px 24px; background-color: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
-        #send-pulse-btn:hover { background-color: #218838; }
-    </style>
-    
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-<body>
-
-    <header class="hero">
-        <h1>Welcome to Euystacio</h1>
-        <p>A new paradigm of decentralized trust and harmony.</p>
-        <div class="cta-buttons">
-            <a href="#" class="cta-primary">Join the Co-creation</a>
-            <a href="#" class="cta-secondary">Explore the Protocol</a>
-        </div>
-    </header>
-
-    <main class="graph-container">
-        <h2>Kernel State Visualization</h2>
-        <p>Real-time visualization of the network's trust and harmony levels.</p>
-        <div id="trust-harmony-graph"></div>
-    </main>
-    
-    <section class="pulse-form-section">
-        <h3>Send a Pulse</h3>
-        <form id="pulse-form">
-            <input type="range" id="pulse-input" min="0" max="1" step="0.01" value="0.5">
-            <button type="submit" id="send-pulse-btn">Send Pulse</button>
-        </form>
-        <div id="kernel-state-display">
-            <p>Trust: <span id="trust-value">0.5</span></p>
-            <p>Harmony: <span id="harmony-value">0.7</span></p>
-        </div>
-    </section>
-
-    <script>
-        // Fetch the current kernel state from /api/reflect
-        function fetchKernelState() {
-            return fetch('/api/reflect', {
-                method: 'GET', // HTTP method for retrieving the state
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Assuming the response contains `trust` and `harmony` keys
-                return data; 
-            })
-            .catch(error => console.error('Error fetching kernel state:', error));
-        }
-
-        // Send a pulse to the API
-        function sendPulse(pulseData) {
-            return fetch('/api/pulse', {
-                method: 'POST', // HTTP method for submitting data
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(pulseData) // Send pulse data in the request body
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Assuming the response contains the updated kernel state
-                return data.new_state;
-            })
-            .catch(error => console.error('Error sending pulse:', error));
-        }
-
-        // 3D GRAPH RENDERING AND INTERACTIVITY
-        function updateGraph() {
-            fetchKernelState().then(state => {
-                const trace = {
-                    x: [state.trust],
-                    y: [state.harmony],
-                    z: [0], // Or use a third value for a 3D effect
-                    mode: 'markers',
-                    type: 'scatter3d',
-                    marker: {
-                        size: 12,
-                        color: state.trust * state.harmony, // Color based on a value
-                        colorscale: 'Viridis',
-                        opacity: 0.8
-                    }
-                };
-
-                const layout = {
-                    title: 'Kernel State',
-                    scene: {
-                        xaxis: { title: 'Trust' },
-                        yaxis: { title: 'Harmony' },
-                        zaxis: { title: 'Pulse Count' }
-                    }
-                };
-
-                Plotly.newPlot('trust-harmony-graph', [trace], layout);
-
-                // Update the displayed kernel values
-                document.getElementById('trust-value').innerText = state.trust.toFixed(2);
-                document.getElementById('harmony-value').innerText = state.harmony.toFixed(2);
-            });
-        }
-
-        document.getElementById('pulse-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const pulseValue = document.getElementById('pulse-input').value;
-
-            // Create pulse data to send to the API
-            const pulseData = {
-                value: pulseValue,
-                emotion: 'positive',  // Example context or emotion, modify as necessary
-                context: 'feedback'  // Example context, modify as necessary
-            };
-
-            sendPulse(pulseData).then(updatedState => {
-                updateGraph();  // Re-render graph with updated data
-            });
-        });
-
-        // Initial graph rendering on page load
-        updateGraph();
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Euystacio Pulse Dashboard</title>
     <style>
-        body { margin: 0; height: 100vh; overflow: hidden; font-family: sans-serif; }
+        body { margin: 0; height: 100vh; overflow: hidden; font-family: Arial, sans-serif; background: #f4f7f6; color: #222; }
         canvas { display: block; }
         #pulse-controls {
             position: fixed;
             top: 20px;
             left: 20px;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.97);
+            padding: 20px 18px 20px 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            min-width: 280px;
         }
-        #pulse-controls label, #pulse-controls button {
+        #pulse-controls label, #pulse-controls button, #pulse-controls select, #pulse-controls input {
             display: block;
             margin-bottom: 10px;
+            font-size: 16px;
         }
-        #pulse-controls input[type="range"] {
-            width: 200px;
-        }
+        #pulse-controls input[type="range"] { width: 220px; }
         #pulse-controls button {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 10px 17px;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-weight: bold;
         }
-        #pulse-controls button:hover {
-            background-color: #0056b3;
+        #pulse-controls button:hover { background-color: #0056b3; }
+        #pulse-history {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(255,255,255,0.97);
+            border-radius: 10px;
+            padding: 14px 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+            min-width: 220px;
         }
+        #pulse-list { list-style: none; padding-left: 0; font-size: 14px; }
+        #pulse-list li { margin-bottom: 6px; }
+        #kernel-state-display {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 8px;
+            padding: 10px 16px;
+            box-shadow: 0 2px 8px #bbb;
+            font-size: 16px;
+            min-width: 180px;
+        }
+        #tooltip {
+            display:none;
+            position:fixed;
+            top:10px;
+            left:50%;
+            background:#fff;
+            padding:10px;
+            border-radius:7px;
+            box-shadow:0 2px 8px #aaa;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+        .night-mode { background: #222 !important; color: #eee !important; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <div id="pulse-controls">
         <label for="emotion-intensity">Emotion Intensity (0-1):</label>
         <input type="range" id="emotion-intensity" min="0" max="1" step="0.01" value="0.5">
-        <button onclick="sendPulse()">Send Pulse</button>
+        <label for="emotion">Emotion:</label>
+        <select id="emotion">
+            <option value="anger">Anger</option>
+            <option value="neutral">Neutral</option>
+            <option value="calm">Calm</option>
+        </select>
+        <label for="context">Context:</label>
+        <input type="text" id="context" placeholder="e.g., User Feedback">
+        <button onclick="handlePulseSubmit()">Send Pulse</button>
+        <button onclick="toggleNightMode()">Toggle Night Mode</button>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div id="pulse-history">
+        <h4>Your Pulse History</h4>
+        <ul id="pulse-list"></ul>
+    </div>
+    <div id="kernel-state-display">
+        <p>Trust: <span id="trust-value">0.0</span></p>
+        <p>Harmony: <span id="harmony-value">0.0</span></p>
+    </div>
+    <div id="tooltip"><span id="tooltip-text"></span></div>
     <script>
-        // Scene Setup
+        // --- 3D Visualization Setup ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Create a rotating sphere (Kernel)
+        // Kernel Sphere
         const geometry = new THREE.SphereGeometry(5, 32, 32);
         const material = new THREE.MeshBasicMaterial({ color: 0x0077ff, transparent: true, opacity: 0.8 });
         const kernel = new THREE.Mesh(geometry, material);
         scene.add(kernel);
 
-        // Add a simple ambient light
-        const light = new THREE.AmbientLight(0x404040); // Soft white light
-        scene.add(light);
-        
-        // Add a directional light for better lighting
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(0, 1, 1);
-        scene.add(directionalLight);
-
-        // Set up camera position
+        // Lighting
+        scene.add(new THREE.AmbientLight(0x404040));
+        const dLight = new THREE.DirectionalLight(0xffffff, 0.5); dLight.position.set(0,1,1); scene.add(dLight);
         camera.position.z = 20;
 
-        // Pulse function to trigger changes based on intensity
-        function sendPulse() {
-            // Get the intensity value from the slider
-            const intensity = parseFloat(document.getElementById('emotion-intensity').value);
-            
-            // Create pulse effect based on intensity
-            const pulse = new THREE.SphereGeometry(intensity * 3 + 0.5, 20, 20);
-            const color = intensity > 0.7 ? 0xff0000 : (intensity > 0.3 ? 0xffff00 : 0x00ff00);
-            const pulseMaterial = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
-            const pulseObject = new THREE.Mesh(pulse, pulseMaterial);
-            
-            pulseObject.position.set(0, 0, 0); // Center of the kernel
-            scene.add(pulseObject);
+        // --- API Integration ---
+        function sendPulseToAPI(pulseData) {
+            return fetch('/api/pulse', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pulseData)
+            }).then(res => res.json());
+        }
+        function fetchKernelStateFromAPI() {
+            return fetch('/api/reflect').then(res => res.json());
+        }
 
-            // Animate the pulse expanding
+        // --- Pulse Animation ---
+        function showPulseTrail(intensity) {
+            const pulseSize = intensity * 3 + 0.5;
+            const color = intensity > 0.7 ? 0xff0000 : (intensity > 0.3 ? 0xffff00 : 0x00ff00);
+            const pulseGeometry = new THREE.SphereGeometry(pulseSize, 20, 20);
+            const pulseMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7 });
+            const pulseObject = new THREE.Mesh(pulseGeometry, pulseMaterial);
+            scene.add(pulseObject);
             let scale = 1;
             const scaleInterval = setInterval(() => {
                 if (scale < 15) {
                     pulseObject.scale.set(scale, scale, scale);
-                    pulseObject.material.opacity = 0.5 - (scale / 30);
+                    pulseObject.material.opacity = Math.max(0.1, 0.7 - (scale / 20));
                     scale += 0.5;
                 } else {
                     clearInterval(scaleInterval);
-                    scene.remove(pulseObject); // Remove pulse after it expands
+                    scene.remove(pulseObject);
                 }
             }, 50);
         }
 
-        // Render Loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Rotate the kernel for dynamic effect
-            kernel.rotation.x += 0.005;
-            kernel.rotation.y += 0.005;
-
-            renderer.render(scene, camera);
+        // --- Kernel Dynamic Updates ---
+        function updateKernelVisualization(state) {
+            // Color by trust, scale by trust, rotate by harmony
+            kernel.material.color.set(state.trust > 0.5 ? 0x00ff00 : 0xff0000);
+            kernel.scale.set(state.trust * 2, state.trust * 2, state.trust * 2);
+            kernel.rotation.x += state.harmony * 0.1;
         }
 
-        animate();
+        // --- UX/UI Feedback ---
+        function updateKernelValuesDisplay(state) {
+            document.getElementById('trust-value').textContent = state.trust.toFixed(2);
+            document.getElementById('harmony-value').textContent = state.harmony.toFixed(2);
+        }
+        function showTooltip(message) {
+            const tooltip = document.getElementById('tooltip');
+            document.getElementById('tooltip-text').textContent = message;
+            tooltip.style.display = 'block';
+            setTimeout(() => { tooltip.style.display = 'none'; }, 2000);
+        }
+        function toggleNightMode() {
+            document.body.classList.toggle('night-mode');
+        }
 
-        // Handle window resizing
+        // --- Pulse History ---
+        function addPulseToHistory(pulseData) {
+            const pulseList = document.getElementById('pulse-list');
+            const newItem = document.createElement('li');
+            newItem.textContent = `Intensity: ${pulseData.intensity}, Emotion: ${pulseData.emotion}, Context: ${pulseData.context}`;
+            pulseList.appendChild(newItem);
+        }
+
+        // --- Pulse Submission Handler ---
+        function handlePulseSubmit() {
+            const intensity = parseFloat(document.getElementById('emotion-intensity').value);
+            const emotion = document.getElementById('emotion').value;
+            const context = document.getElementById('context').value || 'user-feedback';
+            const pulseData = { intensity, emotion, context };
+            showPulseTrail(intensity);
+            sendPulseToAPI(pulseData)
+                .then((resp) => {
+                    addPulseToHistory(pulseData);
+                    updateKernelStateOnFrontend();
+                    showTooltip(`Pulse sent! Kernel updated.`);
+                })
+                .catch(() => showTooltip('Error sending pulse.'));
+        }
+
+        // --- Kernel State Updater ---
+        function updateKernelStateOnFrontend() {
+            fetchKernelStateFromAPI()
+                .then(state => {
+                    updateKernelVisualization(state);
+                    updateKernelValuesDisplay(state);
+                    showTooltip(`Trust: ${state.trust.toFixed(2)}, Harmony: ${state.harmony.toFixed(2)}`);
+                })
+                .catch(() => showTooltip('Error fetching kernel state.'));
+        }
+
+        // --- Initial Kernel State ---
+        updateKernelStateOnFrontend();
+
+        // --- Render Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            kernel.rotation.x += 0.005;
+            kernel.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
