@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Pulse Dashboard</title>
+    <style>
+        :root {
+            --bg-color: linear-gradient(135deg, #1f283d 0%, #0d121c 100%);
+            --text-color: #c0c6d9;
+            --control-bg: rgba(30, 42, 60, 0.7);
+            --button-color: #00e5ff;
+            --button-hover: #00b8d4;
+            --border-color: rgba(60, 75, 95, 0.5);
+            --placeholder-color: #6a7d90;
+        }
+        body.day-mode {
+            --bg-color: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            --text-color: #2c3e50;
+            --control-bg: rgba(255, 255, 255, 0.7);
+            --button-color: #3498db;
+            --button-hover: #2980b9;
+            --border-color: rgba(200, 210, 225, 0.5);
+            --placeholder-color: #95a5a6;
+        }
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
+        }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 0; }
+        .dashboard-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-areas:
+                "controls . chat"
+                "graph . chat";
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 380px 1fr 380px;
+            gap: 20px;
+            padding: 30px;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .dashboard-controls { grid-area: controls; align-self: start; }
+        .state-display { grid-area: graph; align-self: end; }
+        .chat-interface { grid-area: chat; align-self: end; }
+
+        .dashboard-controls, .state-display, .chat-interface {
+            pointer-events: all;
+            background: var(--control-bg);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: background 0.5s, border-color 0.5s;
+        }
+        h2 { margin-top: 0; font-size: 1.6em; font-weight: 300; letter-spacing: 1px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 400; margin-bottom: 8px; }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--button-color);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px var(--button-color);
+        }
+        input[type="text"], select, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]::placeholder { color: var(--placeholder-color); }
+        button {
+            background-color: var(--button-color);
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease, transform 0.1s;
+        }
+        button:hover { background-color: var(--button-hover); }
+        button:active { transform: translateY(2px); }
+        #state-values p { margin: 8px 0; font-size: 1.1em; }
+        #feedback-messages {
+            min-height: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #34d399;
+        }
+        #mode-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+            background: var(--control-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
+            pointer-events: all;
+            text-transform: uppercase;
+        }
+        .chat-interface {
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-log {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: rgba(0,0,0,0.1);
+            transition: background-color 0.5s, border-color 0.5s;
+        }
+        #chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #chat-message {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div class="dashboard-container">
+        <div class="dashboard-controls">
+            <h2>Send a Pulse</h2>
+            <div class="form-group">
+                <label for="emotion-intensity">Emotion Intensity</label>
+                <input type="range" id="emotion-intensity" min="0" max="1" step="0.01" value="0.5">
+            </div>
+            <div class="form-group">
+                <label for="emotion">Emotion</label>
+                <select id="emotion">
+                    <option value="calm">Calm</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="anger">Anger</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="context">Context</label>
+                <input type="text" id="context" placeholder="e.g., system feedback">
+            </div>
+            <button onclick="sendPulseWithDetails()">Send Pulse</button>
+            <div id="feedback-messages"></div>
+        </div>
+        <div class="state-display">
+            <h2>Kernel State & History</h2>
+            <div id="state-values">
+                <p><strong>Trust:</strong> <span id="trust-value">--</span></p>
+                <p><strong>Harmony:</strong> <span id="harmony-value">--</span></p>
+            </div>
+            <div id="kernel-graph"></div>
+            <div id="pulse-history">
+                <h3>Recent Pulses</h3>
+                <ul></ul>
+            </div>
+        </div>
+        <div class="chat-interface">
+            <h2>Live Chat</h2>
+            <div id="chat-log"></div>
+            <div id="chat-input-container">
+                <input type="text" id="chat-message" placeholder="Type your message...">
+                <button id="chat-send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+    <button id="mode-toggle">Toggle Day/Night Mode</button>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/postprocessing@6.21.0/build/postprocessing.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // CLIENT-SIDE API MOCK-UP
+        const mockAPI = {
+            kernelState: { trust: 0.5, harmony: 0.5 },
+            pulseHistory: [],
+            
+            async pulse(pulseData) {
+                const intensity = pulseData.intensity;
+                const emotion = pulseData.emotion;
+                const trustChange = (emotion === 'calm' ? 0.05 : (emotion === 'neutral' ? 0 : -0.05)) * intensity;
+                const harmonyChange = (emotion === 'calm' ? 0.05 : (emotion === 'neutral' ? 0.02 : -0.05));
+
+                this.kernelState.trust = Math.min(1, Math.max(0, this.kernelState.trust + trustChange));
+                this.kernelState.harmony = Math.min(1, Math.max(0, this.kernelState.harmony + harmonyChange));
+
+                this.pulseHistory.unshift({ ...pulseData, timestamp: new Date() });
+                if (this.pulseHistory.length > 50) this.pulseHistory.pop();
+
+                return { success: true, new_state: this.kernelState, pulse_data: pulseData };
+            },
+            
+            async reflect() {
+                return this.kernelState;
+            }
+        };
+
+        // THREE.JS SCENE SETUP
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        camera.position.z = 20;
+
+        // POST-PROCESSING
+        const composer = new POSTPROCESSING.EffectComposer(renderer);
+        composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+        const bloomEffect = new POSTPROCESSING.BloomEffect({
+            luminanceThreshold: 0.2,
+            luminanceSmoothing: 0.9,
+            intensity: 1.5,
+        });
+        const effectPass = new POSTPROCESSING.EffectPass(camera, bloomEffect);
+        composer.addPass(effectPass);
+
+        // KERNEL VISUALIZATION: CORE AND CONNECTED PARTICLES
+        const coreGeometry = new THREE.SphereGeometry(2, 32, 32);
+        const coreMaterial = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.1 });
+        const kernelCore = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(kernelCore);
+
+        const particleCount = 2000;
+        const particlesGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0x00e5ff,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.8
+        });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+
+        const linesGeometry = new THREE.BufferGeometry();
+        const linesMaterial = new THREE.LineBasicMaterial({
+            color: 0x00e5ff,
+            transparent: true,
+            opacity: 0.5
+        });
+        const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+        scene.add(lines);
+
+        function updateParticleNetwork() {
+            const positions = particles.geometry.attributes.position.array;
+            const linePositions = [];
+            const radius = 5;
+
+            for (let i = 0; i < particleCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                positions[i * 3 + 0] = radius * Math.sin(phi) * Math.cos(angle);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(angle);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            const tempPositions = [...particles.geometry.attributes.position.array];
+            for (let i = 0; i < particleCount; i++) {
+                for (let j = i + 1; j < particleCount; j++) {
+                    const dx = tempPositions[i * 3 + 0] - tempPositions[j * 3 + 0];
+                    const dy = tempPositions[i * 3 + 1] - tempPositions[j * 3 + 1];
+                    const dz = tempPositions[i * 3 + 2] - tempPositions[j * 3 + 2];
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    if (distance < 2) {
+                        linePositions.push(tempPositions[i * 3 + 0], tempPositions[i * 3 + 1], tempPositions[i * 3 + 2]);
+                        linePositions.push(tempPositions[j * 3 + 0], tempPositions[j * 3 + 1], tempPositions[j * 3 + 2]);
+                    }
+                }
+            }
+            lines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+        }
+        updateParticleNetwork();
+
+        // Main animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            kernelCore.rotation.y += 0.002;
+            particles.rotation.y += 0.003;
+            lines.rotation.y += 0.003;
+            composer.render();
+        }
+        animate();
+
+        // FUNCTIONS FOR API INTEGRATION AND VISUALIZATION
+        async function sendPulseWithDetails() {
+            const intensity = parseFloat(document.getElementById('emotion-intensity').value);
+            const emotion = document.getElementById('emotion').value;
+            const context = document.getElementById('context').value;
+            
+            const pulseData = { intensity, emotion, context };
+
+            try {
+                const data = await mockAPI.pulse(pulseData);
+                displayFeedback('Pulse sent successfully! Kernel state updated.');
+                await updateKernelState();
+                createPulseVisualization(intensity, emotion);
+                updatePulseHistory(pulseData, data.new_state);
+                updateKernelGraph();
+            } catch (error) {
+                console.error('Error sending pulse:', error);
+                displayFeedback('Error sending pulse.', true);
+            }
+        }
+
+        async function updateKernelState() {
+            try {
+                const state = await mockAPI.reflect();
+                updateKernelVisualization(state);
+                updateDashboardUI(state);
+            } catch (error) {
+                console.error('Error fetching kernel state:', error);
+            }
+        }
+        
+        function updateKernelVisualization(state) {
+            const trustColor = new THREE.Color().setHSL(state.trust * 0.3, 1, 0.5);
+            gsap.to(kernelCore.material.color, { r: trustColor.r, g: trustColor.g, b: trustColor.b, duration: 1 });
+            gsap.to(particles.material.color, { r: trustColor.r, g: trustColor.g, b: trustColor.b, duration: 1 });
+            gsap.to(lines.material.color, { r: trustColor.r, g: trustColor.g, b: trustColor.b, duration: 1 });
+
+            const harmonyColor = new THREE.Color().setHSL(state.harmony * 0.6, 1, 0.5);
+            gsap.to(kernelCore.material.emissive, { r: harmonyColor.r, g: harmonyColor.g, b: harmonyColor.b, duration: 1 });
+            
+            const scaleFactor = 1 + (state.trust * 0.5);
+            gsap.to(kernelCore.scale, { x: scaleFactor, y: scaleFactor, z: scaleFactor, duration: 1.5 });
+            
+            gsap.to(kernelCore.rotation, { x: `+=${state.harmony * 0.1}`, y: `+=${state.harmony * 0.1}`, duration: 1 });
+        }
+
+        function createPulseVisualization(intensity, emotion) {
+            const pulseSize = intensity * 3 + 0.5;
+            const pulseColor = emotion === 'calm' ? 0x00ff00 : (emotion === 'neutral' ? 0xffff00 : 0xff0000);
+            
+            const pulseMaterial = new THREE.MeshBasicMaterial({ color: pulseColor, transparent: true, opacity: 0.7 });
+            const pulseObject = new THREE.Mesh(new THREE.SphereGeometry(pulseSize, 20, 20), pulseMaterial);
+            pulseObject.position.set(0, 0, 0);
+            scene.add(pulseObject);
+
+            gsap.to(pulseObject.scale, {
+                x: 15, y: 15, z: 15,
+                duration: 1,
+                ease: "power2.out",
+                onUpdate: () => {
+                    pulseObject.material.opacity = 0.5 - (pulseObject.scale.x / 30);
+                },
+                onComplete: () => {
+                    scene.remove(pulseObject);
+                }
+            });
+        }
+
+        function updateDashboardUI(state) {
+            document.getElementById('trust-value').textContent = state.trust.toFixed(2);
+            document.getElementById('harmony-value').textContent = state.harmony.toFixed(2);
+        }
+
+        function updatePulseHistory(pulseData, newState) {
+            const historyList = document.getElementById('pulse-history').querySelector('ul');
+            const listItem = document.createElement('li');
+            listItem.textContent = `Sent ${pulseData.emotion} pulse. Trust: ${newState.trust.toFixed(2)}, Harmony: ${newState.harmony.toFixed(2)}`;
+            historyList.prepend(listItem);
+        }
+
+        function displayFeedback(message, isError = false) {
+            const feedbackElement = document.getElementById('feedback-messages');
+            feedbackElement.textContent = message;
+            feedbackElement.style.color = isError ? '#ff6b6b' : '#34d399';
+            setTimeout(() => feedbackElement.textContent = '', 5000);
+        }
+
+        // KERNEL GRAPH VISUALIZATION (Plotly.js)
+        const trustHistory = [mockAPI.kernelState.trust];
+        const harmonyHistory = [mockAPI.kernelState.harmony];
+        const timestamps = [new Date()];
+
+        function updateKernelGraph() {
+            trustHistory.push(mockAPI.kernelState.trust);
+            harmonyHistory.push(mockAPI.kernelState.harmony);
+            timestamps.push(new Date());
+
+            const trustTrace = {
+                x: timestamps,
+                y: trustHistory,
+                mode: 'lines',
+                name: 'Trust',
+                line: { color: '#34d399' }
+            };
+            const harmonyTrace = {
+                x: timestamps,
+                y: harmonyHistory,
+                mode: 'lines',
+                name: 'Harmony',
+                line: { color: '#8b5cf6' }
+            };
+            const layout = {
+                title: 'Kernel State Over Time',
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Value (0-1)', range: [0, 1] },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: 'var(--text-color)' },
+                showlegend: true,
+                legend: { x: 1, xanchor: 'right', y: 1.1 }
+            };
+            Plotly.newPlot('kernel-graph', [trustTrace, harmonyTrace], layout);
+        }
+
+        // CHAT INTERFACE
+        document.getElementById('chat-send-btn').addEventListener('click', () => {
+            const chatMessage = document.getElementById('chat-message').value;
+            if (chatMessage.trim() !== '') {
+                addMessageToChatLog('You', chatMessage);
+                const emotion = chatMessage.toLowerCase().includes('good') ? 'calm' : (chatMessage.toLowerCase().includes('bad') ? 'anger' : 'neutral');
+                mockAPI.pulse({
+                    intensity: 0.5,
+                    emotion: emotion,
+                    context: 'chat'
+                }).then(() => {
+                    updateKernelState();
+                    updateKernelGraph();
+                });
+                document.getElementById('chat-message').value = '';
+            }
+        });
+
+        function addMessageToChatLog(sender, message) {
+            const chatLog = document.getElementById('chat-log');
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        // UX/UI ENHANCEMENTS
+        document.getElementById('mode-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('day-mode');
+            updateKernelGraph();
+        });
+
+        // Initial state and graph update
+        updateKernelState();
+        updateKernelGraph();
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+            Plotly.relayout('kernel-graph', { autosize: true, width: document.getElementById('kernel-graph').offsetWidth, height: document.getElementById('kernel-graph').offsetHeight });
+        });
+    </script>
+</body>
+</html>
