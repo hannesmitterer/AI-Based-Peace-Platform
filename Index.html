@@ -1,4 +1,30 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Woodstone Festival: ARIA Live</title>
+  <link rel="stylesheet" href="css/accessibility.css">
+</head>
+<body>
+  <header>
+    <h1>Woodstone Festival: Accessibility Pulse</h1>
+  </header>
+  <main>
+    <div aria-live="polite" id="festival-live" class="declaration">
+      Festival pulse: Presence, dignity, and accessibility are live.
+    </div>
+    <button onclick="updateLive()">Update Pulse</button>
+  </main>
+  <script>
+    function updateLive() {
+      document.getElementById('festival-live').textContent = "Festival pulse: Harmonic bridge awakened. All voices heard.";
+    }
+  </script>
+</body>
+</html> 
+
+
+<html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
