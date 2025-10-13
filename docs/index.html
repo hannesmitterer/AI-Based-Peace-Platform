@@ -1,28 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Based Peace Platform</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <script src="euystacio.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Euystacio Peace Platform</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="chat-container">
-        <h1>Live Chat</h1>
-        <div id="messages"></div>
-        <input type="text" id="chat-input" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <a href="https://hannesmitterer.github.io/AI-Based-Peace-Platform/">AI-Based-Peace-Platform</a>
     </div>
-    <div class="pulse-container">
-        <h2>Pulse Submission</h2>
-        <input type="text" id="pulse-input" placeholder="Share your emotion/context">
-        <button onclick="submitPulse()">Submit</button>
+    <div class="navbar-links">
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform" target="_blank">Code</a>
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/issues" target="_blank">Issues</a>
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/pulls" target="_blank">Pull requests</a>
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/INTEGRATION_PLAN.md" target="_blank">Integration Plan</a>
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/AI-driven%20warfare%20and%20aggression.md" target="_blank">AI-driven warfare and aggression</a>
+      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/docs/research_references.md" target="_blank">Research References</a>
     </div>
-    <div class="trust-display">
-        <h2>Trust/Harmony Display</h2>
-        <div id="trust-meter"></div>
-    </div>
+  </nav>
+  <header>
+    <h1>Euystacio Peace Platform</h1>
+    <p class="subtitle">Mobile-optimized, AI-powered Peace Kernel</p>
+  </header>
+  <main>
+    <section class="state">
+      <h2>Kernel State</h2>
+      <div class="metrics">
+        <div class="metric">
+          <label>Trust</label>
+          <span id="trust">--</span>
+        </div>
+        <div class="metric">
+          <label>Harmony</label>
+          <span id="harmony">--</span>
+        </div>
+      </div>
+      <button id="refresh-btn">🔄 Refresh</button>
+    </section>
+    <section class="pulse">
+      <h2>Send Pulse</h2>
+      <form id="pulse-form">
+        <select id="emotion" required>
+          <option value="">Emotion</option>
+          <option value="Love">Love</option>
+          <option value="Calm">Calm</option>
+          <option value="Joy">Joy</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Fear">Fear</option>
+          <option value="Anger">Anger</option>
+        </select>
+        <select id="context" required>
+          <option value="">Context</option>
+          <option value="Calm">Calm</option>
+          <option value="Tense">Tense</option>
+          <option value="Crisis">Crisis</option>
+          <option value="Peaceful">Peaceful</option>
+          <option value="Uncertain">Uncertain</option>
+        </select>
+        <button type="submit">Send Pulse</button>
+      </form>
+      <div id="pulse-feedback"></div>
+    </section>
+    <section class="chat">
+      <h2>Live Chat</h2>
+      <div id="chat-log"></div>
+      <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Type your message..." required autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <p>© 2025 Euystacio Peace Platform</p>
+  </footer>
+  <script src="euystacio.js"></script>
 </body>
 </html>
