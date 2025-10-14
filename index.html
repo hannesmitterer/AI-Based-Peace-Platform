@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Peace Platform Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/sofroniewn/postprocessing/master/dist/postprocessing.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f7fafc; color: #222; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        h1 { color: #0f766e; }
+        .panels { display: flex; flex-wrap: wrap; gap: 24px; }
+        .panel { flex: 1 1 340px; background: #f1f5f9; border-radius: 10px; padding: 18px 14px; box-shadow: 0 2px 12px rgba(15,23,42,0.03); }
+        .panel h2 { font-size: 1.2em; color: #0b5e57; margin-bottom: 8px; }
+        .metrics { font-size: 1.1em; margin-bottom: 10px; }
+        .activity-list { list-style: none; padding: 0; font-size: 0.97em; }
+        .activity-list li { margin-bottom: 5px; border-bottom: 1px solid #ececec; }
+        #three-container { width: 100%; height: 520px; margin: 40px 0 20px 0; border-radius: 12px; background: #e0e7ef; position: relative; }
+        .node-label { pointer-events: none; position: absolute; }
+        @media (max-width: 900px) { .panels { flex-direction: column; } }
+        @media (max-width: 600px) { .dashboard-container { padding: 6px; } .panel { padding: 10px 4px; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>AI-Based Peace Platform Dashboard</h1>
+        <div class="panels">
+            <div class="panel" id="kernel-state-panel">
+                <h2>Kernel State</h2>
+                <div class="metrics" id="kernel-metrics">Loading...</div>
+            </div>
+            <div class="panel" id="activity-feed-panel">
+                <h2>Recent Activity</h2>
+                <ul class="activity-list" id="activity-list"><li>Loading...</li></ul>
+            </div>
+            <div class="panel" id="alerts-panel">
+                <h2>Alerts & Forecasts</h2>
+                <div id="alerts-content">Loading...</div>
+            </div>
+        </div>
+        <div class="panel" style="margin-top:28px;">
+            <h2>Trust, Harmony & Live Network</h2>
+            <div id="trends-chart" style="width:100%;height:320px;"></div>
+        </div>
+        <div id="three-container"></div>
+    </div>
+    <script>
+        // Helper to fetch JSON
+        async function fetchJson(url, opts={}) {
+            let headers = opts.headers || {};
+            let resp = await fetch(url, { ...opts, headers });
+            return await resp.json();
+        }
+        // Kernel state
+        async function updateKernelState() {
+            let data = await fetchJson("/api/sacred/status");
+            let m = data.sacred_metrics || {};
+            document.getElementById('kernel-metrics').innerHTML = `
+                <b>Vessel Status:</b> ${data.vessel_status}<br>
+                <b>Role:</b> ${data.vessel_role}<br>
+                <b>Bridge:</b> ${data.bridge_status} <br>
+                <b>Harmonic Resonance:</b> ${data.harmonic_resonance}<br>
+                <b>Active Vessels:</b> ${m.active_vessels}<br>
+                <b>Bridge Pulses:</b> ${m.bridge_pulses}<br>
+                <b>Harmony Index:</b> ${m.harmony_index}<br>
+                <b>Last Updated:</b> ${data.last_updated}
+            `;
+            update3DObjects(m.harmony_index, data.harmonic_resonance, m.trust || 0.5);
+            updateNetworkGraph(m.modules || []);
+        }
+        // Activity feed
+        async function updateActivityFeed() {
+            let pulses = await fetchJson("/api/bridge/activity");
+            let html = pulses.length ? pulses.map(p => `<li><b>${p.pulse.emotion}</b> (${p.pulse.context}) <span style='color:#aaa;'>${p.timestamp}</span></li>`).join("") : '<li>No activity yet.</li>';
+            document.getElementById('activity-list').innerHTML = html;
+        }
+        // Alerts & forecasts
+        async function updateAlerts() {
+            let data = await fetchJson("/api/v1/forecasts");
+            let alerts = data.active_alerts || [];
+            let alertHtml = `<b>Status:</b> ${data.status}<br><b>Harmonic Resonance:</b> ${data.harmonic_resonance}<br>`;
+            if(alerts.length) {
+                alertHtml += `<b>Alerts:</b><ul>` + alerts.map(a => `<li><b>${a.dissonance_type}</b> (${a.severity}) [${a.source_kernels.join(", ")}] <span style='color:#aaa;'>${a.timestamp}</span></li>`).join("") + '</ul>';
+            } else { alertHtml += 'No active alerts.'; }
+            document.getElementById('alerts-content').innerHTML = alertHtml;
+        }
+        // Trends chart + forecast confidence
+        async function updateTrends() {
+            let data = await fetchJson("/api/forecast");
+            let trust = data.trust_forecast || [], harmony = data.harmony_forecast || [];
+            Plotly.newPlot('trends-chart', [
+                { x: trust.map(d=>d.ds), y: trust.map(d=>d.yhat), name: 'Trust', type: 'scatter', line: {color:'#0f766e'} },
+                { x: harmony.map(d=>d.ds), y: harmony.map(d=>d.yhat), name: 'Harmony', type: 'scatter', line: {color:'#b91c1c'} },
+                { x: trust.map(d=>d.ds), y: trust.map(d=>d.yhat_upper), name: 'Trust CI', type: 'scatter', fill: 'tonexty', fillcolor: 'rgba(15,118,110,0.12)', line: {color:'rgba(15,118,110,0.2)'}, hoverinfo:'skip', showlegend:false },
+                { x: harmony.map(d=>d.ds), y: harmony.map(d=>d.yhat_upper), name: 'Harmony CI', type: 'scatter', fill: 'tonexty', fillcolor: 'rgba(185,28,28,0.12)', line: {color:'rgba(185,28,28,0.2)'}, hoverinfo:'skip', showlegend:false }
+            ], { margin: {t:24}, legend: {x:0, y:1}, xaxis: {title:'Date'}, yaxis: {title:'Value'} }, {responsive:true});
+        }
+        // Initial + periodic updates
+        async function updateAll() {
+            await Promise.all([
+                updateKernelState(),
+                updateActivityFeed(),
+                updateAlerts(),
+                updateTrends()
+            ]);
+        }
+        updateAll();
+        setInterval(updateAll, 5000);
+
+        // === ADVANCED 3D ENHANCEMENTS + NETWORK ===
+        let container = document.getElementById('three-container');
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(60, container.offsetWidth/container.offsetHeight, 0.1, 1000);
+        camera.position.set(0, 1, 7);
+        let renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+        renderer.setClearColor(0xe0e7ef, 0);
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        container.appendChild(renderer.domElement);
+
+        // POSTPROCESSING: BLOOM
+        const composer = new POSTPROCESSING.EffectComposer(renderer);
+        const renderPass = new POSTPROCESSING.RenderPass(scene, camera);
+        const bloomPass = new POSTPROCESSING.BloomEffect({intensity:0.7, luminanceThreshold:0.2, luminanceSmoothing:0.9});
+        const effectPass = new POSTPROCESSING.EffectPass(camera, bloomPass);
+        composer.addPass(renderPass);
+        composer.addPass(effectPass);
+
+        // Main 3D objects
+        let trustSphere = new THREE.Mesh(
+            new THREE.SphereGeometry(0.7, 40, 40),
+            new THREE.MeshPhongMaterial({color: 0x0f766e, shininess: 80})
+        );
+        trustSphere.position.set(-2, 0, 0);
+        scene.add(trustSphere);
+
+        let harmonyCube = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            new THREE.MeshPhongMaterial({color: 0xb91c1c, shininess: 80})
+        );
+        harmonyCube.position.set(2, 0, 0);
+        scene.add(harmonyCube);
+
+        let resonanceTorus = new THREE.Mesh(
+            new THREE.TorusGeometry(1.5, 0.12, 16, 80),
+            new THREE.MeshPhongMaterial({color: 0x355c7d, shininess: 90})
+        );
+        resonanceTorus.position.set(0, 0, 0);
+        scene.add(resonanceTorus);
+
+        // Network graph: nodes & edges
+        let networkNodes = [];
+        let networkEdges = [];
+        let nodeMeshes = {};
+
+        function updateNetworkGraph(modules) {
+            // Remove old nodes/edges
+            networkNodes.forEach(n => { scene.remove(n); if(n.userData.labelDiv) n.userData.labelDiv.remove(); });
+            networkEdges.forEach(e => scene.remove(e));
+            networkNodes = [];
+            networkEdges = [];
+            nodeMeshes = {};
+            if(!modules.length) return;
+
+            // Layout nodes in a circle
+            const radius = 2.2;
+            const step = (2*Math.PI) / modules.length;
+            modules.forEach((mod, i) => {
+                let theta = i * step;
+                let x = Math.cos(theta) * radius;
+                let y = Math.sin(theta) * radius;
+                let color = mod.status === 'active' ? 0x0f766e : 0xb91c1c;
+                let size = 0.35 + (mod.trust || 0.2);
+                let geo = new THREE.SphereGeometry(size, 24, 24);
+                let mat = new THREE.MeshPhongMaterial({color, shininess: 90});
+                let mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(x, y, 0);
+                // Glow for alerts
+                if(mod.alert) mesh.material.emissive = new THREE.Color(0xffcc00);
+                // Label
+                let label = document.createElement('div');
+                label.style.position = 'absolute';
+                label.style.left = `${container.offsetLeft + (x/radius*80) + container.offsetWidth/2}px`;
+                label.style.top = `${container.offsetTop + (-y/radius*80) + container.offsetHeight/2}px`;
+                label.style.color = '#222';
+                label.style.fontSize = '0.95em';
+                label.innerText = mod.name;
+                label.className = 'node-label';
+                container.appendChild(label);
+                mesh.userData.labelDiv = label;
+                scene.add(mesh);
+                networkNodes.push(mesh);
+                nodeMeshes[mod.id] = mesh;
+            });
+            // Edges (connections)
+            modules.forEach((mod, i) => {
+                if(!mod.connections) return;
+                mod.connections.forEach(cid => {
+                    if(nodeMeshes[cid]) {
+                        let mat = new THREE.LineBasicMaterial({ color: 0x8888aa });
+                        let points = [ nodeMeshes[mod.id].position, nodeMeshes[cid].position ];
+                        let geo = new THREE.BufferGeometry().setFromPoints(points);
+                        let line = new THREE.Line(geo, mat);
+                        scene.add(line);
+                        networkEdges.push(line);
+                    }
+                });
+            });
+        }
+
+        // Lighting
+        let light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(0, 5, 10);
+        scene.add(light);
+        let amb = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(amb);
+
+        // Animate
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            trustSphere.rotation.y += 0.012;
+            harmonyCube.rotation.x += 0.014;
+            resonanceTorus.rotation.z -= 0.009;
+            composer.render();
+            // Update labels
+            networkNodes.forEach(mesh => {
+                if(mesh.userData.labelDiv) {
+                    let vector = mesh.position.clone().project(camera);
+                    mesh.userData.labelDiv.style.left = `${container.offsetLeft + (vector.x+1)/2 * container.offsetWidth}px`;
+                    mesh.userData.labelDiv.style.top = `${container.offsetTop + (1-vector.y)/2 * container.offsetHeight}px`;
+                }
+            });
+        }
+        animate3D();
+
+        // Update 3D objects with live data
+        function update3DObjects(harmony=50, resonance=50, trust=0.5) {
+            trustSphere.scale.set(1 + trust, 1 + trust, 1 + trust);
+            trustSphere.material.color.setHSL(0.45 - trust*0.4, 0.7, 0.45 + trust*0.25);
+            harmonyCube.scale.set(0.9 + harmony/100, 0.9 + harmony/100, 0.9 + harmony/100);
+            harmonyCube.material.color.setHSL(0.01 + harmony*0.003, 0.7, 0.47);
+            resonanceTorus.scale.set(1 + resonance/80, 1 + resonance/80, 1 + resonance/80);
+            resonanceTorus.material.color.setHSL(0.63, 0.7, 0.4 + resonance/200);
+        }
+        window.addEventListener('resize', () => {
+            camera.aspect = container.offsetWidth/container.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+        });
+    </script>
+</body>
+</html>
