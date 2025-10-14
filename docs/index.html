@@ -6,286 +6,50 @@
   <title>Euystacio Peace Platform</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Additional graphic improvements */
-    .navbar-logo svg {
-      vertical-align: middle;
-      margin-right: 0.25em;
-      height: 1.5em;
-    }
-    .navbar-links a {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3em;
-      padding: 0.4em 0.8em;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .navbar-links a:hover {
-      background: #d7e3fa;
-      text-decoration: none;
-    }
-    .state, .pulse, .chat {
-      margin-top: 2em;
-      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-      border-radius: 14px;
-      box-shadow: 0 2px 16px rgba(53, 92, 125, 0.07);
-      padding: 1.5em;
-      position: relative;
-    }
-    .metrics {
-      display: flex;
-      gap: 2em;
-      margin-bottom: 1em;
-    }
-    .metric label {
-      font-weight: bold;
-      color: #355c7d;
-    }
-    #refresh-btn {
-      margin-top: 1em;
-      background: #3498db;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6em 1.2em;
-      font-weight: bold;
-      transition: background 0.2s;
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(53, 92, 125, 0.09);
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-    #refresh-btn:hover {
-      background: #2980b9;
-    }
-    /* Chat UI */
-    #chat-log {
-      height: 180px;
-      overflow-y: auto;
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid #e3eafc;
-      padding: 0.75em;
-      margin-bottom: 1em;
-      font-size: 1em;
-    }
-    .chat-msg {
-      margin-bottom: 0.6em;
-      line-height: 1.4;
-    }
-    .chat-msg.user {
-      text-align: right;
-      color: #355c7d;
-    }
-    .chat-msg.ai {
-      text-align: left;
-      color: #222;
-    }
-    #chat-input {
-      width: 80%;
-      border-radius: 8px;
-      border: 1px solid #d6d6f7;
-      padding: 0.5em;
-      margin-right: 0.5em;
-      font-size: 1em;
-    }
-    #chat-form button {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 0.6em 1.1em;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #chat-form button:hover {
-      background: #2980b9;
-    }
-    .welcome {
-      margin-top: 1.5em;
-      background: #f5fafd;
-      border-radius: 12px;
-      box-shadow: 0 1px 6px rgba(53,92,125,0.04);
-      padding: 1.2em 1.5em;
-      text-align: center;
-      font-size: 1.2em;
-      color: #355c7d;
-    }
-    .features {
-      margin: 2em 0 1em 0;
-      padding: 1em 1.5em;
-      background: #e0eafc;
-      border-radius: 10px;
-      color: #274472;
-    }
-    .howitworks {
-      margin: 1em 0 2em 0;
-      padding: 1em 1.5em;
-      background: #cfdef3;
-      border-radius: 10px;
-      color: #274472;
-    }
-    .cta {
-      margin: 2em 0 0 0;
-      text-align: center;
-    }
-    .cta button {
-      background: #355c7d;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.8em 2em;
-      font-size: 1.1em;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-      box-shadow: 0 2px 8px rgba(53, 92, 125, 0.10);
-      letter-spacing: 0.5px;
-    }
-    .cta button:hover {
-      background: #2980b9;
-    }
-    footer {
-      margin-top: 2em;
-      font-size: 0.95em;
-      color: #355c7d;
-      letter-spacing: 0.5px;
-    }
+    /* ...existing styles... */
   </style>
 </head>
 <body>
-  <nav class="navbar" aria-label="Main navigation">
-    <div class="navbar-logo">
-      <!-- Peace SVG icon -->
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#355c7d" stroke-width="2"/><path d="M12 2v20M2 12h20" stroke="#355c7d" stroke-width="2"/></svg>
-      <a href="https://hannesmitterer.github.io/AI-Based-Peace-Platform/" aria-label="AI-Based Peace Platform Home">AI-Based-Peace-Platform</a>
-    </div>
-    <div class="navbar-links">
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform" target="_blank" aria-label="View Code on GitHub">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.47 0-.23-.01-.82-.01-1.61-2.78.6-3.37-1.34-3.37-1.34-.45-1.17-1.1-1.49-1.1-1.49-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.12-2.65 0 0 .84-.27 2.75 1.03a9.49 9.49 0 0 1 2.5-.34c.85 0 1.71.11 2.5.34 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .27.16.58.67.48A10.02 10.02 0 0 0 22 12c0-5.52-4.48-10-10-10z" fill="#355c7d"/></svg>
-        Code
-      </a>
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/issues" target="_blank" aria-label="View Issues on GitHub">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#355c7d" stroke-width="2"/><rect x="11" y="7" width="2" height="6" fill="#355c7d"/><rect x="11" y="15" width="2" height="2" fill="#355c7d"/></svg>
-        Issues
-      </a>
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/pulls" target="_blank" aria-label="View Pull Requests on GitHub">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="7" cy="7" r="3" stroke="#355c7d" stroke-width="2"/><circle cx="17" cy="17" r="3" stroke="#355c7d" stroke-width="2"/><path d="M7 10v4a4 4 0 0 0 4 4h3" stroke="#355c7d" stroke-width="2"/></svg>
-        Pull requests
-      </a>
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/INTEGRATION_PLAN.md" target="_blank" aria-label="Integration Plan">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#355c7d" stroke-width="2"/><path d="M7 8h10M7 12h6" stroke="#355c7d" stroke-width="2"/></svg>
-        Integration Plan
-      </a>
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/AI-driven%20warfare%20and%20aggression.md" target="_blank" aria-label="AI-driven warfare and aggression">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 5v14m7-7H5" stroke="#355c7d" stroke-width="2"/></svg>
-        AI-driven warfare and aggression
-      </a>
-      <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/docs/research_references.md" target="_blank" aria-label="Research References">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#355c7d" stroke-width="2"/><path d="M8 8h8M8 12h6M8 16h8" stroke="#355c7d" stroke-width="2"/></svg>
-        Research References
-      </a>
-    </div>
-  </nav>
-  <header>
-    <h1>
-      <span aria-hidden="true" style="margin-right:0.25em;">🕊️</span>
-      Euystacio Peace Platform
-    </h1>
-    <p class="subtitle">Mobile-optimized, AI-powered Peace Kernel</p>
-  </header>
-  <section class="welcome" aria-label="Welcome and Mission">
-    <h2>Welcome to the Euystacio Peace Platform</h2>
-    <p>
-      Our mission: <strong>Harness artificial intelligence for global peace and trust</strong>.<br>
-      Experience live harmony metrics, transparent peace-keeping logic, and real-time chat with an AI designed for cooperation.<br>
-      <em>Join us in building a safer, more harmonious world.</em>
-    </p>
+  <!-- ...existing content... -->
+
+  <section class="deployment-summary" aria-label="Deployment Checklist" style="margin:2em 0 2em 0; background:#f8fafc; border-radius:14px; box-shadow:0 1px 4px rgba(53,92,125,0.06); padding:1.5em;">
+    <h2 style="color:#355c7d;">Deployment & Onboarding Checklist</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:1em;">
+      <thead>
+        <tr style="background:#e0eafc;">
+          <th style="text-align:left;padding:0.6em;border-bottom:1px solid #b6c6de;">Step</th>
+          <th style="text-align:left;padding:0.6em;border-bottom:1px solid #b6c6de;">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:0.5em 0.6em;">Finalize Content</td>
+          <td style="padding:0.5em 0.6em;">Complete and polish all landing page sections, add CTAs, branding, and mission statement.</td>
+        </tr>
+        <tr style="background:#f0f6fb;">
+          <td style="padding:0.5em 0.6em;">Live Integration</td>
+          <td style="padding:0.5em 0.6em;">Confirm JS/UI is linked and live data updates are visible on the landing page.</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5em 0.6em;">Responsive Design</td>
+          <td style="padding:0.5em 0.6em;">Test on desktop/mobile, add accessibility features.</td>
+        </tr>
+        <tr style="background:#f0f6fb;">
+          <td style="padding:0.5em 0.6em;">Deploy &amp; Test</td>
+          <td style="padding:0.5em 0.6em;">Publish via GitHub Pages, verify functionality from public URL.</td>
+        </tr>
+        <tr>
+          <td style="padding:0.5em 0.6em;">README Onboarding</td>
+          <td style="padding:0.5em 0.6em;">(Optional) Add public-friendly instructions to README.md.</td>
+        </tr>
+        <tr style="background:#f0f6fb;">
+          <td style="padding:0.5em 0.6em;">Backend Connectivity</td>
+          <td style="padding:0.5em 0.6em;">(If needed) Ensure all API endpoints are reachable and CORS is configured.</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
-  <section class="features" aria-label="Platform Features">
-    <h3>Platform Features</h3>
-    <ul>
-      <li><strong>Live Trust & Harmony Metrics:</strong> Transparent peace kernel updates in real time</li>
-      <li><strong>Emotional Pulse Submission:</strong> Influence kernel state with your emotion & context</li>
-      <li><strong>AI Chat:</strong> Converse with the AI and see autonomous responses</li>
-      <li><strong>Audit & Security:</strong> Cryptographically-secure, tamper-resistant logs</li>
-      <li><strong>Open Source & Research-Driven:</strong> Built on the latest AI & security research</li>
-    </ul>
-  </section>
-  <section class="howitworks" aria-label="How It Works">
-    <h3>How It Works</h3>
-    <ol>
-      <li><strong>Submit your pulse:</strong> Choose your emotion and context to influence the platform’s peace metrics.</li>
-      <li><strong>See live updates:</strong> Trust and harmony values update in real time.</li>
-      <li><strong>Chat with the AI:</strong> Discuss, ask questions, and observe the peace kernel’s logic in action.</li>
-      <li><strong>Audit & transparency:</strong> Every critical event is immutably logged for trust and review.</li>
-    </ol>
-  </section>
-  <div class="cta">
-    <button onclick="document.getElementById('pulse-form').scrollIntoView({behavior: 'smooth'})">Try Now</button>
-  </div>
-  <main>
-    <section class="state" aria-labelledby="kernel-state-title">
-      <h2 id="kernel-state-title">Kernel State</h2>
-      <div class="metrics">
-        <div class="metric">
-          <label for="trust">Trust</label>
-          <span id="trust" aria-live="polite">--</span>
-        </div>
-        <div class="metric">
-          <label for="harmony">Harmony</label>
-          <span id="harmony" aria-live="polite">--</span>
-        </div>
-      </div>
-      <button id="refresh-btn" aria-label="Refresh Kernel State">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4v5h5" stroke="#fff" stroke-width="2"/><path d="M20 20v-5h-5" stroke="#fff" stroke-width="2"/><path d="M5 19A9 9 0 1 0 12 3v2" stroke="#fff" stroke-width="2"/></svg>
-        Refresh
-      </button>
-    </section>
-    <section class="pulse" aria-labelledby="send-pulse-title">
-      <h2 id="send-pulse-title">Send Pulse</h2>
-      <form id="pulse-form" autocomplete="off">
-        <select id="emotion" required aria-label="Emotion">
-          <option value="">Emotion</option>
-          <option value="Love">Love</option>
-          <option value="Calm">Calm</option>
-          <option value="Joy">Joy</option>
-          <option value="Neutral">Neutral</option>
-          <option value="Fear">Fear</option>
-          <option value="Anger">Anger</option>
-        </select>
-        <select id="context" required aria-label="Context">
-          <option value="">Context</option>
-          <option value="Calm">Calm</option>
-          <option value="Tense">Tense</option>
-          <option value="Crisis">Crisis</option>
-          <option value="Peaceful">Peaceful</option>
-          <option value="Uncertain">Uncertain</option>
-        </select>
-        <button type="submit" aria-label="Send Pulse">
-          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12h4l3 8 4-16 3 8h6" stroke="#fff" stroke-width="2"/></svg>
-          Send Pulse
-        </button>
-      </form>
-      <div id="pulse-feedback" aria-live="polite"></div>
-    </section>
-    <section class="chat" aria-labelledby="live-chat-title">
-      <h2 id="live-chat-title">Live Chat</h2>
-      <div id="chat-log" aria-live="polite"></div>
-      <form id="chat-form" autocomplete="off" aria-label="Chat with Euystacio Helmi AI">
-        <input type="text" id="chat-input" placeholder="Type your message..." required autocomplete="off" aria-label="Message input">
-        <button type="submit" aria-label="Send Message">
-          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 21L23 12 2 3v7l15 2-15 2z" stroke="#fff" stroke-width="2"/></svg>
-          Send
-        </button>
-      </form>
-    </section>
-  </main>
-  <footer>
-    <p>© 2025 Euystacio Peace Platform. Crafted for peace, powered by AI.</p>
-  </footer>
-  <script src="euystacio.js"></script>
+
+  <!-- ...existing footer and scripts... -->
 </body>
 </html>
