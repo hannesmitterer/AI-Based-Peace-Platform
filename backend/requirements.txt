@@ -1,3 +1,6 @@
+flask-cors
+pandas
+prophet
 fastapi
 uvicorn[standard]
 pydantic
