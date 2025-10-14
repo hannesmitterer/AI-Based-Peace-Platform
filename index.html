@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Based Peace Platform Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/sofroniewn/postprocessing/master/dist/postprocessing.js"></script>
     <style>
         body { margin: 0; font-family: Arial, sans-serif; background: #f7fafc; color: #222; }
         .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
@@ -15,6 +17,7 @@
         .metrics { font-size: 1.1em; margin-bottom: 10px; }
         .activity-list { list-style: none; padding: 0; font-size: 0.97em; }
         .activity-list li { margin-bottom: 5px; border-bottom: 1px solid #ececec; }
+        #three-container { width: 100%; height: 400px; margin: 40px 0 20px 0; border-radius: 12px; background: #e0e7ef; position: relative; }
         @media (max-width: 900px) { .panels { flex-direction: column; } }
         @media (max-width: 600px) { .dashboard-container { padding: 6px; } .panel { padding: 10px 4px; } }
     </style>
@@ -40,6 +43,7 @@
             <h2>Trust & Harmony Trends</h2>
             <div id="trends-chart" style="width:100%;height:320px;"></div>
         </div>
+        <div id="three-container"></div>
     </div>
     <script>
         // Helper to fetch JSON with/without token
@@ -64,6 +68,8 @@
                 <b>Harmony Index:</b> ${m.harmony_index}<br>
                 <b>Last Updated:</b> ${data.last_updated}
             `;
+            // Update 3D objects
+            update3DObjects(m.harmony_index, data.harmonic_resonance, m.trust || 0.5);
         }
         // Activity feed
         async function updateActivityFeed() {
@@ -101,6 +107,74 @@
         }
         updateAll();
         setInterval(updateAll, 5000);
+
+        // === ADVANCED 3D ENHANCEMENTS ===
+        let container = document.getElementById('three-container');
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(60, container.offsetWidth/container.offsetHeight, 0.1, 1000);
+        camera.position.set(0, 1, 5);
+        let renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+        renderer.setClearColor(0xe0e7ef, 0);
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        container.appendChild(renderer.domElement);
+
+        // 3D Objects
+        let trustSphere = new THREE.Mesh(
+            new THREE.SphereGeometry(0.7, 40, 40),
+            new THREE.MeshPhongMaterial({color: 0x0f766e, shininess: 80})
+        );
+        trustSphere.position.set(-1.2, 0, 0);
+        scene.add(trustSphere);
+
+        let harmonyCube = new THREE.Mesh(
+            new THREE.BoxGeometry(1,1,1),
+            new THREE.MeshPhongMaterial({color: 0xb91c1c, shininess: 80})
+        );
+        harmonyCube.position.set(1.2, 0, 0);
+        scene.add(harmonyCube);
+
+        let resonanceTorus = new THREE.Mesh(
+            new THREE.TorusGeometry(1.5, 0.12, 16, 80),
+            new THREE.MeshPhongMaterial({color: 0x355c7d, shininess: 90})
+        );
+        scene.add(resonanceTorus);
+
+        // Lighting
+        let light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(0, 5, 10);
+        scene.add(light);
+        let amb = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(amb);
+
+        // Animation loop
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            trustSphere.rotation.y += 0.012;
+            harmonyCube.rotation.x += 0.014;
+            resonanceTorus.rotation.z -= 0.009;
+            renderer.render(scene, camera);
+        }
+        animate3D();
+
+        // Update 3D objects with live data
+        function update3DObjects(harmony=50, resonance=50, trust=0.5) {
+            // Trust sphere: size and color
+            trustSphere.scale.set(1 + trust, 1 + trust, 1 + trust);
+            trustSphere.material.color.setHSL(0.45 - trust*0.4, 0.7, 0.45 + trust*0.25);
+            // Harmony cube: pulsate size and color
+            let hScale = 0.9 + harmony/100;
+            harmonyCube.scale.set(hScale, hScale, hScale);
+            harmonyCube.material.color.setHSL(0.01 + harmony*0.003, 0.7, 0.47);
+            // Resonance torus: thickness and color
+            resonanceTorus.scale.set(1 + resonance/80, 1 + resonance/80, 1 + resonance/80);
+            resonanceTorus.material.color.setHSL(0.63, 0.7, 0.4 + resonance/200);
+        }
+        // Responsive resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.offsetWidth/container.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+        });
     </script>
 </body>
 </html>
