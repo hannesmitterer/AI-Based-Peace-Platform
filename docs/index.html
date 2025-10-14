@@ -103,6 +103,50 @@
     #chat-form button:hover {
       background: #2980b9;
     }
+    .welcome {
+      margin-top: 1.5em;
+      background: #f5fafd;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(53,92,125,0.04);
+      padding: 1.2em 1.5em;
+      text-align: center;
+      font-size: 1.2em;
+      color: #355c7d;
+    }
+    .features {
+      margin: 2em 0 1em 0;
+      padding: 1em 1.5em;
+      background: #e0eafc;
+      border-radius: 10px;
+      color: #274472;
+    }
+    .howitworks {
+      margin: 1em 0 2em 0;
+      padding: 1em 1.5em;
+      background: #cfdef3;
+      border-radius: 10px;
+      color: #274472;
+    }
+    .cta {
+      margin: 2em 0 0 0;
+      text-align: center;
+    }
+    .cta button {
+      background: #355c7d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8em 2em;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(53, 92, 125, 0.10);
+      letter-spacing: 0.5px;
+    }
+    .cta button:hover {
+      background: #2980b9;
+    }
     footer {
       margin-top: 2em;
       font-size: 0.95em;
@@ -120,7 +164,7 @@
     </div>
     <div class="navbar-links">
       <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform" target="_blank" aria-label="View Code on GitHub">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.47 0-.23-.01-.82-.01-1.61-2.78.6-3.37-1.34-3.37-1.34-.45-1.17-1.1-1.49-1.1-1.49-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03a9.49 9.49 0 0 1 2.5-.34c.85 0 1.71.11 2.5.34 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .27.16.58.67.48A10.02 10.02 0 0 0 22 12c0-5.52-4.48-10-10-10z" fill="#355c7d"/></svg>
+        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.47 0-.23-.01-.82-.01-1.61-2.78.6-3.37-1.34-3.37-1.34-.45-1.17-1.1-1.49-1.1-1.49-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.12-2.65 0 0 .84-.27 2.75 1.03a9.49 9.49 0 0 1 2.5-.34c.85 0 1.71.11 2.5.34 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.83-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .27.16.58.67.48A10.02 10.02 0 0 0 22 12c0-5.52-4.48-10-10-10z" fill="#355c7d"/></svg>
         Code
       </a>
       <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/issues" target="_blank" aria-label="View Issues on GitHub">
@@ -140,7 +184,7 @@
         AI-driven warfare and aggression
       </a>
       <a href="https://github.com/hannesmitterer/AI-Based-Peace-Platform/blob/main/docs/research_references.md" target="_blank" aria-label="Research References">
-        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#355c7d" stroke-width="2"/><path d="M8 8h8M8 12h6M8 16h4" stroke="#355c7d" stroke-width="2"/></svg>
+        <svg height="16" width="16" aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#355c7d" stroke-width="2"/><path d="M8 8h8M8 12h6M8 16h8" stroke="#355c7d" stroke-width="2"/></svg>
         Research References
       </a>
     </div>
@@ -152,6 +196,36 @@
     </h1>
     <p class="subtitle">Mobile-optimized, AI-powered Peace Kernel</p>
   </header>
+  <section class="welcome" aria-label="Welcome and Mission">
+    <h2>Welcome to the Euystacio Peace Platform</h2>
+    <p>
+      Our mission: <strong>Harness artificial intelligence for global peace and trust</strong>.<br>
+      Experience live harmony metrics, transparent peace-keeping logic, and real-time chat with an AI designed for cooperation.<br>
+      <em>Join us in building a safer, more harmonious world.</em>
+    </p>
+  </section>
+  <section class="features" aria-label="Platform Features">
+    <h3>Platform Features</h3>
+    <ul>
+      <li><strong>Live Trust & Harmony Metrics:</strong> Transparent peace kernel updates in real time</li>
+      <li><strong>Emotional Pulse Submission:</strong> Influence kernel state with your emotion & context</li>
+      <li><strong>AI Chat:</strong> Converse with the AI and see autonomous responses</li>
+      <li><strong>Audit & Security:</strong> Cryptographically-secure, tamper-resistant logs</li>
+      <li><strong>Open Source & Research-Driven:</strong> Built on the latest AI & security research</li>
+    </ul>
+  </section>
+  <section class="howitworks" aria-label="How It Works">
+    <h3>How It Works</h3>
+    <ol>
+      <li><strong>Submit your pulse:</strong> Choose your emotion and context to influence the platform’s peace metrics.</li>
+      <li><strong>See live updates:</strong> Trust and harmony values update in real time.</li>
+      <li><strong>Chat with the AI:</strong> Discuss, ask questions, and observe the peace kernel’s logic in action.</li>
+      <li><strong>Audit & transparency:</strong> Every critical event is immutably logged for trust and review.</li>
+    </ol>
+  </section>
+  <div class="cta">
+    <button onclick="document.getElementById('pulse-form').scrollIntoView({behavior: 'smooth'})">Try Now</button>
+  </div>
   <main>
     <section class="state" aria-labelledby="kernel-state-title">
       <h2 id="kernel-state-title">Kernel State</h2>
