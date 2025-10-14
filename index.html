@@ -1,12 +1,558 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Based Peace Platform</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Euystacio AI Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    :root {
+      --primary: #234e70;
+      --accent: #44d39f;
+      --danger: #f87c7c;
+      --background: #f7fafc;
+      --card: #fff;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      color: #1a202c;
+      min-height: 100vh;
+    }
+    .topbar {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 0;
+      text-align: center;
+      font-size: 1.35em;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      box-shadow: 0 2px 16px #234e701a;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 8px 34px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .metrics-bar {
+      margin: 18px 0 12px 0;
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: 0 2px 18px #234e7011;
+      padding: 10px 8px 2px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+      gap: 16px;
+      min-height: 86px;
+      position: relative;
+    }
+    .metrics-bar .metric-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .metric {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.95em;
+      min-width: 70px;
+      margin-bottom: 8px;
+    }
+    .metric .label {
+      color: #3776a5;
+      font-weight: 600;
+      font-size: 0.96em;
+      margin-bottom: 2px;
+    }
+    .metric .value {
+      font-size: 1.55em;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.01em;
+    }
+    .metric.pulse .label {
+      color: #44d39f;
+    }
+    .metric.pulse .value {
+      color: #44d39f;
+    }
+    .metric.error .label, .metric.error .value {
+      color: var(--danger) !important;
+    }
+    /* 3D Graph */
+    #modules-3d-graph {
+      width: 100%;
+      height: 160px;
+      min-height: 120px;
+      margin: 0 auto 0 auto;
+      max-width: 99vw;
+    }
+    /* Chat UI */
+    .chat-card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 2px 18px #234e7011;
+      display: flex;
+      flex-direction: column;
+      max-width: 100vw;
+      margin: 0 auto;
+      padding: 0 0 0 0;
+    }
+    .chat-header {
+      font-size: 1.13em;
+      font-weight: 600;
+      color: var(--primary);
+      padding: 13px 17px 7px 17px;
+      letter-spacing: 0.01em;
+      border-radius: 18px 18px 0 0;
+    }
+    .chat-backends {
+      display: flex;
+      gap: 8px;
+      padding: 2px 10px 8px 10px;
+      flex-wrap: wrap;
+    }
+    .chat-backend-btn {
+      background: #e6f0fa;
+      color: var(--primary);
+      border: 1.7px solid #cbe8ff;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .17s, border .17s, color .17s;
+      outline: none;
+    }
+    .chat-backend-btn.active,
+    .chat-backend-btn:focus {
+      background: var(--primary);
+      color: #fff;
+      border: 1.7px solid var(--primary);
+    }
+    .chat-log {
+      flex: 1 1 auto;
+      padding: 15px 14px 14px 14px;
+      overflow-y: auto;
+      font-size: 1em;
+      background: #f9fafc;
+      min-height: 210px;
+      max-height: 360px;
+      border-bottom: 1px solid #f1f5fa;
+    }
+    .chat-msg-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 11px;
+    }
+    .chat-msg {
+      padding: 6px 13px;
+      border-radius: 10px;
+      margin-bottom: 2px;
+      max-width: 90%;
+      word-break: break-word;
+      font-size: 1.01em;
+      box-shadow: 0 1px 5px #234e7006;
+    }
+    .chat-msg.user {
+      background: #e6f7ef;
+      color: var(--primary);
+      margin-left: auto;
+      text-align: right;
+      align-self: flex-end;
+    }
+    .chat-msg.bot {
+      background: #e8eefc;
+      color: #355c7d;
+      margin-right: auto;
+      text-align: left;
+      align-self: flex-start;
+    }
+    .chat-msg.thinking {
+      background: #fffbe6;
+      color: #e6b800;
+      font-style: italic;
+      border: 1px dashed #ffe066;
+    }
+    .chat-msg.error {
+      background: #ffeaea;
+      color: #b6002e;
+      border: 1px solid #f87c7c;
+    }
+    .pulse-resonance-bar {
+      background: #e6fff5;
+      border-radius: 8px;
+      padding: 5px 11px 6px 11px;
+      margin: 6px 0 0 0;
+      color: #177e4d;
+      font-weight: 600;
+      font-size: 1.06em;
+      box-shadow: 0 1px 4px #44d39f10;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 120px;
+      max-width: 90vw;
+    }
+    .pulse-dot {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #44d39f;
+      margin-right: 5px;
+    }
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 12px 13px 12px;
+      border-radius: 0 0 18px 18px;
+      background: #f1f5fa;
+    }
+    .chat-input-bar input[type="text"] {
+      flex: 1 1 auto;
+      font-size: 1em;
+      border: 1px solid #d4dbe6;
+      border-radius: 7px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border 0.18s;
+      background: #fff;
+    }
+    .chat-input-bar button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 22px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .chat-input-bar button:hover {
+      background: #3776a5;
+    }
+    @media (max-width: 600px) {
+      .main {
+        max-width: 100vw;
+        padding: 0 0 22vw 0;
+      }
+      .chat-card {
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .metrics-bar {
+        border-radius: 0;
+      }
+      .chat-header {
+        border-radius: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to the AI-Based Peace Platform</h1>
-    <p>Your content goes here...</p>
+  <div class="topbar">Euystacio AI</div>
+  <div class="main">
+    <!-- Persistent Metrics / 3D Bar -->
+    <section class="metrics-bar" id="metrics-bar">
+      <div style="width:100%">
+        <div id="modules-3d-graph"></div>
+      </div>
+      <div class="metric-group" id="metrics-group"></div>
+    </section>
+    <!-- Chat Card -->
+    <section class="chat-card">
+      <div class="chat-header">Unified Chat Interface</div>
+      <div class="chat-backends" id="chat-backends"></div>
+      <div class="chat-log" id="chat-log"></div>
+      <form class="chat-input-bar" id="chat-form" autocomplete="off">
+        <input type="text" id="chat-input" placeholder="Type your message to Euystacio AI..." required autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+  <script>
+    // List all backends to try
+    const BACKENDS = [
+      { name: "Euystacio AI #1", url: "https://euystacio-helmi-ai-4na0.onrender.com/api" },
+      { name: "Symphio", url: "https://euysymphio-sacredpackage.onrender.com/api" },
+      { name: "Euystacio AI #2", url: "https://euystacio-helmi-ai.onrender.com/api" },
+      { name: "Euystacio Backend", url: "https://euystacio-backend.onrender.com/api" },
+      { name: "Sacred Bridge", url: "https://euystaciosacredbridge.onrender.com/api" }
+    ];
+    // For autodetection: for each backend, map what endpoints are available
+    let detectedBackends = [];
+    let activeBackendIdx = 0; // default selected
+
+    async function detectBackendFunctions() {
+      // Detect available endpoints
+      detectedBackends = await Promise.all(BACKENDS.map(async (b) => {
+        let endpoints = {};
+        try {
+          // Try the most common endpoints
+          const resp = await fetch(b.url, { method: "OPTIONS" });
+          if (resp.ok && resp.headers.get('Allow')) {
+            endpoints.root = true;
+          }
+        } catch {}
+        // Try endpoint: /modules
+        try {
+          const resp = await fetch(b.url + "/modules", {method: "GET"});
+          if (resp.ok) endpoints.modules = true;
+        } catch {}
+        // Try endpoint: /metrics
+        try {
+          const resp = await fetch(b.url + "/metrics", {method: "GET"});
+          if (resp.ok) endpoints.metrics = true;
+        } catch {}
+        // Try endpoint: /sacred/status
+        try {
+          const resp = await fetch(b.url + "/sacred/status", {method: "GET"});
+          if (resp.ok) endpoints.sacred = true;
+        } catch {}
+        // Try endpoint: /bridge/pulse
+        try {
+          const resp = await fetch(b.url + "/bridge/pulse", {method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({pulse:{emotion:"test"}})});
+          if (resp.ok) endpoints.pulse = true;
+        } catch {}
+        // Try endpoint: /chat
+        try {
+          const resp = await fetch(b.url + "/chat", {method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({message:"test"})});
+          if (resp.ok) endpoints.chat = true;
+        } catch {}
+        // Try endpoint: /status
+        try {
+          const resp = await fetch(b.url + "/status", {method: "GET"});
+          if (resp.ok) endpoints.status = true;
+        } catch {}
+        return {...b, endpoints};
+      }));
+    }
+
+    // Utility for GET
+    async function fetchJSON(url) {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("Failed to fetch " + url);
+      return resp.json();
+    }
+    // Utility for POST
+    async function postJSON(url, data) {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!resp.ok) throw new Error("Failed to send message");
+      return resp.json();
+    }
+
+    // METRICS BAR AND 3D GRAPH
+    async function updateMetricsBar() {
+      // Pick the first backend with modules/metrics for default
+      let backend = detectedBackends.find(b=>b.endpoints.metrics || b.endpoints.modules) || detectedBackends[0];
+      if (!backend) return;
+      let metrics = {};
+      let modules = [];
+      try {
+        if (backend.endpoints.metrics) {
+          metrics = await fetchJSON(backend.url + "/metrics");
+        }
+        if (backend.endpoints.modules) {
+          modules = await fetchJSON(backend.url + "/modules");
+        }
+      } catch {}
+      // fallback
+      if (!metrics.moduleCount && modules.length) metrics.moduleCount = modules.length;
+      // Render metrics bar
+      let group = document.getElementById("metrics-group");
+      group.innerHTML = `
+        <div class="metric">
+          <span class="label">Backend</span>
+          <span class="value">${backend.name}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Modules</span>
+          <span class="value">${metrics.moduleCount ?? modules.length ?? '--'}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Active</span>
+          <span class="value">${metrics.activeModules ?? '--'}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Idle</span>
+          <span class="value">${metrics.idleModules ?? '--'}</span>
+        </div>
+        <div class="metric error">
+          <span class="label">Errors</span>
+          <span class="value">${metrics.errorModules ?? '--'}</span>
+        </div>
+      `;
+      // Draw 3D module graph
+      render3DGraph(modules);
+    }
+
+    function render3DGraph(modules) {
+      if (!Array.isArray(modules) || !modules.length) {
+        Plotly.purge('modules-3d-graph');
+        return;
+      }
+      const nodes = modules.map((m,i) => ({
+        id: m.id || m.name || ("Mod"+i),
+        label: m.name || ("Module "+i),
+        status: m.status,
+        group: m.type || "module",
+        x: Math.cos(2*Math.PI*i/modules.length),
+        y: Math.sin(2*Math.PI*i/modules.length),
+        z: (Math.random()-0.5)*2
+      }));
+      let links = [];
+      for (let i = 0; i < nodes.length; ++i) {
+        if (i < nodes.length-1) links.push([nodes[i].id, nodes[i+1].id]);
+        if (nodes.length > 2 && Math.random() > 0.6) links.push([nodes[i].id, nodes[Math.floor(Math.random()*nodes.length)].id]);
+      }
+      const scatter = {
+        type: 'scatter3d',
+        mode: 'markers+text',
+        x: nodes.map(n=>n.x),
+        y: nodes.map(n=>n.y),
+        z: nodes.map(n=>n.z),
+        text: nodes.map(n=>n.label),
+        marker: {
+          size: 15,
+          color: nodes.map(n=>n.status === "running" ? "#44d39f" : n.status === "idle" ? "#ffe066" : "#f87c7c"),
+          line: { width: 2, color: '#234e70' }
+        },
+        textposition: "top center",
+        hoverinfo: "text",
+        name: 'Modules'
+      };
+      const linkTraces = links.map(l => {
+        const n0 = nodes.find(n=>n.id===l[0]), n1 = nodes.find(n=>n.id===l[1]);
+        if (!n0 || !n1) return null;
+        return {
+          type: 'scatter3d',
+          mode: 'lines',
+          x: [n0.x, n1.x],
+          y: [n0.y, n1.y],
+          z: [n0.z, n1.z],
+          line: { color: '#b0c4de', width: 3 },
+          hoverinfo: 'none',
+          showlegend: false
+        };
+      }).filter(Boolean);
+      Plotly.newPlot('modules-3d-graph', [scatter, ...linkTraces], {
+        margin: {l:0,r:0,b:0,t:0},
+        scene: { xaxis:{visible:false}, yaxis:{visible:false}, zaxis:{visible:false} },
+        showlegend: false,
+        paper_bgcolor: "#fff"
+      }, {displayModeBar: false});
+    }
+
+    // CHAT
+    function renderChatBackends() {
+      const wrap = document.getElementById("chat-backends");
+      wrap.innerHTML = detectedBackends.map((b, i) =>
+        `<button class="chat-backend-btn${i===activeBackendIdx?' active':''}" data-idx="${i}">${b.name}</button>`
+      ).join('');
+      Array.from(wrap.querySelectorAll("button")).forEach(btn => {
+        btn.onclick = () => {
+          activeBackendIdx = +btn.dataset.idx;
+          renderChatBackends();
+        };
+      });
+    }
+    function addMsg(text, who="user", opts={}) {
+      // opts: {pulseResonance, error}
+      const log = document.getElementById("chat-log");
+      const row = document.createElement("div");
+      row.className = "chat-msg-row";
+      let m = document.createElement("div");
+      m.className = "chat-msg " + who + (opts.error ? " error":"") + (opts.thinking?" thinking":"");
+      m.textContent = text;
+      row.appendChild(m);
+      if (opts.pulseResonance) {
+        let p = document.createElement("div");
+        p.className = "pulse-resonance-bar";
+        p.innerHTML = `<span class="pulse-dot"></span>Pulse Resonance: <b>${opts.pulseResonance}</b>`;
+        row.appendChild(p);
+      }
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById("chat-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const input = document.getElementById("chat-input");
+      const msg = input.value.trim();
+      if (!msg) return;
+      addMsg(msg, "user");
+      input.value = "";
+      // Show "thinking..." message
+      let thinkingRow = document.createElement("div");
+      thinkingRow.className = "chat-msg-row";
+      let thinkingMsg = document.createElement("div");
+      thinkingMsg.className = "chat-msg bot thinking";
+      thinkingMsg.textContent = "Thinking...";
+      thinkingRow.appendChild(thinkingMsg);
+      document.getElementById("chat-log").appendChild(thinkingRow);
+      document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
+
+      // Determine backend
+      let backend = detectedBackends[activeBackendIdx];
+      let reply = null, pulse = null, error = null;
+      try {
+        // Try /chat first, fallback to /bridge/pulse
+        if (backend.endpoints.chat) {
+          let resp = await postJSON(backend.url+"/chat", {message: msg});
+          reply = resp.reply ?? resp.result ?? JSON.stringify(resp);
+        } else if (backend.endpoints.pulse) {
+          let resp = await postJSON(backend.url+"/bridge/pulse", {pulse:{emotion:"chat", context:msg}});
+          reply = resp.reply ?? resp.result ?? JSON.stringify(resp);
+        } else {
+          throw new Error("No chat endpoint found");
+        }
+        // For Euystacio systems, show pulse resonance after reply
+        if (backend.name.toLowerCase().includes('euystacio') && backend.endpoints.sacred) {
+          try {
+            let pulseResp = await fetchJSON(backend.url+"/sacred/status");
+            pulse = pulseResp.pulseResonance || pulseResp.pulse_resonance || pulseResp.resonance || JSON.stringify(pulseResp);
+          } catch {}
+        }
+      } catch (e) {
+        error = e.message;
+      }
+      // Remove "Thinking..." message
+      thinkingRow.remove();
+      // Add bot reply
+      if (error) {
+        addMsg("Error: "+error, "bot", {error:true});
+      } else {
+        addMsg(reply, "bot", {pulseResonance: pulse});
+      }
+    });
+
+    // INIT
+    (async function init() {
+      document.getElementById("metrics-group").innerHTML = `<div class="metric"><span class="label">Loading</span><span class="value">...</span></div>`;
+      document.getElementById("chat-backends").innerHTML = `<button class="chat-backend-btn active">Loading backends...</button>`;
+      await detectBackendFunctions();
+      renderChatBackends();
+      updateMetricsBar();
+      setInterval(updateMetricsBar, 15000);
+    })();
+  </script>
 </body>
 </html>
