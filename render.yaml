@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ai-based-peace-platform
+    env: python
+    region: oregon
+    plan: free
+    repo: https://github.com/hannesmitterer/AI-Based-Peace-Platform
+    branch: main
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT
+    rootDir: backend
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000  # Render sets this automatically, but may be required by some frameworks
