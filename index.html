@@ -1,40 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI-Based Peace Platform</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-Based Peace Platform Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
-      background: linear-gradient(135deg, #f7fafc 60%, #ffe6e6 100%);
-      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
       margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7fafc;
+      color: #1a202c;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+    }
+    .sidebar {
+      width: 250px;
+      background: #234e70;
+      color: #fff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      align-items: flex-start;
+      padding: 32px 18px 18px 18px;
+      box-shadow: 2px 0 20px #0001;
+      position: fixed;
+      left: 0;
+      top: 0;
     }
-    .dashboard {
+    .sidebar h2 {
+      margin: 0 0 18px 0;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 0.04em;
+      color: #ffe066;
+      text-shadow: 0 2px 8px #0003;
+    }
+    .sidebar nav {
+      width: 100%;
+    }
+    .sidebar nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      margin: 12px 0;
+      font-weight: 500;
+      font-size: 1.1rem;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: background 0.18s;
+    }
+    .sidebar nav a:hover {
+      background: #40618c;
+    }
+    .sidebar .sidebar-section {
+      margin-bottom: 28px;
+      width: 100%;
+    }
+    .sidebar .metrics-tile {
+      background: #476d8b;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 10px 14px 7px 14px;
+      box-shadow: 0 4px 24px #0002;
+      font-size: 1.07em;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .main-content {
+      margin-left: 250px;
+      width: calc(100vw - 250px);
+      min-height: 100vh;
+      padding: 36px 32px 32px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 34px;
+      box-sizing: border-box;
+    }
+    .summary-bar {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 24px;
-      margin: 40px 0;
-      width: 100%;
-      max-width: 1100px;
+      gap: 22px;
+      margin-bottom: 22px;
     }
-    .card {
-      flex: 1 1 320px;
-      max-width: 340px;
-      min-width: 260px;
-      margin: 0;
-      padding: 32px 24px 24px 24px;
-      border-radius: 24px 60px 20px 40px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.16), 0 1.5px 0 #fff inset;
-      color: #222;
-      background: linear-gradient(115deg, #ffe260 80%, #ffba7a 100%);
+    .summary-tile {
+      background: linear-gradient(115deg, #e6f0fa 60%, #cbe8ff 100%);
+      border-radius: 16px;
+      box-shadow: 0 3px 18px #234e7011;
+      padding: 20px 36px 18px 24px;
+      min-width: 180px;
+      max-width: 320px;
+      flex: 1 1 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .summary-tile .label {
+      color: #3776a5;
+      font-weight: 600;
+      font-size: 1.1em;
+      margin-bottom: 6px;
+    }
+    .summary-tile .value {
+      font-size: 2.2em;
+      font-weight: 800;
+      color: #234e70;
+      letter-spacing: 0.01em;
+    }
+    .modules-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #234e7011;
+      padding: 18px 24px 18px 24px;
+      margin-bottom: 16px;
+    }
+    .modules-section h3 {
+      color: #234e70;
+      margin-top: 0;
+      font-size: 1.15em;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      margin-bottom: 18px;
+    }
+    table.modules-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+      background: transparent;
+    }
+    table.modules-table th, table.modules-table td {
+      padding: 10px 8px;
+      text-align: left;
+    }
+    table.modules-table th {
+      color: #234e70;
+      font-weight: 700;
+      border-bottom: 2px solid #e4edf7;
+      background: #f9fafc;
+    }
+    table.modules-table td {
+      border-bottom: 1px solid #eaf2fb;
+    }
+    table.modules-table tr:last-child td {
+      border-bottom: none;
+    }
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      border-radius: 50%;
+      margin-right: 7px;
+      vertical-align: middle;
+    }
+    .status-running { background: #44d39f; }
+    .status-idle { background: #ffe066; }
+    .status-error { background: #f87c7c; }
+    .graph-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 3px 18px #234e7011;
+      padding: 24px 8px 8px 12px;
+      margin-bottom: 24px;
+      min-height: 420px;
+    }
+    .graph-section h3 {
+      color: #234e70;
+      margin: 0 0 22px 8px;
+      font-size: 1.07em;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    #modules-3d-graph {
+      width: 100%;
+      height: 410px;
+    }
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 65px;
+        padding: 24px 4px 8px 4px;
+      }
+      .sidebar h2, .sidebar nav a span, .sidebar .metrics-tile .label {
+        display: none;
+      }
+      .sidebar nav a {
+        font-size: 1.5em;
+        padding: 8px 7px;
+        margin: 11px 0;
+        text-align: center;
+      }
+      .main-content {
+        margin-left: 65px;
+        width: calc(100vw - 65px);
+        padding: 22px 4vw 24px 2vw;
+      }
+      .summary-bar {
+        gap: 13px;
+      }
+    }
+    @media (max-width: 600px) {
+      .main-content {
+        margin-left: 0;
+        width: 100vw;
+        padding: 12px 2vw 12px 2vw;
+      }
+      .sidebar {
+        display: none;
+      }
+      .summary-bar {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .summary-tile {
+        min-width: 0;
+        width: 97vw;
+        max-width: 100vw;
+        padding: 12px 7vw 14px 7vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Peace AI</h2>
+    <nav>
+      <a href="#"><span>Dashboard</span></a>
+      <a href="#modules"><span>Modules</span></a>
+      <a href="#graph"><span>3D Graph</span></a>
+    </nav>
+    <div class="sidebar-section" id="sidebar-metrics">
+      <div class="metrics-tile" id="sidebar-metric-1">
+        <span class="label">Modules</span>
+        <span class="value" id="sidebar-modules-count">--</span>
+      </div>
+      <div class="metrics-tile" id="sidebar-metric-2">
+        <span class="label">Active</span>
+        <span class="value" id="sidebar-modules-active">--</span>
+      </div>
+      <div class="metrics-tile" id="sidebar-metric-3">
+        <span class="label">Errors</span>
+        <span class="value" id="sidebar-modules-errors">--</span>
+      </div>
+    </div>
+  </aside>
+  <main class="main-content">
+    <section class="summary-bar" id="summary-bar">
+      <!-- Summary tiles injected by JS -->
+    </section>
+    <section class="modules-section" id="modules">
+      <h3>Platform Modules</h3>
+      <div style="overflow-x:auto;">
+        <table class="modules-table" id="modules-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Last Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="graph-section" id="graph">
+      <h3>3D Module Network</h3>
+      <div id="modules-3d-graph"></div>
+    </section>
+  </main>
+  <script>
+    const API_BASE = "https://euystacio-helmi-ai-4na0.onrender.com/api";
+    async function fetchJSON(url) {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("Failed to fetch " + url);
+      return resp.json();
+    }
+    function statusDot(status) {
+      if (status === 'running') return '<span class="status-dot status-running"></span>';
+      if (status === 'idle') return '<span class="status-dot status-idle"></span>';
+      return '<span class="status-dot status-error"></span>';
+    }
+    function prettyTime(iso) {
+      if (!iso) return "--";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleString();
+    }
+
+    function renderSummaryTiles(metrics) {
+      const bar = document.getElementById("summary-bar");
+      if (!bar) return;
+      bar.innerHTML = `
+        <div class="summary-tile">
+          <span class="label">Total Modules</span>
+          <span class="value">${metrics.moduleCount ?? '--'}</span>
+        </div>
+        <div class="summary-tile">
+          <span class="label">Active</span>
+          <span class="value">${metrics.activeModules ?? '--'}</span>
+        </div>
+        <div class="summary-tile">
+          <span class="label">Idle</span>
+          <span class="value">${metrics.idleModules ?? '--'}</span>
+        </div>
+        <div class="summary-tile">
+          <span class="label">Errors</span>
+          <span class="value">${metrics.errorModules ?? '--'}</span>
+        </div>
+        <div class="summary-tile">
+          <span class="label">Last Update</span>
+          <span class="value">${metrics.lastUpdate ? prettyTime(metrics.lastUpdate) : '--'}</span>
+        </div>
+      `;
+      document.getElementById("sidebar-modules-count").textContent = metrics.moduleCount ?? "--";
+      document.getElementById("sidebar-modules-active").textContent = metrics.activeModules ?? "--";
+      document.getElementById("sidebar-modules-errors").textContent = metrics.errorModules ?? "--";
+    }
+
+    function renderModulesTable(modules) {
+      const table = document.getElementById("modules-table").querySelector("tbody");
+      table.innerHTML = "";
+      modules.forEach(m => {
+        table.innerHTML += `
+          <tr>
+            <td>${m.name ?? m.id ?? '--'}</td>
+            <td>${statusDot(m.status)}${m.status}</td>
+            <td>${m.type ?? '--'}</td>
+            <td>${prettyTime(m.updatedAt || m.updated_at)}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function render3DGraph(modules) {
+      const nodes = modules.map((m,i) => ({
+        id: m.id || m.name || ("Mod"+i),
+        label: m.name || ("Module "+i),
+        status: m.status,
+        group: m.type || "module",
+        x: 0.9*Math.cos(2*Math.PI*i/modules.length),
+        y: 0.9*Math.sin(2*Math.PI*i/modules.length),
+        z: (Math.random()-0.5)*2
+      }));
+      let links = [];
+      for (let i = 0; i < nodes.length; ++i) {
+        if (i < nodes.length-1) links.push([nodes[i].id, nodes[i+1].id]);
+        if (nodes.length > 2 && Math.random() > 0.6) links.push([nodes[i].id, nodes[Math.floor(Math.random()*nodes.length)].id]);
+      }
+
+      const scatter = {
+        type: 'scatter3d',
+        mode: 'markers+text',
+        x: nodes.map(n=>n.x),
+        y: nodes.map(n=>n.y),
+        z: nodes.map(n=>n.z),
+        text: nodes.map(n=>n.label),
+        marker: {
+          size: 16,
+          color: nodes.map(n=>n.status === "running" ? "#44d39f" : n.status === "idle" ? "#ffe066" : "#f87c7c"),
+          line: { width: 3, color: '#234e70' }
+        },
+        textposition: "top center",
+        hoverinfo: "text",
+        name: 'Modules'
+      };
+      const linkTraces = links.map(l => {
+        const n0 = nodes.find(n=>n.id===l[0]), n1 = nodes.find(n=>n.id===l[1]);
+        if (!n0 || !n1) return null;
+        return {
+          type: 'scatter3d',
+          mode: 'lines',
+          x: [n0.x, n1.x],
+          y: [n0.y, n1.y],
+          z: [n0.z, n1.z],
+          line: { color: '#b0c4de', width: 4 },
+          hoverinfo: 'none',
+          showlegend: false
+        };
+      }).filter(Boolean);
+      const data = [scatter, ...linkTraces];
+      Plotly.newPlot('modules-3d-graph', data, {
+        margin: {l:0,r:0,b:0,t:0},
+        scene: { xaxis:{visible:false}, yaxis:{visible:false}, zaxis:{visible:false} },
+        showlegend: false,
+        paper_bgcolor: "#fff"
+      }, {displayModeBar: false});
+    }
+
+    async function updateDashboard() {
+      try {
+        const [metrics, modules] = await Promise.all([
+          fetchJSON(API_BASE + "/metrics"),
+          fetchJSON(API_BASE + "/modules")
+        ]);
+        renderSummaryTiles(metrics);
+        renderModulesTable(modules);
+        render3DGraph(modules);
+      } catch (e) {
+        document.getElementById("summary-bar").innerHTML = `<div class="summary-tile"><span class="label">Error</span><span class="value">${e.message}</span></div>`;
+      }
+    }
+    updateDashboard();
+    setInterval(updateDashboard, 15000);
+  </script>
+</body>
+</html>      background: linear-gradient(115deg, #ffe260 80%, #ffba7a 100%);
       transform: rotate(-2deg) skewY(-2deg);
       position: relative;
       transition: transform 0.28s cubic-bezier(.44,1.4,.58,1);
