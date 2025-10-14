@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+cryptography
+python-dotenv
+requests
+loguru
+httpx
+plotly
+numpy
