@@ -1,56 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Based Peace Platform</title>
-    <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: 'Arial', sans-serif;
-        }
-        .dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .card {
-            margin: 10px;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            background-color: #ffec40;
-            transform: rotate(-5deg);
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: rotate(0deg);
-        }
-        h1 {
-            color: #ff5733;
-            text-align: center;
-        }
-        p {
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Based Peace Platform</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f7fafc 60%, #ffe6e6 100%);
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px;
+      margin: 40px 0;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .card {
+      flex: 1 1 320px;
+      max-width: 340px;
+      min-width: 260px;
+      margin: 0;
+      padding: 32px 24px 24px 24px;
+      border-radius: 24px 60px 20px 40px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.16), 0 1.5px 0 #fff inset;
+      color: #222;
+      background: linear-gradient(115deg, #ffe260 80%, #ffba7a 100%);
+      transform: rotate(-2deg) skewY(-2deg);
+      position: relative;
+      transition: transform 0.28s cubic-bezier(.44,1.4,.58,1);
+      z-index: 1;
+    }
+    .card:nth-child(2) {
+      background: linear-gradient(120deg, #b4e7f8 80%, #7affc1 100%);
+      transform: rotate(3.5deg) skewY(1deg);
+      top: 16px;
+      z-index: 2;
+    }
+    .card:nth-child(3) {
+      background: linear-gradient(120deg, #ffc6e0 80%, #ffefba 100%);
+      transform: rotate(-4deg) skewY(-2deg);
+      top: 32px;
+      z-index: 3;
+    }
+    .picasso-shape {
+      position: absolute;
+      top: -40px; left: -40px;
+      width: 90px; height: 90px;
+      background: radial-gradient(circle at 70% 40%, #ff6b6b 55%, transparent 70%);
+      border-radius: 45% 69% 43% 59%;
+      z-index: 0;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .card h1 {
+      color: #ff3e34;
+      font-size: 1.7em;
+      margin: 0 0 18px 0;
+      font-family: 'Arial Black', Arial, sans-serif;
+      letter-spacing: 0.03em;
+      text-shadow: 1px 1px 0 #fff6, 2px 3px 12px #ffba7a55;
+    }
+    .card p {
+      font-size: 1.16em;
+      color: #2b2b2b;
+      font-weight: 500;
+      margin: 0;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+    }
+    @media (max-width: 900px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .card {
+        max-width: 92vw;
+        font-size: 0.98em;
+      }
+    }
+    @media (max-width: 600px) {
+      .dashboard {
+        margin: 12px 0;
+      }
+      .card {
+        min-width: 0;
+        padding: 16px 8px 18px 16px;
+        font-size: 0.92em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard">
-        <div class="card">
-            <h1>Welcome to the AI-Based Peace Platform</h1>
-            <p>Explore innovative solutions for peace.</p>
-        </div>
-        <div class="card">
-            <h1>Our Mission</h1>
-            <p>Promoting peace through technology.</p>
-        </div>
-        <div class="card">
-            <h1>Get Involved</h1>
-            <p>Join us in making a difference!</p>
-        </div>
+  <div class="dashboard">
+    <div class="card">
+      <div class="picasso-shape"></div>
+      <h1>Welcome to the AI-Based Peace Platform</h1>
+      <p>Explore innovative, AI-powered solutions for a more peaceful world.<br>
+      Designed with creativity and collaboration in mind.</p>
     </div>
+    <div class="card">
+      <div class="picasso-shape"></div>
+      <h1>Our Mission</h1>
+      <p>Promoting trust, harmony, and understanding by leveraging technology.<br>
+      Empowering communities to resolve conflicts and foster peace.</p>
+    </div>
+    <div class="card">
+      <div class="picasso-shape"></div>
+      <h1>Get Involved</h1>
+      <p>Join us! Contribute, collaborate, and share ideas.<br>
+      Together, let's make a difference for global harmony.</p>
+    </div>
+  </div>
 </body>
 </html>
