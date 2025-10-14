@@ -1,3 +1,4 @@
+/* Improved, visually enhanced CSS for Peace Platform cards and chat */
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: #f8f8fa;
@@ -28,46 +29,135 @@ ul {
 li {
   margin: 0.5em 0;
 }
-.quick-access-item {
-  margin: 1em 0;
-  padding: 1em;
-  background: #f6f9fc;
+/* Card sections */
+.state, .pulse, .chat {
+  margin-top: 2em;
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(53, 92, 125, 0.07);
+  padding: 1.5em;
+  position: relative;
+}
+.metrics {
+  display: flex;
+  gap: 2em;
+  margin-bottom: 1em;
+}
+.metric label {
+  font-weight: bold;
+  color: #355c7d;
+}
+#refresh-btn {
+  margin-top: 1em;
+  background: #3498db;
+  color: #fff;
+  border: none;
   border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-weight: bold;
+  transition: background 0.2s;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(53, 92, 125, 0.09);
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  gap: 0.5em;
 }
-.hymn-card {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
+#refresh-btn:hover {
+  background: #2980b9;
 }
-.hymn-preview-image {
-  margin-right: 1em;
+#pulse-form select, #pulse-form button {
+  margin-right: 0.5em;
+  margin-top: 0.5em;
+}
+#pulse-form select {
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  border: 1px solid #d6d6f7;
+  padding: 0.5em;
+  font-size: 1em;
+  background: #fff;
+  margin-bottom: 0.5em;
 }
-.hymn-text h3 {
-  margin: 0 0 0.25em 0;
+#pulse-form button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.6em 1.1em;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
 }
-````markdown name=README.md
-# AI-Based Peace Platform
-
-## Purpose
-A conceptual platform designed to prevent AI-driven warfare and aggression by combining AI safety, multi-modal threat detection, secure oversight mechanisms, and international governance principles.
-
-## Key Features
-- **Aggression Detection:** Multi-modal monitoring of global communications with advanced AI pipelines.
-- **Human-in-the-Loop:** All automated detection escalates to expert human review before action.
-- **Kill Switch Protocol:** Tamper-proof, cryptographically secure oversight and multi-party control for autonomous systems.
-- **Ethical Governance:** Designed for transparency, auditability, and compliance with international law.
-- **Peace Messaging:** Includes cultural/non-violent elements (see SacredHymnCard.html).
-
-## Files
-- `index.html`: Landing page for GitHub Pages.
-- `style.css`: Simple CSS for styling the landing page and cards.
-- `ai_peace_platform.py`: Main module sketching platform integration.
-- `aggression_pipeline.py`: Conceptual multi-modal aggression detection.
-- `kill_switch_protocol.py`: Multi-party secure kill switch protocol.
-- `SacredHymnCard.html`: Peace-themed UI card.
+#pulse-form button:hover {
+  background: #2980b9;
+}
+#pulse-feedback {
+  min-height: 1em;
+  margin-top: 0.5em;
+  font-size: 1em;
+  color: #355c7d;
+}
+#chat-log {
+  height: 180px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e3eafc;
+  padding: 0.75em;
+  margin-bottom: 1em;
+  font-size: 1em;
+}
+.chat-msg {
+  margin-bottom: 0.6em;
+  line-height: 1.4;
+}
+.chat-msg.user {
+  text-align: right;
+  color: #355c7d;
+}
+.chat-msg.ai {
+  text-align: left;
+  color: #222;
+}
+#chat-input {
+  width: 80%;
+  border-radius: 8px;
+  border: 1px solid #d6d6f7;
+  padding: 0.5em;
+  margin-right: 0.5em;
+  font-size: 1em;
+}
+#chat-form button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.6em 1.1em;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#chat-form button:hover {
+  background: #2980b9;
+}
+footer {
+  margin-top: 2em;
+  font-size: 0.95em;
+  color: #355c7d;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 700px) {
+  main {
+    padding: 0.5em;
+  }
+  .state, .pulse, .chat {
+    padding: 1em;
+    font-size: 0.96em;
+  }
+  .metrics {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  #chat-log {
+    height: 120px;
+  }
+}
