@@ -1,9 +1,12 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import pandas as pd
 from prophet import Prophet
 import random
+from datetime import datetime
 
 app = Flask(__name__)
+CORS(app, origins=["https://hannesmitterer.github.io"])
 
 def generate_sample_data():
     dates = pd.date_range("2025-01-01", periods=100, freq="D")
@@ -33,5 +36,38 @@ def get_forecast():
         "harmony_forecast": harmony_forecast_json
     })
 
+@app.route('/api/modules', methods=['GET'])
+def get_modules():
+    # Example: Replace with your real modules as needed
+    return jsonify([
+        {
+            "id": "core-1",
+            "name": "Forecast Engine",
+            "status": "running",
+            "type": "forecast",
+            "updatedAt": datetime.utcnow().isoformat() + "Z"
+        },
+        {
+            "id": "nlp-2",
+            "name": "NLP Processor",
+            "status": "idle",
+            "type": "nlp",
+            "updatedAt": datetime.utcnow().isoformat() + "Z"
+        }
+    ])
+
+@app.route('/api/metrics', methods=['GET'])
+def get_metrics():
+    # Example: Adjust logic as needed for real metrics
+    return jsonify({
+        "moduleCount": 2,
+        "activeModules": 1,
+        "idleModules": 1,
+        "errorModules": 0,
+        "lastUpdate": datetime.utcnow().isoformat() + "Z"
+    })
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
