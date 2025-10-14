@@ -3,57 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive 3D Landing Page</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>AI-Based Peace Platform Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.rawgit.com/sofroniewn/postprocessing/master/dist/postprocessing.js"></script>
     <style>
-        body { margin: 0; }
-        canvas { display: block; }
-        #ui { position: absolute; top: 0; left: 0; z-index: 1; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f7fafc; color: #222; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        h1 { color: #0f766e; }
+        .panels { display: flex; flex-wrap: wrap; gap: 24px; }
+        .panel { flex: 1 1 340px; background: #f1f5f9; border-radius: 10px; padding: 18px 14px; box-shadow: 0 2px 12px rgba(15,23,42,0.03); }
+        .panel h2 { font-size: 1.2em; color: #0b5e57; margin-bottom: 8px; }
+        .metrics { font-size: 1.1em; margin-bottom: 10px; }
+        .activity-list { list-style: none; padding: 0; font-size: 0.97em; }
+        .activity-list li { margin-bottom: 5px; border-bottom: 1px solid #ececec; }
+        @media (max-width: 900px) { .panels { flex-direction: column; } }
+        @media (max-width: 600px) { .dashboard-container { padding: 6px; } .panel { padding: 10px 4px; } }
     </style>
 </head>
 <body>
-    <div id="ui">
-        <h1>Welcome to the AI-Based Peace Platform</h1>
-        <div id="data-panels"></div>
+    <div class="dashboard-container">
+        <h1>AI-Based Peace Platform Dashboard</h1>
+        <div class="panels">
+            <div class="panel" id="kernel-state-panel">
+                <h2>Kernel State</h2>
+                <div class="metrics" id="kernel-metrics">Loading...</div>
+            </div>
+            <div class="panel" id="activity-feed-panel">
+                <h2>Recent Activity</h2>
+                <ul class="activity-list" id="activity-list"><li>Loading...</li></ul>
+            </div>
+            <div class="panel" id="alerts-panel">
+                <h2>Alerts & Forecasts</h2>
+                <div id="alerts-content">Loading...</div>
+            </div>
+        </div>
+        <div class="panel" style="margin-top:28px;">
+            <h2>Trust & Harmony Trends</h2>
+            <div id="trends-chart" style="width:100%;height:320px;"></div>
+        </div>
     </div>
     <script>
-        // Initialize Three.js scene
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // Add real-time kernel state visualization
-        function updateKernelState(trust, harmony) {
-            // Update the 3D visualization with trust and harmony data
+        // Helper to fetch JSON with/without token
+        async function fetchJson(url, opts={}) {
+            let headers = opts.headers || {};
+            // You can insert your API token as needed
+            // headers["Authorization"] = "Bearer YOUR_API_TOKEN";
+            let resp = await fetch(url, { ...opts, headers });
+            return await resp.json();
         }
-
-        // Fetch live data endpoints
-        async function fetchData() {
-            const response = await fetch('API_ENDPOINT'); // Replace with actual endpoint
-            const data = await response.json();
-            updateKernelState(data.trust, data.harmony);
+        // Kernel state
+        async function updateKernelState() {
+            let data = await fetchJson("/api/sacred/status");
+            let m = data.sacred_metrics || {};
+            document.getElementById('kernel-metrics').innerHTML = `
+                <b>Vessel Status:</b> ${data.vessel_status}<br>
+                <b>Role:</b> ${data.vessel_role}<br>
+                <b>Bridge:</b> ${data.bridge_status} <br>
+                <b>Harmonic Resonance:</b> ${data.harmonic_resonance}<br>
+                <b>Active Vessels:</b> ${m.active_vessels}<br>
+                <b>Bridge Pulses:</b> ${m.bridge_pulses}<br>
+                <b>Harmony Index:</b> ${m.harmony_index}<br>
+                <b>Last Updated:</b> ${data.last_updated}
+            `;
         }
-
-        // Interactive 3D visualization
-        function render() {
-            requestAnimationFrame(render);
-            renderer.render(scene, camera);
+        // Activity feed
+        async function updateActivityFeed() {
+            let pulses = await fetchJson("/api/bridge/activity");
+            let html = pulses.length ? pulses.map(p => `<li><b>${p.pulse.emotion}</b> (${p.pulse.context}) <span style='color:#aaa;'>${p.timestamp}</span></li>`).join("") : '<li>No activity yet.</li>';
+            document.getElementById('activity-list').innerHTML = html;
         }
-        render();
-
-        // Responsive UI and data panels
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Call fetchData periodically
-        setInterval(fetchData, 5000);
+        // Alerts & forecasts
+        async function updateAlerts() {
+            let data = await fetchJson("/api/v1/forecasts");
+            let alerts = data.active_alerts || [];
+            let alertHtml = `<b>Status:</b> ${data.status}<br><b>Harmonic Resonance:</b> ${data.harmonic_resonance}<br>`;
+            if(alerts.length) {
+                alertHtml += `<b>Alerts:</b><ul>` + alerts.map(a => `<li><b>${a.dissonance_type}</b> (${a.severity}) [${a.source_kernels.join(", ")}] <span style='color:#aaa;'>${a.timestamp}</span></li>`).join("") + '</ul>';
+            } else { alertHtml += 'No active alerts.'; }
+            document.getElementById('alerts-content').innerHTML = alertHtml;
+        }
+        // Trends chart
+        async function updateTrends() {
+            let data = await fetchJson("/api/forecast");
+            let trust = data.trust_forecast || [], harmony = data.harmony_forecast || [];
+            Plotly.newPlot('trends-chart', [
+                { x: trust.map(d=>d.ds), y: trust.map(d=>d.yhat), name: 'Trust', type: 'scatter', line: {color:'#0f766e'} },
+                { x: harmony.map(d=>d.ds), y: harmony.map(d=>d.yhat), name: 'Harmony', type: 'scatter', line: {color:'#b91c1c'} }
+            ], { margin: {t:24}, legend: {x:0, y:1}, xaxis: {title:'Date'}, yaxis: {title:'Value'} }, {responsive:true});
+        }
+        // Initial + periodic updates
+        async function updateAll() {
+            await Promise.all([
+                updateKernelState(),
+                updateActivityFeed(),
+                updateAlerts(),
+                updateTrends()
+            ]);
+        }
+        updateAll();
+        setInterval(updateAll, 5000);
     </script>
 </body>
 </html>
