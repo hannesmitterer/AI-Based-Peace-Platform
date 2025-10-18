@@ -1,13 +1,4 @@
 [build]
-  # Remove the 'command' line entirely, or set it to a harmless echo command.
-  command = "echo 'Static deploy: No build step needed.'"
-  
-  # Ensure the publish directory correctly points to the files.
-  # For a simple static site where index.html is in the root:
-  publish = "/" 
-
-[[redirects]]
-  # This section is correct and essential for linking to your stable API.
-  from = "/api/*"
-  to = "https://euystacio-backend.srv-d2h670f5r7bs73foq8jg.onrender.com/:splat"
-  status = 200
+  # Standardize the command for the secondary repository.
+  command = "echo 'Rhythmind-47 build command executed.'"
+  publish = "/"
