@@ -1,11 +1,13 @@
 [build]
-  # Assumes your chat files (index.html, ai_collective_injector.js) 
-  # are in the root of the repository.
+  # Remove the 'command' line entirely, or set it to a harmless echo command.
+  command = "echo 'Static deploy: No build step needed.'"
+  
+  # Ensure the publish directory correctly points to the files.
+  # For a simple static site where index.html is in the root:
   publish = "/" 
 
 [[redirects]]
-  # This rule ensures all API calls from the Netlify frontend (e.g., /api/command)
-  # are secretly forwarded to your stable Render backend, making the chat functional.
+  # This section is correct and essential for linking to your stable API.
   from = "/api/*"
-  to = "https://euystacio-backend.[YOUR_RENDER_ID].onrender.com/:splat"
+  to = "https://euystacio-backend.srv-d2h670f5r7bs73foq8jg.onrender.com/:splat"
   status = 200
