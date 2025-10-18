@@ -1,0 +1,11 @@
+[build]
+  # Assumes your chat files (index.html, ai_collective_injector.js) 
+  # are in the root of the repository.
+  publish = "/" 
+
+[[redirects]]
+  # This rule ensures all API calls from the Netlify frontend (e.g., /api/command)
+  # are secretly forwarded to your stable Render backend, making the chat functional.
+  from = "/api/*"
+  to = "https://euystacio-backend.[YOUR_RENDER_ID].onrender.com/:splat"
+  status = 200
