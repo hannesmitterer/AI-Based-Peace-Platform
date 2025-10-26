@@ -1,0 +1,7 @@
+SimpleDFPOracle.sol SHA-256 fingerprint
+---------------------------------------
+SHA-256: 5b25547941097e382875b7b99824e4d6a50b71946399088496839e24933923c5
+File path: contracts/SimpleDFPOracle.sol
+Committed at: 2025-10-26 02:10:00 UTC
+Repository: hannesmitterer/AI-Based-Peace-Platform
+Note: Added by automated process.
