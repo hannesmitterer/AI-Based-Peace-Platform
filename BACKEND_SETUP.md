@@ -193,7 +193,20 @@ Authorization: Bearer <google-id-token>
 2. **Token verification happens server-side** - The backend validates all Google ID tokens
 3. **Role enforcement is server-side** - Client-side role checks are for UX only
 4. **HTTPS in production** - Always use HTTPS for production deployments
-5. **CORS configuration** - Update `CORS_ALLOW_ORIGIN` in `.env` for production
+5. **CORS configuration** - Update `CORS_ALLOW_ORIGIN` in `.env` for production (set to specific domain instead of `*`)
+6. **Rate limiting** - The server includes rate limiting (default: 100 requests per 15 minutes per IP). Configure via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX_REQUESTS` in `.env`
+
+### Rate Limiting
+
+The backend includes automatic rate limiting to prevent abuse and DoS attacks:
+- Default: 100 requests per 15 minutes per IP address
+- Configurable via environment variables:
+  - `RATE_LIMIT_WINDOW_MS`: Time window in milliseconds (default: 900000 = 15 minutes)
+  - `RATE_LIMIT_MAX_REQUESTS`: Maximum requests per window (default: 100)
+- Rate limit information is returned in response headers:
+  - `RateLimit-Limit`: Maximum requests allowed
+  - `RateLimit-Remaining`: Remaining requests in current window
+  - `RateLimit-Reset`: Time until the rate limit resets (in seconds)
 
 ## Deployment
 

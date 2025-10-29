@@ -1,9 +1,22 @@
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import config from './config';
 import { requireAuth, Role, AuthenticatedRequest } from './middleware/googleAuth';
 
 const app = express();
+
+// Rate limiting configuration
+const limiter = rateLimit({
+  windowMs: config.rateLimitWindowMs,
+  max: config.rateLimitMaxRequests,
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again later.',
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
 
 // Middleware
 app.use(cors({

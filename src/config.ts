@@ -11,6 +11,8 @@ export interface Config {
   requiredScopesCouncil: string[];
   corsAllowOrigin: string;
   port: number;
+  rateLimitWindowMs: number;
+  rateLimitMaxRequests: number;
 }
 
 function parseEmailList(emailString: string | undefined): string[] {
@@ -37,6 +39,8 @@ const config: Config = {
   requiredScopesCouncil: parseScopeList(process.env.REQUIRED_SCOPES_COUNCIL),
   corsAllowOrigin: process.env.CORS_ALLOW_ORIGIN || '*',
   port: parseInt(process.env.PORT || '8080', 10),
+  rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes default
+  rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10), // 100 requests default
 };
 
 if (!config.googleClientId) {
