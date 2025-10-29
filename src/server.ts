@@ -14,6 +14,8 @@ dotenv.config();
 const config = {
   port: parseInt(process.env.PORT || '8080', 10),
   corsOrigin: process.env.CORS_ALLOW_ORIGIN || '*',
+  // Note: sentimentoBroadcastHz is reserved for future rate limiting implementation
+  // Currently, broadcasts are triggered by ingest events, not by a timer
   sentimentoBroadcastHz: parseInt(process.env.SENTIMENTO_BROADCAST_HZ || '10', 10),
 };
 

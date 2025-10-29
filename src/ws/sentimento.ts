@@ -19,12 +19,23 @@ export class SentimentoWSHub {
 
     // Attach to HTTP server upgrade event
     server.on('upgrade', (request: IncomingMessage, socket, head) => {
-      const pathname = new URL(request.url || '', `http://${request.headers.host}`).pathname;
+      try {
+        // Validate request URL
+        if (!request.url || !request.headers.host) {
+          socket.destroy();
+          return;
+        }
 
-      if (pathname === '/api/v2/sentimento/live') {
-        this.wss.handleUpgrade(request, socket, head, (ws) => {
-          this.wss.emit('connection', ws, request);
-        });
+        const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+
+        if (pathname === '/api/v2/sentimento/live') {
+          this.wss.handleUpgrade(request, socket, head, (ws) => {
+            this.wss.emit('connection', ws, request);
+          });
+        }
+      } catch (error) {
+        console.error('[SentimentoWSHub] Error handling upgrade:', error);
+        socket.destroy();
       }
     });
 
