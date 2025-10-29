@@ -1,12 +1,16 @@
 services:
   - type: web
     name: ai-based-peace-platform
-    env: python
+    env: node
     region: oregon
     plan: free
     repo: https://github.com/hannesmitterer/AI-Based-Peace-Platform
     branch: main
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
-    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 8080
     autoDeploy: true

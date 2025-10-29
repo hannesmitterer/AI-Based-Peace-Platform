@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seed-003: Hope Transduction Layer</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      --sorrow-bg: #2d3748;
+      --hope-bg: #bee3f8;
+      --sorrow-accent: #fc8181;
+      --hope-accent: #68d391;
+      --transition-speed: 0.8s;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--sorrow-bg);
+      color: white;
+      transition: background var(--transition-speed), color var(--transition-speed);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.hope-state {
+      background: var(--hope-bg);
+      color: #2d3748;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .auth-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-container h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    #googleSignInButton {
+      margin: 1rem auto;
+    }
+
+    .dashboard {
+      display: none;
+      width: 100%;
+    }
+
+    .dashboard.active {
+      display: block;
+    }
+
+    .control-panel {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .toggle-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background: #ccc;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: var(--hope-accent);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(30px);
+    }
+
+    .kpi-panel {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    body.hope-state .kpi-panel {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .ratio-display {
+      font-size: 4rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: var(--sorrow-accent);
+      transition: color var(--transition-speed);
+    }
+
+    body.hope-state .ratio-display {
+      color: var(--hope-accent);
+    }
+
+    .ratio-meter {
+      width: 100%;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .ratio-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sorrow-accent), var(--hope-accent));
+      transition: width 0.5s ease;
+      border-radius: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .user-info {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+    }
+
+    body.hope-state .user-info {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .error-message {
+      background: rgba(252, 129, 129, 0.2);
+      color: #fc8181;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .ratio-display {
+        font-size: 3rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌍 SEED-003</h1>
+    <p class="subtitle">Hope Transduction Layer (ARSP-001)</p>
+  </header>
+
+  <div class="user-info" id="userInfo" style="display: none;">
+    <div id="userEmail"></div>
+  </div>
+
+  <main>
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+      <h2>🔐 Secure Access Required</h2>
+      <p style="margin-bottom: 1.5rem;">
+        Sign in with Google to access the Hope Transduction Layer
+      </p>
+      <div id="googleSignInButton"></div>
+      <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.7;">
+        <strong>Allowlist:</strong><br>
+        Seedbringer: hannes.mitterer@gmail.com<br>
+        Council: dietmar.zuegg@gmail.com, bioarchitettura.rivista@gmail.com, consultant.laquila@gmail.com
+      </p>
+    </div>
+
+    <!-- Dashboard (hidden until authenticated) -->
+    <div class="dashboard" id="dashboard">
+      <div class="control-panel">
+        <h2>💚 Hope Amplifier</h2>
+        <div class="toggle-container">
+          <span class="toggle-label">OFF</span>
+          <div class="toggle-switch" id="hopeToggle">
+            <div class="toggle-slider"></div>
+          </div>
+          <span class="toggle-label">ON</span>
+        </div>
+        <p style="text-align: center; opacity: 0.8; margin-top: 1rem;">
+          Status: <span id="amplifierStatus">Disabled</span>
+        </p>
+      </div>
+
+      <div class="kpi-panel">
+        <h3>Net Hope Ratio</h3>
+        <div class="ratio-display" id="ratioDisplay">0.500</div>
+        
+        <div class="ratio-meter">
+          <div class="ratio-fill" id="ratioFill" style="width: 50%"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Avg Sorrow</div>
+            <div class="stat-value" id="avgSorrow">0.000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Hope</div>
+            <div class="stat-value" id="avgHope">0.000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Samples</div>
+            <div class="stat-value" id="samplesCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Window</div>
+            <div class="stat-value" id="windowSec">120s</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+    </div>
+  </main>
+
+  <script>
+    let idToken = null;
+    let hopeAmplifierEnabled = false;
+    let pollInterval = null;
+
+    // Google Sign-In callback
+    function handleCredentialResponse(response) {
+      idToken = response.credential;
+      
+      // Decode JWT to get email (basic decode, no verification - server does that)
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      
+      document.getElementById('authContainer').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      document.getElementById('userInfo').style.display = 'block';
+      document.getElementById('userEmail').textContent = payload.email;
+
+      // Start polling KPI endpoint
+      startPolling();
+    }
+
+    // Initialize Google Sign-In
+    window.onload = function() {
+      google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual client ID from env
+        callback: handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInButton'),
+        { 
+          theme: 'filled_blue', 
+          size: 'large',
+          text: 'signin_with',
+          width: 250
+        }
+      );
+    };
+
+    // Hope Amplifier toggle
+    document.getElementById('hopeToggle').addEventListener('click', function() {
+      hopeAmplifierEnabled = !hopeAmplifierEnabled;
+      this.classList.toggle('active');
+      
+      const statusEl = document.getElementById('amplifierStatus');
+      statusEl.textContent = hopeAmplifierEnabled ? 'Enabled' : 'Disabled';
+
+      // Theme transition
+      if (hopeAmplifierEnabled) {
+        document.body.classList.add('hope-state');
+      } else {
+        document.body.classList.remove('hope-state');
+      }
+    });
+
+    // Fetch KPI data
+    async function fetchKpi() {
+      if (!idToken) return;
+
+      try {
+        const response = await fetch('/kpi/hope-ratio', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        updateUI(data.kpi);
+        hideError();
+      } catch (error) {
+        showError(`Failed to fetch KPI: ${error.message}`);
+      }
+    }
+
+    // Update UI with KPI data
+    function updateUI(kpi) {
+      document.getElementById('ratioDisplay').textContent = kpi.ratio.toFixed(3);
+      document.getElementById('ratioFill').style.width = (kpi.ratio * 100) + '%';
+      document.getElementById('avgSorrow').textContent = kpi.avgSorrow.toFixed(3);
+      document.getElementById('avgHope').textContent = kpi.avgHope.toFixed(3);
+      document.getElementById('samplesCount').textContent = kpi.samples;
+      document.getElementById('windowSec').textContent = kpi.windowSec + 's';
+
+      // Auto-enable hope state if ratio > threshold
+      const threshold = 0.58; // SEED003_HOPE_THRESHOLD
+      if (kpi.ratio > threshold && !hopeAmplifierEnabled) {
+        document.getElementById('hopeToggle').click();
+      } else if (kpi.ratio <= threshold && hopeAmplifierEnabled) {
+        document.getElementById('hopeToggle').click();
+      }
+    }
+
+    // Start polling
+    function startPolling() {
+      fetchKpi(); // Initial fetch
+      pollInterval = setInterval(fetchKpi, 4000); // Poll every 4 seconds
+    }
+
+    // Error handling
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+    }
+
+    function hideError() {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.classList.remove('show');
+    }
+  </script>
+</body>
+</html>
