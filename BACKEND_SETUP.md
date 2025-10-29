@@ -14,7 +14,7 @@ This guide explains how to set up and deploy the ALO-001 backend with Google OAu
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create or select a project
-3. Enable the Google+ API or People API
+3. Enable the **People API** or **Google Identity Services**
 4. Go to **APIs & Services > Credentials**
 5. Create an **OAuth 2.0 Client ID** (Web application)
 6. Add authorized JavaScript origins:
@@ -47,13 +47,13 @@ Update the Google Client ID in `public/pbl-001/index.html`:
 
 ```html
 <div id="g_id_onload"
-     data-client_id="YOUR_ACTUAL_GOOGLE_CLIENT_ID"
+     data-client_id="YOUR_GOOGLE_CLIENT_ID"
      data-callback="handleCredentialResponse"
      data-auto_prompt="false">
 </div>
 ```
 
-Replace `YOUR_ACTUAL_GOOGLE_CLIENT_ID` with the same Client ID from step 2.
+Replace `YOUR_GOOGLE_CLIENT_ID` with the same Client ID from step 2.
 
 ### 4. Install Dependencies
 

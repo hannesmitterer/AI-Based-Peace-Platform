@@ -388,36 +388,30 @@
             const userInfoDiv = document.getElementById('userInfo');
             const role = determineRole(user.email);
             
-            let roleHTML = '';
-            if (role === 'seedbringer') {
-                roleHTML = '<span class="role-badge seedbringer">Seedbringer</span>';
-            } else if (role === 'council') {
-                roleHTML = '<span class="role-badge council">Council</span>';
-            } else {
-                roleHTML = '<span class="role-badge" style="background: #ef4444; color: white;">Unauthorized</span>';
-            }
+            // Note: Actual role will be determined by the backend
+            // This is just a placeholder for display
+            let roleHTML = '<span class="role-badge" style="background: #34d399; color: white;">Authenticated</span>';
             
             userInfoDiv.innerHTML = `
                 <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
                 <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Role:</strong> ${roleHTML}</p>
-                <p><strong>Status:</strong> <span style="color: var(--success-color);">✓ Authenticated</span></p>
+                <p><strong>Status:</strong> ${roleHTML}</p>
+                <p style="font-size: 0.9em; color: #6b7280; margin-top: 10px;">
+                    Your role and permissions are determined by the backend. 
+                    Try the endpoints below to see what you have access to.
+                </p>
             `;
         }
 
         /**
          * Determine user role (client-side only for display - server enforces)
+         * Note: This is a UI-only helper. The backend is the source of truth for authorization.
          */
         function determineRole(email) {
-            const seedbringerEmails = ['hannes.mitterer@gmail.com'];
-            const councilEmails = ['dietmar.zuegg@gmail.com', 'bioarchitettura.rivista@gmail.com', 'consultant.laquila@gmail.com'];
-            
-            if (seedbringerEmails.includes(email)) {
-                return 'seedbringer';
-            } else if (councilEmails.includes(email)) {
-                return 'council';
-            }
-            return 'unauthorized';
+            // Role will be determined by the server
+            // This is just for UI display purposes
+            // In production, you could fetch this from a /me endpoint
+            return 'authenticated';
         }
 
         /**
