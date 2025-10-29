@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALO-001: Protected Platform Access</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #34d399;
+            --background: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --error-color: #dc2626;
+            --success-color: #16a34a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .auth-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .sign-in-button {
+            display: inline-block;
+            margin: 20px 10px;
+        }
+
+        .user-info {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .user-info p {
+            margin: 8px 0;
+        }
+
+        .user-info strong {
+            color: var(--primary-color);
+        }
+
+        .api-section {
+            display: none;
+        }
+
+        .api-section.active {
+            display: block;
+        }
+
+        .endpoint {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .endpoint h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .endpoint .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+
+        .method.get {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .method.post {
+            background: #10b981;
+            color: white;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #2dbd87;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.danger {
+            background-color: var(--error-color);
+        }
+
+        button.danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .response-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1f2937;
+            color: #f3f4f6;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .response-container.success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .response-container.error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-badge.seedbringer {
+            background: #fbbf24;
+            color: #78350f;
+        }
+
+        .role-badge.council {
+            background: #a78bfa;
+            color: #4c1d95;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 ALO-001 Protected Platform</h1>
+            <p>Role-Based Access Control with Google OAuth</p>
+        </header>
+
+        <!-- Authentication Section -->
+        <div class="section auth-section" id="authSection">
+            <h2>Sign In with Google</h2>
+            <p>Authenticate using your Google account to access protected endpoints.</p>
+            
+            <div class="sign-in-button">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.9em; color: #6b7280;">
+                <strong>Authorized Roles:</strong><br>
+                <span class="role-badge seedbringer">Seedbringer</span> - Full access (read & write)<br>
+                <span class="role-badge council">Council</span> - Read-only access
+            </p>
+        </div>
+
+        <!-- User Info Section (hidden initially) -->
+        <div class="section" id="userSection" style="display: none;">
+            <h2>User Information</h2>
+            <div class="user-info" id="userInfo"></div>
+            <button class="danger" onclick="signOut()">Sign Out</button>
+        </div>
+
+        <!-- API Testing Section (hidden initially) -->
+        <div class="section api-section" id="apiSection">
+            <h2>Protected API Endpoints</h2>
+            <p>Test the protected endpoints with your authenticated token.</p>
+
+            <!-- GET /sfi -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    /sfi - Systemic Fairness Index
+                </h3>
+                <p>Retrieve global inequality and access metrics.</p>
+                <p><strong>Access:</strong> Council or Seedbringer</p>
+                <button onclick="callEndpoint('GET', '/sfi')">Call Endpoint</button>
+                <div id="response-sfi"></div>
+            </div>
+
+            <!-- GET /mcl/live -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    /mcl/live - Mission Critical Live
+                </h3>
+                <p>Real-time monitoring of critical system parameters.</p>
+                <p><strong>Access:</strong> Council or Seedbringer</p>
+                <button onclick="callEndpoint('GET', '/mcl/live')">Call Endpoint</button>
+                <div id="response-mcl"></div>
+            </div>
+
+            <!-- POST /allocations -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    /allocations - Create Resource Allocation
+                </h3>
+                <p>Submit a new resource allocation request.</p>
+                <p><strong>Access:</strong> Seedbringer only (write access)</p>
+                
+                <div class="input-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" placeholder="e.g., 50000" value="50000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="target">Target:</label>
+                    <input type="text" id="target" placeholder="e.g., Sahel Region" value="Sahel Region">
+                </div>
+                
+                <div class="input-group">
+                    <label for="purpose">Purpose:</label>
+                    <textarea id="purpose" placeholder="e.g., DAS Protocol implementation">DAS Protocol implementation for local food security</textarea>
+                </div>
+                
+                <button onclick="callAllocationEndpoint()">Submit Allocation</button>
+                <div id="response-allocations"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let idToken = null;
+        let userInfo = null;
+        const API_BASE_URL = 'http://localhost:8080'; // Update this to match your backend
+
+        /**
+         * Handle the Google Sign-In response
+         */
+        function handleCredentialResponse(response) {
+            idToken = response.credential;
+            
+            // Decode the JWT to get user info (just for display - server validates)
+            const base64Url = idToken.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            userInfo = JSON.parse(jsonPayload);
+            
+            // Update UI
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            document.getElementById('apiSection').classList.add('active');
+            
+            displayUserInfo(userInfo);
+        }
+
+        /**
+         * Display user information
+         */
+        function displayUserInfo(user) {
+            const userInfoDiv = document.getElementById('userInfo');
+            const role = determineRole(user.email);
+            
+            let roleHTML = '';
+            if (role === 'seedbringer') {
+                roleHTML = '<span class="role-badge seedbringer">Seedbringer</span>';
+            } else if (role === 'council') {
+                roleHTML = '<span class="role-badge council">Council</span>';
+            } else {
+                roleHTML = '<span class="role-badge" style="background: #ef4444; color: white;">Unauthorized</span>';
+            }
+            
+            userInfoDiv.innerHTML = `
+                <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>Role:</strong> ${roleHTML}</p>
+                <p><strong>Status:</strong> <span style="color: var(--success-color);">✓ Authenticated</span></p>
+            `;
+        }
+
+        /**
+         * Determine user role (client-side only for display - server enforces)
+         */
+        function determineRole(email) {
+            const seedbringerEmails = ['hannes.mitterer@gmail.com'];
+            const councilEmails = ['dietmar.zuegg@gmail.com', 'bioarchitettura.rivista@gmail.com', 'consultant.laquila@gmail.com'];
+            
+            if (seedbringerEmails.includes(email)) {
+                return 'seedbringer';
+            } else if (councilEmails.includes(email)) {
+                return 'council';
+            }
+            return 'unauthorized';
+        }
+
+        /**
+         * Sign out
+         */
+        function signOut() {
+            idToken = null;
+            userInfo = null;
+            
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+            document.getElementById('apiSection').classList.remove('active');
+            
+            // Reset response containers
+            document.querySelectorAll('[id^="response-"]').forEach(el => {
+                el.innerHTML = '';
+            });
+        }
+
+        /**
+         * Call a protected endpoint
+         */
+        async function callEndpoint(method, endpoint) {
+            const responseId = 'response-' + endpoint.substring(1).replace('/', '-');
+            const responseDiv = document.getElementById(responseId);
+            
+            if (!idToken) {
+                displayResponse(responseDiv, { error: 'Not authenticated' }, false);
+                return;
+            }
+            
+            try {
+                responseDiv.innerHTML = '<div class="response-container">⏳ Loading...</div>';
+                
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                const data = await response.json();
+                displayResponse(responseDiv, data, response.ok);
+            } catch (error) {
+                displayResponse(responseDiv, { error: error.message }, false);
+            }
+        }
+
+        /**
+         * Call the allocations endpoint with form data
+         */
+        async function callAllocationEndpoint() {
+            const responseDiv = document.getElementById('response-allocations');
+            
+            if (!idToken) {
+                displayResponse(responseDiv, { error: 'Not authenticated' }, false);
+                return;
+            }
+            
+            const amount = document.getElementById('amount').value;
+            const target = document.getElementById('target').value;
+            const purpose = document.getElementById('purpose').value;
+            
+            if (!amount || !target || !purpose) {
+                displayResponse(responseDiv, { error: 'All fields are required' }, false);
+                return;
+            }
+            
+            try {
+                responseDiv.innerHTML = '<div class="response-container">⏳ Submitting...</div>';
+                
+                const response = await fetch(API_BASE_URL + '/allocations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        target: target,
+                        purpose: purpose,
+                    }),
+                });
+                
+                const data = await response.json();
+                displayResponse(responseDiv, data, response.ok);
+            } catch (error) {
+                displayResponse(responseDiv, { error: error.message }, false);
+            }
+        }
+
+        /**
+         * Display API response
+         */
+        function displayResponse(container, data, isSuccess) {
+            const cssClass = isSuccess ? 'success' : 'error';
+            container.innerHTML = `
+                <div class="response-container ${cssClass}">
+                    ${JSON.stringify(data, null, 2)}
+                </div>
+            `;
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            console.log('ALO-001 Platform initialized');
+            console.log('Backend API:', API_BASE_URL);
+        };
+    </script>
+</body>
+</html>
