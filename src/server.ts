@@ -19,6 +19,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Middleware
+// NOTE: CORS origin is configurable via environment variable
+// For production, set CORS_ALLOW_ORIGIN to your specific domain instead of '*'
+// See BACKEND_SETUP.md for security recommendations
 app.use(cors({
   origin: config.corsAllowOrigin,
 }));
