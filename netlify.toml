@@ -1,4 +1,8 @@
 [build]
-  # Standardize the command for the secondary repository.
-  command = "echo 'Rhythmind-47 build command executed.'"
-  publish = "/"
+  command = "echo 'Seed-003 frontend build completed'"
+  publish = "public"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
