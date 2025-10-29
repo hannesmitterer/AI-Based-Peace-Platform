@@ -342,8 +342,12 @@
 
     // Initialize Google Sign-In
     window.onload = function() {
+      // NOTE: Replace with actual GOOGLE_CLIENT_ID from your environment
+      // This should be injected at build time or loaded from a config file
+      const clientId = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+      
       google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual client ID from env
+        client_id: clientId,
         callback: handleCredentialResponse
       });
 

@@ -17,6 +17,14 @@ const PORT = process.env.PORT || 8080;
 // Google OAuth client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+// Extend Express Request interface
+interface AuthenticatedRequest extends Request {
+  user?: {
+    email: string;
+    role: string;
+  };
+}
+
 // Middleware
 app.use(cors({ origin: process.env.CORS_ALLOW_ORIGIN || '*' }));
 app.use(express.json());
@@ -87,7 +95,7 @@ async function requireCouncil(req: Request, res: Response, next: NextFunction) {
 
   try {
     const { email, role } = await verifyToken(token, 'council');
-    (req as any).user = { email, role };
+    (req as AuthenticatedRequest).user = { email, role };
     next();
   } catch (error) {
     res.status(403).json({ error: (error as Error).message });
@@ -105,7 +113,7 @@ app.get('/sfi', requireCouncil, (req: Request, res: Response) => {
   res.json({
     sfi: 0.72,
     message: 'Placeholder: System Fairness Indicator',
-    user: (req as any).user,
+    user: (req as AuthenticatedRequest).user,
   });
 });
 
@@ -116,7 +124,7 @@ app.get('/mcl/live', requireCouncil, (req: Request, res: Response) => {
   res.json({
     status: 'operational',
     message: 'Placeholder: Mission Control Live',
-    user: (req as any).user,
+    user: (req as AuthenticatedRequest).user,
   });
 });
 
@@ -128,7 +136,7 @@ app.post('/allocations', requireCouncil, (req: Request, res: Response) => {
     success: true,
     message: 'Placeholder: Allocations endpoint',
     data: req.body,
-    user: (req as any).user,
+    user: (req as AuthenticatedRequest).user,
   });
 });
 

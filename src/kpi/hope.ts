@@ -87,7 +87,7 @@ class HopeKpiBuffer {
 
 // Global singleton instance
 const globalBuffer = new HopeKpiBuffer(
-  parseInt(process.env.SEED003_ROLLING_WINDOW_SEC || '120')
+  parseInt(process.env.SEED003_ROLLING_WINDOW_SEC || '120', 10)
 );
 
 export function pushSample(sorrow: number, hope: number): void {
