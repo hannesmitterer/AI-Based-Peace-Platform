@@ -1,0 +1,112 @@
+name: ALO-001 CI
+
+on:
+  push:
+    branches:
+      - 'copilot/alo-001google-oauth'
+      - 'alo-001/google-oauth'
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify .env.example exists
+        run: |
+          if [ ! -f .env.example ]; then
+            echo "Error: .env.example file not found!"
+            exit 1
+          fi
+          echo "✓ .env.example exists"
+          echo "Contents:"
+          cat .env.example
+
+      - name: Verify required env vars in .env.example
+        run: |
+          required_vars=("GOOGLE_CLIENT_ID" "SEEDBRINGER_EMAILS" "COUNCIL_EMAILS" "PORT")
+          missing_vars=()
+          
+          for var in "${required_vars[@]}"; do
+            if ! grep -q "^${var}=" .env.example; then
+              missing_vars+=("$var")
+            fi
+          done
+          
+          if [ ${#missing_vars[@]} -gt 0 ]; then
+            echo "Error: Missing required variables in .env.example:"
+            printf '%s\n' "${missing_vars[@]}"
+            exit 1
+          fi
+          echo "✓ All required environment variables present in .env.example"
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          if [ ! -d dist ]; then
+            echo "Error: dist directory not created!"
+            exit 1
+          fi
+          if [ ! -f dist/server.js ]; then
+            echo "Error: dist/server.js not found!"
+            exit 1
+          fi
+          echo "✓ TypeScript build successful"
+          echo "Build artifacts:"
+          ls -la dist/
+
+      - name: Verify source structure
+        run: |
+          required_files=(
+            "src/config.ts"
+            "src/server.ts"
+            "src/middleware/googleAuth.ts"
+            "public/pbl-001/index.html"
+            "tsconfig.json"
+            "package.json"
+          )
+          
+          missing_files=()
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+          
+          if [ ${#missing_files[@]} -gt 0 ]; then
+            echo "Error: Missing required files:"
+            printf '%s\n' "${missing_files[@]}"
+            exit 1
+          fi
+          echo "✓ All required source files present"
+
+      - name: Check for security vulnerabilities
+        run: npm audit --audit-level=moderate || true
+
+      - name: Success summary
+        run: |
+          echo "===================="
+          echo "✓ ALO-001 CI PASSED"
+          echo "===================="
+          echo "✓ Dependencies installed"
+          echo "✓ TypeScript compiled successfully"
+          echo "✓ .env.example verified"
+          echo "✓ Required files present"
+          echo "✓ Ready for deployment"

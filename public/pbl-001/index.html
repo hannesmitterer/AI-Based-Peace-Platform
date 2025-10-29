@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBL-001: Google OAuth Gated Access</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --color-primary: #1e3a8a;
+            --color-secondary: #34d399;
+            --color-background: #f0f2f5;
+            --color-card: #ffffff;
+            --color-text: #1f2937;
+            --color-light-text: #6b7280;
+            --color-accent: #fcd34d;
+            --color-border: #e2e8f0;
+            --color-error: #dc2626;
+            --color-success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background-color: var(--color-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .auth-section {
+            text-align: center;
+        }
+
+        .auth-section h2 {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            background-color: var(--color-background);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .user-info p {
+            margin: 8px 0;
+        }
+
+        .user-info strong {
+            color: var(--color-primary);
+        }
+
+        .controls {
+            margin-top: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            color: var(--color-secondary);
+            margin-bottom: 15px;
+        }
+
+        .control-group p {
+            color: var(--color-light-text);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        button {
+            background-color: var(--color-secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #2dbd87;
+        }
+
+        button:disabled {
+            background-color: var(--color-light-text);
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background-color: var(--color-primary);
+        }
+
+        button.secondary:hover:not(:disabled) {
+            background-color: #1e40af;
+        }
+
+        button.danger {
+            background-color: var(--color-error);
+        }
+
+        button.danger:hover:not(:disabled) {
+            background-color: #b91c1c;
+        }
+
+        .response-display {
+            background-color: #2b2b2b;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .response-display.show {
+            display: block;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #fee;
+            border: 1px solid var(--color-error);
+            color: var(--color-error);
+        }
+
+        .status-message.success {
+            background-color: #efe;
+            border: 1px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .status-message.warning {
+            background-color: #fef3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        #signInDiv {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h4 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: var(--color-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 PBL-001: Protected Access Control</h1>
+            <p class="subtitle">Google OAuth Authentication Gateway</p>
+        </header>
+
+        <div class="card auth-section">
+            <h2>Authentication</h2>
+            <div id="signedOutView">
+                <p>Please sign in with your Google account to access protected endpoints.</p>
+                <div id="signInDiv"></div>
+            </div>
+
+            <div id="signedInView" class="hidden">
+                <div class="user-info">
+                    <h3>✓ Authenticated</h3>
+                    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                    <p><strong>Name:</strong> <span id="userName"></span></p>
+                    <p><strong>Role:</strong> <span id="userRole"></span></p>
+                </div>
+                <button onclick="handleSignOut()" class="danger">Sign Out</button>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+
+        <div class="card controls hidden" id="controlsSection">
+            <h2>Protected Endpoints</h2>
+            
+            <div class="info-box">
+                <h4>Access Control Information:</h4>
+                <ul>
+                    <li><strong>/sfi</strong> (GET) - Systemic Fairness Index - Requires Council access</li>
+                    <li><strong>/mcl/live</strong> (GET) - Mission-Critical Live data - Requires Council access</li>
+                    <li><strong>/allocations</strong> (POST) - Resource Allocations - Requires Seedbringer access</li>
+                </ul>
+            </div>
+
+            <div class="control-group">
+                <h3>Council Endpoints</h3>
+                <p>Access Systemic Fairness Index and Mission-Critical Live data</p>
+                <button onclick="callEndpoint('GET', '/sfi')">GET /sfi</button>
+                <button onclick="callEndpoint('GET', '/mcl/live')">GET /mcl/live</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Seedbringer Endpoint</h3>
+                <p>Submit resource allocation requests</p>
+                <button onclick="callAllocationsEndpoint()">POST /allocations</button>
+            </div>
+
+            <div id="responseDisplay" class="response-display"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Update this with your actual backend URL and Google Client ID
+        const BACKEND_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8080' 
+            : (window.location.origin.includes('github.io') 
+                ? 'https://your-backend-domain.com' 
+                : window.location.origin);
+        
+        const GOOGLE_CLIENT_ID = 'your-oauth-client.apps.googleusercontent.com'; // Replace with actual client ID
+
+        let currentUser = null;
+        let idToken = null;
+
+        // Initialize Google Sign-In
+        function initializeGoogleSignIn() {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse,
+                auto_select: false,
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById('signInDiv'),
+                { 
+                    theme: 'outline', 
+                    size: 'large',
+                    text: 'signin_with',
+                    shape: 'rectangular',
+                }
+            );
+
+            // Prompt for sign-in
+            google.accounts.id.prompt();
+        }
+
+        // Handle Google Sign-In response
+        function handleCredentialResponse(response) {
+            idToken = response.credential;
+            
+            // Decode JWT to get user info (for display only)
+            const payload = parseJwt(idToken);
+            currentUser = {
+                email: payload.email,
+                name: payload.name,
+                sub: payload.sub,
+            };
+
+            updateUIForSignedIn();
+            determineUserRole();
+        }
+
+        // Parse JWT token (client-side for display only)
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error('Error parsing JWT:', e);
+                return {};
+            }
+        }
+
+        // Determine user role based on email
+        function determineUserRole() {
+            const seedbringerEmails = ['hannes.mitterer@gmail.com'];
+            const councilEmails = [
+                'dietmar.zuegg@gmail.com',
+                'bioarchitettura.rivista@gmail.com',
+                'consultant.laquila@gmail.com',
+                'alfred.mitterer@gmail.com',
+                'cranedeathrow007@gmail.com',
+                'sensisara81@gmail.com'
+            ];
+
+            let role = 'Unknown';
+            if (seedbringerEmails.includes(currentUser.email)) {
+                role = 'Seedbringer';
+            } else if (councilEmails.includes(currentUser.email)) {
+                role = 'Council Member';
+            }
+
+            document.getElementById('userRole').textContent = role;
+        }
+
+        // Update UI for signed-in state
+        function updateUIForSignedIn() {
+            document.getElementById('signedOutView').classList.add('hidden');
+            document.getElementById('signedInView').classList.remove('hidden');
+            document.getElementById('controlsSection').classList.remove('hidden');
+            
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userName').textContent = currentUser.name;
+
+            showStatus('Successfully authenticated!', 'success');
+        }
+
+        // Handle sign out
+        function handleSignOut() {
+            google.accounts.id.disableAutoSelect();
+            currentUser = null;
+            idToken = null;
+
+            document.getElementById('signedOutView').classList.remove('hidden');
+            document.getElementById('signedInView').classList.add('hidden');
+            document.getElementById('controlsSection').classList.add('hidden');
+            
+            hideResponse();
+            showStatus('Signed out successfully', 'warning');
+        }
+
+        // Call backend endpoint
+        async function callEndpoint(method, path) {
+            if (!idToken) {
+                showStatus('Please sign in first', 'error');
+                return;
+            }
+
+            showStatus('Calling endpoint...', 'warning');
+            
+            try {
+                const url = `${BACKEND_URL}${path}`;
+                const options = {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                };
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus(`Success: ${method} ${path}`, 'success');
+                    showResponse(data);
+                } else {
+                    showStatus(`Error ${response.status}: ${data.error || 'Unknown error'}`, 'error');
+                    showResponse(data);
+                }
+            } catch (error) {
+                showStatus(`Network error: ${error.message}`, 'error');
+                showResponse({ error: error.message });
+            }
+        }
+
+        // Call allocations endpoint with sample data
+        async function callAllocationsEndpoint() {
+            if (!idToken) {
+                showStatus('Please sign in first', 'error');
+                return;
+            }
+
+            showStatus('Submitting allocation request...', 'warning');
+            
+            const allocationData = {
+                project: 'DAS Protocol - Sahel',
+                amount: 50000,
+                currency: 'USD',
+                purpose: 'Local production support',
+                timestamp: new Date().toISOString(),
+            };
+
+            try {
+                const url = `${BACKEND_URL}/allocations`;
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(allocationData),
+                };
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus('Allocation request submitted successfully', 'success');
+                    showResponse(data);
+                } else {
+                    showStatus(`Error ${response.status}: ${data.error || 'Unknown error'}`, 'error');
+                    showResponse(data);
+                }
+            } catch (error) {
+                showStatus(`Network error: ${error.message}`, 'error');
+                showResponse({ error: error.message });
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message show ${type}`;
+        }
+
+        // Show API response
+        function showResponse(data) {
+            const responseEl = document.getElementById('responseDisplay');
+            responseEl.textContent = JSON.stringify(data, null, 2);
+            responseEl.classList.add('show');
+        }
+
+        // Hide response
+        function hideResponse() {
+            const responseEl = document.getElementById('responseDisplay');
+            responseEl.classList.remove('show');
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            initializeGoogleSignIn();
+        });
+    </script>
+</body>
+</html>
