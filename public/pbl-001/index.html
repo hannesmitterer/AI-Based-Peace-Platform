@@ -256,6 +256,11 @@
             <h2>Sign In with Google</h2>
             <p>Authenticate using your Google account to access protected endpoints.</p>
             
+            <!-- 
+                CONFIGURATION REQUIRED: 
+                Replace YOUR_GOOGLE_CLIENT_ID below with your actual Google OAuth Client ID
+                from Google Cloud Console (format: xxx.apps.googleusercontent.com)
+            -->
             <div class="sign-in-button">
                 <div id="g_id_onload"
                      data-client_id="YOUR_GOOGLE_CLIENT_ID"
@@ -348,7 +353,10 @@
     <script>
         let idToken = null;
         let userInfo = null;
-        const API_BASE_URL = 'http://localhost:8080'; // Update this to match your backend
+        // CONFIGURATION: Update this to match your backend server URL
+        // For local development: http://localhost:8080
+        // For production: https://your-backend-domain.com
+        const API_BASE_URL = 'http://localhost:8080';
 
         /**
          * Handle the Google Sign-In response
