@@ -107,6 +107,11 @@ ENV/
 env.bak/
 venv.bak/
 
+# Node.js
+node_modules/
+package-lock.json
+*.tsbuildinfo
+
 # Spyder project settings
 .spyderproject
 .spyproject
