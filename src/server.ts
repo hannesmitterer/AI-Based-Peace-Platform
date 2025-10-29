@@ -19,6 +19,32 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Get current user info and role (authenticated)
+app.get('/auth/me', verifyGoogleToken, (req: AuthenticatedRequest, res) => {
+  if (!req.user) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+
+  const userEmail = req.user.email.toLowerCase();
+  const seedbringerEmails = config.seedbringerEmails.map(e => e.toLowerCase());
+  const councilEmails = config.councilEmails.map(e => e.toLowerCase());
+
+  let role = 'Unknown';
+  if (seedbringerEmails.includes(userEmail)) {
+    role = 'Seedbringer';
+  } else if (councilEmails.includes(userEmail)) {
+    role = 'Council Member';
+  }
+
+  res.json({
+    email: req.user.email,
+    name: req.user.name,
+    sub: req.user.sub,
+    role: role,
+  });
+});
+
 // GET /sfi - Requires Council access
 app.get('/sfi', verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, res) => {
   res.json({

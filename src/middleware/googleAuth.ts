@@ -117,30 +117,4 @@ export function requireCouncil(
   next();
 }
 
-/**
- * Middleware to check if user is either a Seedbringer or Council member
- */
-export function requireSeedbringerOrCouncil(
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): void {
-  if (!req.user) {
-    res.status(401).json({ error: 'Authentication required' });
-    return;
-  }
 
-  const userEmail = req.user.email.toLowerCase();
-  const seedbringerEmails = config.seedbringerEmails.map(e => e.toLowerCase());
-  const councilEmails = config.councilEmails.map(e => e.toLowerCase());
-
-  if (!seedbringerEmails.includes(userEmail) && !councilEmails.includes(userEmail)) {
-    res.status(403).json({ 
-      error: 'Forbidden: Seedbringer or Council access required',
-      user: req.user.email 
-    });
-    return;
-  }
-
-  next();
-}

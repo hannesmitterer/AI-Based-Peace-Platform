@@ -280,6 +280,9 @@
 
     <script>
         // Configuration - Update this with your actual backend URL and Google Client ID
+        // IMPORTANT: For production deployment:
+        // 1. Replace GOOGLE_CLIENT_ID with your actual Google OAuth Client ID from Google Cloud Console
+        // 2. Replace BACKEND_URL logic with your actual backend domain or use environment-specific config
         const BACKEND_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:8080' 
             : (window.location.origin.includes('github.io') 
@@ -326,7 +329,7 @@
             };
 
             updateUIForSignedIn();
-            determineUserRole();
+            fetchUserRole();
         }
 
         // Parse JWT token (client-side for display only)
@@ -344,26 +347,27 @@
             }
         }
 
-        // Determine user role based on email
-        function determineUserRole() {
-            const seedbringerEmails = ['hannes.mitterer@gmail.com'];
-            const councilEmails = [
-                'dietmar.zuegg@gmail.com',
-                'bioarchitettura.rivista@gmail.com',
-                'consultant.laquila@gmail.com',
-                'alfred.mitterer@gmail.com',
-                'cranedeathrow007@gmail.com',
-                'sensisara81@gmail.com'
-            ];
+        // Fetch user role from backend
+        async function fetchUserRole() {
+            try {
+                const url = `${BACKEND_URL}/auth/me`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                });
 
-            let role = 'Unknown';
-            if (seedbringerEmails.includes(currentUser.email)) {
-                role = 'Seedbringer';
-            } else if (councilEmails.includes(currentUser.email)) {
-                role = 'Council Member';
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userRole').textContent = data.role;
+                } else {
+                    document.getElementById('userRole').textContent = 'Unknown';
+                    console.error('Failed to fetch user role');
+                }
+            } catch (error) {
+                document.getElementById('userRole').textContent = 'Unknown';
+                console.error('Error fetching user role:', error);
             }
-
-            document.getElementById('userRole').textContent = role;
         }
 
         // Update UI for signed-in state
