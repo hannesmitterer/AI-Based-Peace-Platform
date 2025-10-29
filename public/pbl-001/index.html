@@ -283,11 +283,17 @@
         // IMPORTANT: For production deployment:
         // 1. Replace GOOGLE_CLIENT_ID with your actual Google OAuth Client ID from Google Cloud Console
         // 2. Replace BACKEND_URL logic with your actual backend domain or use environment-specific config
-        const BACKEND_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8080' 
-            : (window.location.origin.includes('github.io') 
-                ? 'https://your-backend-domain.com' 
-                : window.location.origin);
+        const BACKEND_URL = (() => {
+            const hostname = window.location.hostname;
+            if (hostname === 'localhost') {
+                return 'http://localhost:8080';
+            } else if (hostname.endsWith('.github.io')) {
+                // For GitHub Pages deployment, update with actual backend URL
+                return 'https://your-backend-domain.com';
+            } else {
+                return window.location.origin;
+            }
+        })();
         
         const GOOGLE_CLIENT_ID = 'your-oauth-client.apps.googleusercontent.com'; // Replace with actual client ID
 

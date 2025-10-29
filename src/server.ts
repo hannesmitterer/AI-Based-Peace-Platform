@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { config } from './config';
 import { 
   verifyGoogleToken, 
@@ -10,9 +11,27 @@ import {
 
 const app = express();
 
+// Rate limiting middleware
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again later.',
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Stricter limit for authenticated endpoints
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many authentication attempts, please try again later.',
+});
+
 // Middleware
-app.use(cors({ origin: config.corsAllowOrigin }));
+app.use(cors({ origin: config.corsAllowOrigin })); // Note: Configure CORS_ALLOW_ORIGIN in .env for production
 app.use(express.json());
+app.use(apiLimiter); // Apply rate limiting to all routes
 
 // Health check endpoint (public)
 app.get('/health', (req, res) => {
@@ -20,7 +39,7 @@ app.get('/health', (req, res) => {
 });
 
 // Get current user info and role (authenticated)
-app.get('/auth/me', verifyGoogleToken, (req: AuthenticatedRequest, res) => {
+app.get('/auth/me', authLimiter, verifyGoogleToken, (req: AuthenticatedRequest, res) => {
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required' });
     return;
@@ -46,7 +65,7 @@ app.get('/auth/me', verifyGoogleToken, (req: AuthenticatedRequest, res) => {
 });
 
 // GET /sfi - Requires Council access
-app.get('/sfi', verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, res) => {
+app.get('/sfi', authLimiter, verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, res) => {
   res.json({
     message: 'Systemic Fairness Index data',
     user: req.user?.email,
@@ -65,7 +84,7 @@ app.get('/sfi', verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, r
 });
 
 // GET /mcl/live - Requires Council access
-app.get('/mcl/live', verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, res) => {
+app.get('/mcl/live', authLimiter, verifyGoogleToken, requireCouncil, (req: AuthenticatedRequest, res) => {
   res.json({
     message: 'Mission-Critical Live data',
     user: req.user?.email,
@@ -84,7 +103,7 @@ app.get('/mcl/live', verifyGoogleToken, requireCouncil, (req: AuthenticatedReque
 });
 
 // POST /allocations - Requires Seedbringer access
-app.post('/allocations', verifyGoogleToken, requireSeedbringer, (req: AuthenticatedRequest, res) => {
+app.post('/allocations', authLimiter, verifyGoogleToken, requireSeedbringer, (req: AuthenticatedRequest, res) => {
   const allocationData = req.body;
   
   // Validate allocation data
