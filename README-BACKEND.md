@@ -244,6 +244,10 @@ ws.on('message', (data) => {
 - **Production**: Implement proper Google OAuth token validation in `src/middleware/auth.ts`
 - POST /ingest/sentimento is currently unauthenticated (can be gated in future PR)
 - All Council/Seedbringer emails must be configured in environment variables
+- **CORS Configuration**: The default CORS setting (`*`) allows any origin for development
+  - **Production**: Set `CORS_ALLOW_ORIGIN` to specific domain(s) in production environment
+  - Example: `CORS_ALLOW_ORIGIN=https://hannesmitterer.github.io`
+  - Multiple origins can be handled with custom CORS middleware logic if needed
 
 ## Development
 

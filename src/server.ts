@@ -23,6 +23,8 @@ const config = {
 const app = express();
 
 // Middleware
+// Note: CORS is configured from environment. In production, set CORS_ALLOW_ORIGIN 
+// to specific domain(s) instead of '*' for better security
 app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json());
 
