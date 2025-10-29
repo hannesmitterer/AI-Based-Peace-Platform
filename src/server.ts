@@ -7,6 +7,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
+import rateLimit from 'express-rate-limit';
 import { pushSample, getRollingKpi } from './kpi/hope';
 
 dotenv.config();
@@ -28,6 +29,28 @@ interface AuthenticatedRequest extends Request {
 // Middleware
 app.use(cors({ origin: process.env.CORS_ALLOW_ORIGIN || '*' }));
 app.use(express.json());
+
+// Rate limiting for API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const ingestLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // Limit each IP to 30 requests per minute for ingest
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to API routes
+app.use('/kpi/', apiLimiter);
+app.use('/sfi', apiLimiter);
+app.use('/mcl/', apiLimiter);
+app.use('/allocations', apiLimiter);
+app.use('/ingest/', ingestLimiter);
 
 // Static files (serve public directory)
 app.use(express.static('public'));
