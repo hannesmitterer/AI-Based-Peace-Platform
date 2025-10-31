@@ -24,7 +24,7 @@ export interface SentimentoLiveEvent {
   };
 
   /**
-   * Event sequence number for ordering
+   * Event sequence number for ordering (always present in broadcasts)
    */
-  sequence?: number;
+  sequence: number;
 }

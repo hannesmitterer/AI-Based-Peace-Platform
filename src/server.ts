@@ -36,14 +36,25 @@ const COUNCIL_EMAILS = (process.env.COUNCIL_EMAILS || 'dietmar.zuegg@gmail.com, 
   .split(',')
   .map(e => e.trim());
 
+// Warn if using default allowlists (not configured via env)
+if (!process.env.SEEDBRINGER_EMAILS) {
+  console.warn('[SECURITY WARNING] Using default SEEDBRINGER_EMAILS. Set environment variable in production.');
+}
+if (!process.env.COUNCIL_EMAILS) {
+  console.warn('[SECURITY WARNING] Using default COUNCIL_EMAILS. Set environment variable in production.');
+}
+
 /**
  * ALO-001 Authentication Middleware
- * For this PR, we're implementing scaffolding without full OAuth verification
- * In production, this should validate Google OAuth tokens
+ * 
+ * SECURITY WARNING: This implementation uses header-based authentication for scaffolding.
+ * In production, this MUST be replaced with proper Google OAuth token validation.
+ * Current header-based approach is INSECURE and can be easily spoofed.
+ * 
+ * TODO: Implement full Google OAuth verification as specified in ALO-001
  */
 function requireSeedbringer(req: Request, res: Response, next: NextFunction): void {
-  // TODO: Implement full Google OAuth verification
-  // For now, allow through (will be implemented in subsequent PR)
+  // INSECURE: Header-based auth for scaffolding only
   const userEmail = req.headers['x-user-email'] as string;
   
   if (userEmail && SEEDBRINGER_EMAILS.includes(userEmail)) {
@@ -54,8 +65,7 @@ function requireSeedbringer(req: Request, res: Response, next: NextFunction): vo
 }
 
 function requireCouncil(req: Request, res: Response, next: NextFunction): void {
-  // TODO: Implement full Google OAuth verification
-  // For now, allow through (will be implemented in subsequent PR)
+  // INSECURE: Header-based auth for scaffolding only
   const userEmail = req.headers['x-user-email'] as string;
   
   if (userEmail && COUNCIL_EMAILS.includes(userEmail)) {

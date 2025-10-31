@@ -47,7 +47,8 @@ export class SentimentoWSHub {
   private readonly bufferMaxKB: number;
 
   constructor() {
-    this.bufferMaxKB = parseInt(process.env.SENTIMENTO_BUFFER_MAX_KB || '512', 10);
+    const bufferMaxKBRaw = parseInt(process.env.SENTIMENTO_BUFFER_MAX_KB || '512', 10);
+    this.bufferMaxKB = isNaN(bufferMaxKBRaw) ? 512 : bufferMaxKBRaw;
     
     this.wss = new WebSocketServer({ noServer: true });
     this.wss.on('connection', this.handleConnection.bind(this));
