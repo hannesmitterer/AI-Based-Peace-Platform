@@ -136,6 +136,12 @@ council_ledger.log*
 *.log
 *.log.*
 
+# Node.js
+node_modules/
+package-lock.json
+dist/
+*.tsbuildinfo
+
 # Temporary files
 tmp/
 temp/
