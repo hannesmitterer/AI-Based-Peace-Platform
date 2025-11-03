@@ -1,0 +1,557 @@
+syntax = "proto3";
+
+package nexus.v1;
+
+option go_package = "github.com/hannesmitterer/nexus-api/proto/nexus/v1;nexusv1";
+option java_package = "com.nexusapi.proto.v1";
+option java_outer_classname = "NexusProto";
+
+// ============================================================================
+// Telemetry Messages
+// ============================================================================
+
+// Telemetry frame containing metrics from an agent
+message TelemetryFrame {
+  // Unique identifier for this telemetry submission
+  string telemetry_id = 1;
+  
+  // Agent identifier
+  string agent_id = 2;
+  
+  // Timestamp when metrics were collected (Unix epoch in milliseconds)
+  int64 timestamp = 3;
+  
+  // Agent status
+  AgentStatus status = 4;
+  
+  // Performance metrics
+  Metrics metrics = 5;
+  
+  // Geographic location information
+  Location location = 6;
+  
+  // Custom metadata
+  map<string, string> metadata = 7;
+}
+
+// Agent operational status
+enum AgentStatus {
+  AGENT_STATUS_UNSPECIFIED = 0;
+  AGENT_STATUS_ACTIVE = 1;
+  AGENT_STATUS_INACTIVE = 2;
+  AGENT_STATUS_OFFLINE = 3;
+  AGENT_STATUS_ERROR = 4;
+  AGENT_STATUS_MAINTENANCE = 5;
+}
+
+// Performance and resource metrics
+message Metrics {
+  // CPU usage percentage (0-100)
+  float cpu_percent = 1;
+  
+  // Memory usage percentage (0-100)
+  float memory_percent = 2;
+  
+  // Disk usage percentage (0-100)
+  float disk_percent = 3;
+  
+  // Network I/O in bytes per second
+  int64 network_io_bps = 4;
+  
+  // Number of active tasks
+  int32 task_count = 5;
+  
+  // Error rate (errors per minute)
+  float error_rate = 6;
+  
+  // Average response time in milliseconds
+  float avg_response_time_ms = 7;
+  
+  // Request throughput (requests per second)
+  float requests_per_second = 8;
+  
+  // Custom metrics
+  map<string, float> custom_metrics = 9;
+}
+
+// Geographic location information
+message Location {
+  // Cloud region or datacenter
+  string region = 1;
+  
+  // Availability zone
+  string availability_zone = 2;
+  
+  // Service availability percentage
+  float availability_percent = 3;
+  
+  // Latitude (optional)
+  double latitude = 4;
+  
+  // Longitude (optional)
+  double longitude = 5;
+}
+
+// Batch telemetry submission
+message TelemetryBatch {
+  repeated TelemetryFrame frames = 1;
+  
+  // Batch metadata
+  string batch_id = 2;
+  int64 submitted_at = 3;
+}
+
+// Telemetry submission response
+message TelemetryResponse {
+  // Accepted telemetry IDs
+  repeated string telemetry_ids = 1;
+  
+  // Rejection reasons (if any)
+  repeated RejectionReason rejections = 2;
+  
+  // Server timestamp
+  int64 received_at = 3;
+}
+
+// Rejection reason for telemetry
+message RejectionReason {
+  string telemetry_id = 1;
+  string reason = 2;
+  string error_code = 3;
+}
+
+// ============================================================================
+// Command Messages
+// ============================================================================
+
+// Command frame for agent execution
+message CommandFrame {
+  // Unique command identifier
+  string command_id = 1;
+  
+  // Command to execute
+  string command = 2;
+  
+  // Target agents
+  repeated string target_agents = 3;
+  
+  // Command parameters (JSON-encoded)
+  string parameters_json = 4;
+  
+  // Execution timeout in seconds
+  int32 timeout_seconds = 5;
+  
+  // Asynchronous execution flag
+  bool async = 6;
+  
+  // Priority level
+  Priority priority = 7;
+  
+  // Command metadata
+  map<string, string> metadata = 8;
+  
+  // Timestamp when command was created
+  int64 created_at = 9;
+}
+
+// Command execution priority
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;
+  PRIORITY_MEDIUM = 2;
+  PRIORITY_HIGH = 3;
+  PRIORITY_CRITICAL = 4;
+}
+
+// Command execution status
+enum CommandStatus {
+  COMMAND_STATUS_UNSPECIFIED = 0;
+  COMMAND_STATUS_PENDING = 1;
+  COMMAND_STATUS_RUNNING = 2;
+  COMMAND_STATUS_COMPLETED = 3;
+  COMMAND_STATUS_FAILED = 4;
+  COMMAND_STATUS_CANCELLED = 5;
+  COMMAND_STATUS_TIMEOUT = 6;
+}
+
+// Command execution result
+message CommandResult {
+  // Command identifier
+  string command_id = 1;
+  
+  // Agent that executed the command
+  string agent_id = 2;
+  
+  // Execution status
+  CommandStatus status = 3;
+  
+  // Output from command execution
+  string output = 4;
+  
+  // Error message (if failed)
+  string error = 5;
+  
+  // Exit code
+  int32 exit_code = 6;
+  
+  // Start timestamp
+  int64 started_at = 7;
+  
+  // Completion timestamp
+  int64 completed_at = 8;
+  
+  // Execution duration in milliseconds
+  int64 duration_ms = 9;
+}
+
+// Command batch for multiple commands
+message CommandBatch {
+  repeated CommandFrame commands = 1;
+  string batch_id = 2;
+}
+
+// ============================================================================
+// Task Messages
+// ============================================================================
+
+// Task definition
+message Task {
+  // Unique task identifier
+  string task_id = 1;
+  
+  // Task name
+  string name = 2;
+  
+  // Task type
+  string type = 3;
+  
+  // Task status
+  TaskStatus status = 4;
+  
+  // Priority
+  Priority priority = 5;
+  
+  // Assigned agent
+  string assigned_to = 6;
+  
+  // Task parameters (JSON-encoded)
+  string parameters_json = 7;
+  
+  // Task dependencies (other task IDs)
+  repeated string dependencies = 8;
+  
+  // Created timestamp
+  int64 created_at = 9;
+  
+  // Started timestamp
+  int64 started_at = 10;
+  
+  // Completed timestamp
+  int64 completed_at = 11;
+  
+  // Deadline timestamp
+  int64 deadline = 12;
+  
+  // Progress percentage (0-100)
+  int32 progress = 13;
+  
+  // Result (JSON-encoded)
+  string result_json = 14;
+  
+  // Task metadata
+  map<string, string> metadata = 15;
+}
+
+// Task execution status
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_PENDING = 1;
+  TASK_STATUS_IN_PROGRESS = 2;
+  TASK_STATUS_COMPLETED = 3;
+  TASK_STATUS_FAILED = 4;
+  TASK_STATUS_CANCELLED = 5;
+  TASK_STATUS_BLOCKED = 6;
+}
+
+// Task update request
+message TaskUpdate {
+  string task_id = 1;
+  TaskStatus status = 2;
+  int32 progress = 3;
+  string result_json = 4;
+}
+
+// ============================================================================
+// Agent Messages
+// ============================================================================
+
+// Agent registration
+message Agent {
+  // Unique agent identifier
+  string agent_id = 1;
+  
+  // Agent name
+  string name = 2;
+  
+  // Agent version
+  string version = 3;
+  
+  // Agent capabilities
+  repeated string capabilities = 4;
+  
+  // Agent endpoint URL
+  string endpoint = 5;
+  
+  // Current status
+  AgentStatus status = 6;
+  
+  // Registration timestamp
+  int64 registered_at = 7;
+  
+  // Last seen timestamp
+  int64 last_seen = 8;
+  
+  // Agent metadata
+  map<string, string> metadata = 9;
+}
+
+// Agent heartbeat
+message Heartbeat {
+  string agent_id = 1;
+  AgentStatus status = 2;
+  int32 current_tasks = 3;
+  Metrics health = 4;
+  int64 timestamp = 5;
+}
+
+// Heartbeat acknowledgment
+message HeartbeatAck {
+  bool acknowledged = 1;
+  int64 timestamp = 2;
+  int32 next_heartbeat_seconds = 3;
+}
+
+// ============================================================================
+// Event Messages
+// ============================================================================
+
+// Event frame for streaming
+message EventFrame {
+  // Unique event identifier
+  string event_id = 1;
+  
+  // Event type
+  string event_type = 2;
+  
+  // Event timestamp
+  int64 timestamp = 3;
+  
+  // Source agent or system component
+  string source = 4;
+  
+  // Event severity
+  Severity severity = 5;
+  
+  // Event data (JSON-encoded)
+  string data_json = 6;
+  
+  // Event tags
+  repeated string tags = 7;
+  
+  // Event metadata
+  map<string, string> metadata = 8;
+}
+
+// Event severity levels
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_INFO = 1;
+  SEVERITY_WARNING = 2;
+  SEVERITY_ERROR = 3;
+  SEVERITY_CRITICAL = 4;
+}
+
+// Event subscription request
+message EventSubscription {
+  // Event types to subscribe to
+  repeated string event_types = 1;
+  
+  // Filters (JSON-encoded)
+  string filters_json = 2;
+  
+  // Client identifier
+  string client_id = 3;
+}
+
+// Event subscription response
+message EventSubscriptionResponse {
+  bool success = 1;
+  repeated string subscribed_events = 2;
+  string subscription_id = 3;
+  int64 timestamp = 4;
+}
+
+// ============================================================================
+// Common Messages
+// ============================================================================
+
+// Generic response status
+message Status {
+  // Success flag
+  bool success = 1;
+  
+  // Status code
+  string code = 2;
+  
+  // Human-readable message
+  string message = 3;
+  
+  // Additional details (JSON-encoded)
+  string details_json = 4;
+  
+  // Timestamp
+  int64 timestamp = 5;
+}
+
+// Error details
+message Error {
+  // Error code
+  string code = 1;
+  
+  // Error message
+  string message = 2;
+  
+  // Stack trace (optional)
+  string stack_trace = 3;
+  
+  // Additional error details
+  map<string, string> details = 4;
+  
+  // Timestamp
+  int64 timestamp = 5;
+}
+
+// Pagination metadata
+message PageInfo {
+  // Total number of items
+  int32 total = 1;
+  
+  // Current page number
+  int32 page = 2;
+  
+  // Items per page
+  int32 per_page = 3;
+  
+  // Has more pages
+  bool has_more = 4;
+}
+
+// ============================================================================
+// Service Definitions (gRPC)
+// ============================================================================
+
+// Telemetry service
+service TelemetryService {
+  // Submit single telemetry frame
+  rpc SubmitTelemetry(TelemetryFrame) returns (TelemetryResponse);
+  
+  // Submit batch of telemetry frames
+  rpc SubmitTelemetryBatch(TelemetryBatch) returns (TelemetryResponse);
+  
+  // Stream telemetry (bidirectional)
+  rpc StreamTelemetry(stream TelemetryFrame) returns (stream TelemetryResponse);
+}
+
+// Command service
+service CommandService {
+  // Execute command
+  rpc ExecuteCommand(CommandFrame) returns (CommandResult);
+  
+  // Execute command batch
+  rpc ExecuteCommandBatch(CommandBatch) returns (stream CommandResult);
+  
+  // Get command status
+  rpc GetCommandStatus(CommandStatusRequest) returns (CommandResult);
+  
+  // Cancel command
+  rpc CancelCommand(CommandCancelRequest) returns (Status);
+}
+
+message CommandStatusRequest {
+  string command_id = 1;
+}
+
+message CommandCancelRequest {
+  string command_id = 1;
+}
+
+// Task service
+service TaskService {
+  // Create task
+  rpc CreateTask(Task) returns (Task);
+  
+  // Get task
+  rpc GetTask(TaskRequest) returns (Task);
+  
+  // Update task
+  rpc UpdateTask(TaskUpdate) returns (Task);
+  
+  // List tasks
+  rpc ListTasks(TaskListRequest) returns (TaskListResponse);
+}
+
+message TaskRequest {
+  string task_id = 1;
+}
+
+message TaskListRequest {
+  TaskStatus status = 1;
+  string assigned_to = 2;
+  Priority priority = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+message TaskListResponse {
+  repeated Task tasks = 1;
+  PageInfo page_info = 2;
+}
+
+// Agent service
+service AgentService {
+  // Register agent
+  rpc RegisterAgent(Agent) returns (AgentRegistrationResponse);
+  
+  // Submit heartbeat
+  rpc Heartbeat(Heartbeat) returns (HeartbeatAck);
+  
+  // List agents
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+}
+
+message AgentRegistrationResponse {
+  string agent_id = 1;
+  string api_key = 2;
+  int64 registered_at = 3;
+}
+
+message ListAgentsRequest {
+  AgentStatus status = 1;
+  string capability = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListAgentsResponse {
+  repeated Agent agents = 1;
+  PageInfo page_info = 2;
+}
+
+// Event service
+service EventService {
+  // Subscribe to events (server streaming)
+  rpc Subscribe(EventSubscription) returns (stream EventFrame);
+  
+  // Publish event
+  rpc PublishEvent(EventFrame) returns (Status);
+}
