@@ -51,7 +51,7 @@ class WalletConfig:
         except json.JSONDecodeError as e:
             raise WalletConfigError(f"Invalid JSON in wallet configuration: {e}")
     
-    def get_wallet_address(self, wallet_name: str) -> str:
+    def get_wallet_address(self, wallet_name: str, _visited: Optional[set] = None) -> str:
         """
         Get the active wallet address for a given wallet name.
         
@@ -59,6 +59,7 @@ class WalletConfig:
         
         Args:
             wallet_name: Name of the wallet (e.g., 'primary', 'governance_audit', 'digital_bonds')
+            _visited: Internal parameter for cycle detection (do not use)
         
         Returns:
             The EVM wallet address
@@ -66,6 +67,12 @@ class WalletConfig:
         Raises:
             WalletConfigError: If wallet is not found or configuration is invalid
         """
+        if _visited is None:
+            _visited = set()
+        
+        if wallet_name in _visited:
+            raise WalletConfigError(f"Circular redirect detected: {' -> '.join(_visited)} -> {wallet_name}")
+        
         if wallet_name not in self.config.get('wallets', {}):
             raise WalletConfigError(f"Wallet '{wallet_name}' not found in configuration")
         
@@ -78,7 +85,8 @@ class WalletConfig:
                 raise WalletConfigError(
                     f"Wallet '{wallet_name}' redirects to '{redirect_target}' which does not exist"
                 )
-            return self.get_wallet_address(redirect_target)
+            _visited.add(wallet_name)
+            return self.get_wallet_address(redirect_target, _visited)
         
         # Return the address from the wallet
         if 'address' not in wallet:
@@ -147,11 +155,20 @@ class WalletConfig:
         if not primary.get('address'):
             raise WalletConfigError("Primary wallet does not have an address")
         
-        # Validate address format (basic EVM address validation)
+        # Validate address format (EVM address validation)
         address = primary['address']
-        if not address.startswith('0x') or len(address) != 42:
+        if not address.startswith('0x'):
+            raise WalletConfigError(f"Invalid EVM address format: must start with 0x")
+        
+        if len(address) != 42:
+            raise WalletConfigError(f"Invalid EVM address length: must be 42 characters (0x + 40 hex digits)")
+        
+        # Check all characters after 0x are hexadecimal
+        try:
+            int(address[2:], 16)
+        except ValueError:
             raise WalletConfigError(
-                f"Invalid EVM address format for primary wallet: {address}"
+                f"Invalid EVM address format: contains non-hexadecimal characters"
             )
         
         # Check that all consolidated wallets redirect correctly

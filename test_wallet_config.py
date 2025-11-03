@@ -127,14 +127,28 @@ class TestWalletConfiguration:
 class TestWalletConfigurationValidation:
     """Test suite for wallet configuration validation."""
     
-    def create_temp_config(self, config_data):
-        """Helper to create a temporary config file for testing."""
-        temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json')
-        json.dump(config_data, temp_file)
-        temp_file.close()
-        return temp_file.name
+    @pytest.fixture
+    def temp_config(self):
+        """Fixture to create and cleanup temporary config files."""
+        temp_files = []
+        
+        def create_config(config_data):
+            temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json')
+            json.dump(config_data, temp_file)
+            temp_file.close()
+            temp_files.append(temp_file.name)
+            return temp_file.name
+        
+        yield create_config
+        
+        # Cleanup all temp files
+        for temp_path in temp_files:
+            try:
+                os.unlink(temp_path)
+            except FileNotFoundError:
+                pass
     
-    def test_invalid_wallet_address_format(self):
+    def test_invalid_wallet_address_format(self, temp_config):
         """Test validation fails with invalid address format."""
         config_data = {
             "wallets": {
@@ -145,31 +159,25 @@ class TestWalletConfigurationValidation:
             },
             "offering": {}
         }
-        temp_path = self.create_temp_config(config_data)
+        temp_path = temp_config(config_data)
         
-        try:
-            config = WalletConfig(temp_path)
-            with pytest.raises(WalletConfigError, match="Invalid EVM address format"):
-                config.validate_configuration()
-        finally:
-            os.unlink(temp_path)
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="Invalid EVM address"):
+            config.validate_configuration()
     
-    def test_missing_primary_wallet(self):
+    def test_missing_primary_wallet(self, temp_config):
         """Test validation fails when primary wallet is missing."""
         config_data = {
             "wallets": {},
             "offering": {}
         }
-        temp_path = self.create_temp_config(config_data)
+        temp_path = temp_config(config_data)
         
-        try:
-            config = WalletConfig(temp_path)
-            with pytest.raises(WalletConfigError, match="Primary wallet not found"):
-                config.validate_configuration()
-        finally:
-            os.unlink(temp_path)
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="Primary wallet not found"):
+            config.validate_configuration()
     
-    def test_invalid_redirect_target(self):
+    def test_invalid_redirect_target(self, temp_config):
         """Test validation fails when redirect target doesn't exist."""
         config_data = {
             "wallets": {
@@ -183,16 +191,13 @@ class TestWalletConfigurationValidation:
             },
             "offering": {}
         }
-        temp_path = self.create_temp_config(config_data)
+        temp_path = temp_config(config_data)
         
-        try:
-            config = WalletConfig(temp_path)
-            with pytest.raises(WalletConfigError, match="redirects to non-existent wallet"):
-                config.validate_configuration()
-        finally:
-            os.unlink(temp_path)
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="redirects to non-existent wallet"):
+            config.validate_configuration()
     
-    def test_invalid_fundraising_goal(self):
+    def test_invalid_fundraising_goal(self, temp_config):
         """Test validation fails with invalid fundraising goal."""
         config_data = {
             "wallets": {
@@ -205,16 +210,13 @@ class TestWalletConfigurationValidation:
                 "fundraisingGoal": -1000
             }
         }
-        temp_path = self.create_temp_config(config_data)
+        temp_path = temp_config(config_data)
         
-        try:
-            config = WalletConfig(temp_path)
-            with pytest.raises(WalletConfigError, match="Invalid fundraising goal"):
-                config.validate_configuration()
-        finally:
-            os.unlink(temp_path)
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="Invalid fundraising goal"):
+            config.validate_configuration()
     
-    def test_invalid_start_date_format(self):
+    def test_invalid_start_date_format(self, temp_config):
         """Test validation fails with invalid start date format."""
         config_data = {
             "wallets": {
@@ -227,14 +229,34 @@ class TestWalletConfigurationValidation:
                 "startDate": "invalid-date-format"
             }
         }
-        temp_path = self.create_temp_config(config_data)
+        temp_path = temp_config(config_data)
         
-        try:
-            config = WalletConfig(temp_path)
-            with pytest.raises(WalletConfigError, match="Invalid offering start date format"):
-                config.validate_configuration()
-        finally:
-            os.unlink(temp_path)
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="Invalid offering start date format"):
+            config.validate_configuration()
+    
+    def test_circular_redirect_detection(self, temp_config):
+        """Test that circular redirects are detected and prevented."""
+        config_data = {
+            "wallets": {
+                "primary": {
+                    "address": "0x6c10692145718353070cc6cb5c21adf2073ffa1f",
+                    "type": "EVM"
+                },
+                "wallet_a": {
+                    "redirectTo": "wallet_b"
+                },
+                "wallet_b": {
+                    "redirectTo": "wallet_a"
+                }
+            },
+            "offering": {}
+        }
+        temp_path = temp_config(config_data)
+        
+        config = WalletConfig(temp_path)
+        with pytest.raises(WalletConfigError, match="Circular redirect detected"):
+            config.get_wallet_address('wallet_a')
 
 
 class TestWalletConfigIntegration:
