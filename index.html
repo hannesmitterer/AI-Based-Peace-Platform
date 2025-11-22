@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euystacio Framework - AI based Peace Platform | Public Hub & Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Base Styles */
+        :root {
+            --color-primary: #004d80; /* Dark Blue */
+            --color-secondary: #34d399; /* Mint Green */
+            --color-background: #f0f2f5; /* Light Gray Blue */
+            --color-card: #ffffff;
+            --color-text: #2c2c2c; /* Dark Gray */
+            --color-light-text: #6b7280;
+            --color-accent: #fcd34d; /* Gold/Yellow for Seal/Highlights */
+            --color-border: #e2e8f0;
+            --color-button-bg: var(--color-secondary);
+            --color-button-text: white;
+            --color-button-hover: #2dbd87;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 0 20px 0;
+            background-color: var(--color-primary);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .nav-bar {
+            background-color: var(--color-card);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .nav-bar a {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 15px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-bar a:hover,
+        .nav-bar a.active {
+            background-color: var(--color-secondary);
+            color: var(--color-button-text);
+        }
+
+        /* Section Styling */
+        .section {
+            background-color: var(--color-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-primary);
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-secondary);
+            font-size: 1.4em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Dashboard Grid for Live Data */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background-color: var(--color-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-placeholder {
+            background-color: #e0e0e0;
+            height: 200px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-light-text);
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        /* Auth & Control Panel */
+        .auth-form,
+        .control-panel-grid {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+        }
+
+        .auth-form input[type="text"],
+        .auth-form input[type="password"],
+        .control-panel-grid input[type="text"],
+        .control-panel-grid select,
+        .control-panel-grid textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1em;
+        }
+
+        .auth-form button,
+        .control-panel-grid button {
+            background-color: var(--color-button-bg);
+            color: var(--color-button-text);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .auth-form button:hover,
+        .control-panel-grid button:hover {
+            background-color: var(--color-button-hover);
+        }
+
+        .control-panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .control-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .log-display {
+            background-color: #2b2b2b;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 15px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--color-light-text);
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+
+        footer .seal {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 15px 0;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        footer .seal strong {
+            color: var(--color-accent);
+        }
+
+        .footer-links {
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+                padding: 0 10px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 0.9em;
+            }
+
+            .nav-bar a {
+                margin: 0 8px;
+                padding: 6px 10px;
+            }
+
+            h2 {
+                font-size: 1.6em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+            }
+
+            .dashboard-grid,
+            .control-panel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>EUYSTACIO HELMI AI</h1>
+        <p>Public Hub & Operational Control</p>
+    </header>
+
+    <nav class="nav-bar container">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#investor">Investor</a>
+        <a href="#governance">Governance</a>
+        <a href="#control">Control Panel</a>
+        <a href="#logs">Audit Logs</a>
+        <a href="#account">Account</a>
+    </nav>
+
+    <div class="container">
+        <section id="dashboard" class="section">
+            <h2>Live Data Dashboard 📊</h2>
+            <p class="description">Real-time insights from the Euystacio Kernels, filtered by the Rhythmmind Job. Monitoring global ethical health indicators and intervention impact.</p>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Global Scarcity Index (GRI)</h3>
+                    <div class="chart-placeholder">Live Scarcity Graph (e.g., Food, Water, Energy)</div>
+                    <p class="data-summary">Current Status: Moderate Stress. Last Update: <span id="gsi-update">2025-10-04 10:30 UTC</span></p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Systemic Fairness Monitor (SFM)</h3>
+                    <div class="chart-placeholder">Live Inequity Graph (e.g., Gini Coefficient, Access to Opportunity)</div>
+                    <p class="data-summary">Current Status: Persistent Disparity. Last Update: <span id="sfm-update">2025-10-04 10:30 UTC</span></p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Regional Stability Tracker (RST)</h3>
+                    <div class="chart-placeholder">Live Conflict/Displacement Graph (e.g., Conflict Intensity, Refugee Flow)</div>
+                    <p class="data-summary">Current Status: Elevated Risk. Last Update: <span id="rst-update">2025-10-04 10:30 UTC</span></p>
+                </div>
+                <div class="dashboard-card">
+                    <h3>DAS Protocol Impact (Sahel)</h3>
+                    <div class="chart-placeholder">Live DAS Protocol Impact (e.g., Local Production, Trade Volume)</div>
+                    <p class="data-summary">Current Status: Initial Growth Phase. Last Update: <span id="das-update">2025-10-04 10:30 UTC</span></p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>
