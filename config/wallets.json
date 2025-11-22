@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Consolidated wallet configuration for AI-Based Peace Platform investment operations",
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-03T18:14:33Z",
+  "wallets": {
+    "primary": {
+      "name": "Primary Consolidated Wallet",
+      "description": "Unified EVM wallet for all investment operations including governance audit and digital bonds",
+      "address": "0x6c10692145718353070cc6cb5c21adf2073ffa1f",
+      "type": "EVM",
+      "chain": null,
+      "chainNote": "Awaiting confirmation - Options: Polygon, Arbitrum, or other EVM-compatible chain",
+      "purposes": [
+        "investment_collection",
+        "governance_audit",
+        "digital_bonds"
+      ],
+      "status": "active",
+      "consolidatedFrom": [
+        "governance_audit_wallet",
+        "digital_bonds_wallet"
+      ]
+    },
+    "governance_audit": {
+      "name": "Governance Audit Wallet",
+      "description": "Redirected to primary consolidated wallet",
+      "redirectTo": "primary",
+      "status": "consolidated",
+      "consolidatedDate": "2025-11-03T18:14:33Z",
+      "note": "All operations redirected to primary wallet for simplified operations"
+    },
+    "digital_bonds": {
+      "name": "Digital Bonds Wallet",
+      "description": "Redirected to primary consolidated wallet",
+      "redirectTo": "primary",
+      "status": "consolidated",
+      "consolidatedDate": "2025-11-03T18:14:33Z",
+      "note": "All operations redirected to primary wallet for simplified operations"
+    }
+  },
+  "offering": {
+    "startDate": "2025-12-01T00:00:00Z",
+    "fundraisingGoal": 5000000,
+    "fundraisingAsset": null,
+    "fundraisingAssetNote": "Awaiting confirmation - Options: USDC, ETH, or other stablecoin/cryptocurrency",
+    "decimals": null,
+    "decimalsNote": "To be confirmed based on selected fundraising asset (typically 6 for USDC, 18 for ETH)",
+    "status": "pending_final_confirmation",
+    "statusNote": "Awaiting confirmation of chain, fundraising asset, and decimals",
+    "pendingConfirmations": [
+      "chain/network selection",
+      "fundraising asset selection",
+      "asset decimals configuration"
+    ]
+  },
+  "postMergeActions": [
+    {
+      "priority": 1,
+      "action": "Confirm chain/network",
+      "description": "Select and confirm the blockchain network (e.g., Polygon, Arbitrum)",
+      "status": "pending"
+    },
+    {
+      "priority": 2,
+      "action": "Confirm fundraising asset",
+      "description": "Select and confirm the asset for fundraising (e.g., USDC, ETH)",
+      "status": "pending"
+    },
+    {
+      "priority": 3,
+      "action": "Confirm asset decimals",
+      "description": "Confirm decimals relative to the selected fundraising asset",
+      "status": "pending"
+    },
+    {
+      "priority": 4,
+      "action": "Configure on-chain automation",
+      "description": "Set up and test on-chain automation for the consolidated wallet",
+      "status": "pending"
+    },
+    {
+      "priority": 5,
+      "action": "Test wallet operations",
+      "description": "Comprehensive testing of all wallet operations with the new consolidated setup",
+      "status": "pending"
+    }
+  ],
+  "auditTrail": [
+    {
+      "date": "2025-11-03T18:14:33Z",
+      "action": "Initial consolidation",
+      "description": "Created consolidated wallet configuration with primary address 0x6c10692145718353070cc6cb5c21adf2073ffa1f",
+      "affectedWallets": [
+        "primary",
+        "governance_audit",
+        "digital_bonds"
+      ]
+    }
+  ]
+}
