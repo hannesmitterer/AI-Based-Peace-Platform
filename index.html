@@ -518,6 +518,25 @@
             });
         });
     </script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const updateDashboardData = async () => {
+        // Simulate fetching data from an API
+        const response = await fetch('  https://euystacio-backend.onrender.com'); // Replace with actual API endpoint
+        const data = await response.json();
+
+        // Update dashboard with live data
+        document.getElementById('gsi-update').textContent = data.gsi_update_time;
+        document.getElementById('sfm-update').textContent = data.sfm_update_time;
+        document.getElementById('rst-update').textContent = data.rst_update_time;
+        document.getElementById('das-update').textContent = data.das_update_time;
+        document.getElementById('funds-deployed').textContent = `$${data.funds_deployed}`;
+        document.getElementById('active-initiatives').textContent = data.active_initiatives;
+    };
+
+    updateDashboardData(); // Call on load to populate data
+    setInterval(updateDashboardData, 60000); // Refresh data every minute
+});
+
 </body>
 
 <head>
