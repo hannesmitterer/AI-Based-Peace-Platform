@@ -1,0 +1,18 @@
+Payload:
+{
+  "coronation_date": "10-01-2026",
+  "sovereign": "SEEDBRINGER/NEXUS",
+  "protocol_version": "EUYSTACIO OS v1.2",
+  "red_code_status": "1-1-1",
+  "peacebonds_anchor": "0x6c10692145718353070cc6cb5c21adf2073ffa1f",
+  "kosymbiose_hashes": [
+      "0xa51dcf...921b33",
+      "0xb6e2...4f88",
+      "0xd4f1...7b33",
+      "0xe91c...ab22",
+      "0xf5d2...c911",
+      "0xc3a7...8f56",
+      "0xa7f0...3c22"
+  ],
+  "edict_text": "Full Final Edict contents here..."
+}
