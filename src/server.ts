@@ -1,131 +1,202 @@
-import express from 'express';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
-import config from './config';
-import { requireAuth, Role, AuthenticatedRequest } from './middleware/googleAuth';
+import express, { Request, Response, NextFunction } from 'express';
+import { createServer } from 'http';
+import * as dotenv from 'dotenv';
+import { SentimentoWSHub } from './ws/sentimento';
+import { SentimentoLiveEvent } from './types/sentimento';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
-
-// Rate limiting configuration
-const limiter = rateLimit({
-  windowMs: config.rateLimitWindowMs,
-  max: config.rateLimitMaxRequests,
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: 'Too many requests from this IP, please try again later.',
-});
-
-// Apply rate limiting to all requests
-app.use(limiter);
+const server = createServer(app);
+const sentimentoHub = new SentimentoWSHub();
 
 // Middleware
-// NOTE: CORS origin is configurable via environment variable
-// For production, set CORS_ALLOW_ORIGIN to your specific domain instead of '*'
-// See BACKEND_SETUP.md for security recommendations
-app.use(cors({
-  origin: config.corsAllowOrigin,
-}));
 app.use(express.json());
 
-// Health check endpoint (public)
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-/**
- * GET /sfi - Systemic Fairness Index
- * Accessible by Council or Seedbringer (read-only)
- */
-app.get('/sfi', requireAuth([Role.COUNCIL, Role.SEEDBRINGER]), (req: AuthenticatedRequest, res) => {
-  const sfiData = {
-    index: 'Systemic Fairness Index',
-    description: 'Global inequality and access to opportunity metrics',
-    currentValue: 7.2,
-    status: 'Persistent Disparity',
-    lastUpdated: new Date().toISOString(),
-    requestedBy: {
-      email: req.user?.email,
-      role: req.user?.role,
-    },
-  };
-  res.json(sfiData);
-});
-
-/**
- * GET /mcl/live - Mission Critical Live data
- * Accessible by Council or Seedbringer (read-only)
- */
-app.get('/mcl/live', requireAuth([Role.COUNCIL, Role.SEEDBRINGER]), (req: AuthenticatedRequest, res) => {
-  const mclData = {
-    endpoint: 'Mission Critical Live',
-    description: 'Real-time monitoring of critical system parameters',
-    metrics: {
-      globalScarcityIndex: 6.8,
-      regionalStability: 'Elevated Risk',
-      dasProtocolImpact: 'Initial Growth Phase',
-    },
-    lastUpdated: new Date().toISOString(),
-    requestedBy: {
-      email: req.user?.email,
-      role: req.user?.role,
-    },
-  };
-  res.json(mclData);
-});
-
-/**
- * POST /allocations - Create new resource allocation
- * Accessible by Seedbringer only (write access)
- */
-app.post('/allocations', requireAuth([Role.SEEDBRINGER]), (req: AuthenticatedRequest, res) => {
-  const { amount, target, purpose } = req.body;
-
-  // Validate input
-  if (!amount || !target || !purpose) {
-    return res.status(400).json({ 
-      error: 'Missing required fields',
-      required: ['amount', 'target', 'purpose'],
-    });
+// CORS configuration
+const corsOrigin = process.env.CORS_ALLOW_ORIGIN || '*';
+app.use((req: Request, res: Response, next: NextFunction): void => {
+  res.header('Access-Control-Allow-Origin', corsOrigin);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
   }
+  next();
+});
 
-  // In a real implementation, this would persist to a database
-  const allocation = {
-    id: `alloc-${Date.now()}`,
-    amount,
-    target,
-    purpose,
-    status: 'pending',
-    createdBy: req.user?.email,
-    createdAt: new Date().toISOString(),
-  };
+// ALO-001: Role allowlists
+const SEEDBRINGER_EMAILS = (process.env.SEEDBRINGER_EMAILS || 'hannes.mitterer@gmail.com')
+  .split(',')
+  .map(e => e.trim());
 
-  console.log('New allocation created:', allocation);
+const COUNCIL_EMAILS = (process.env.COUNCIL_EMAILS || 'dietmar.zuegg@gmail.com, bioarchitettura.rivista@gmail.com, consultant.laquila@gmail.com')
+  .split(',')
+  .map(e => e.trim());
 
-  res.status(201).json({
-    message: 'Allocation created successfully',
-    allocation,
+// Warn if using default allowlists (not configured via env)
+if (!process.env.SEEDBRINGER_EMAILS) {
+  console.warn('[SECURITY WARNING] Using default SEEDBRINGER_EMAILS. Set environment variable in production.');
+}
+if (!process.env.COUNCIL_EMAILS) {
+  console.warn('[SECURITY WARNING] Using default COUNCIL_EMAILS. Set environment variable in production.');
+}
+
+/**
+ * ALO-001 Authentication Middleware
+ * 
+ * SECURITY WARNING: This implementation uses header-based authentication for scaffolding.
+ * In production, this MUST be replaced with proper Google OAuth token validation.
+ * Current header-based approach is INSECURE and can be easily spoofed.
+ * 
+ * TODO: Implement full Google OAuth verification as specified in ALO-001
+ */
+function requireSeedbringer(req: Request, res: Response, next: NextFunction): void {
+  // INSECURE: Header-based auth for scaffolding only
+  const userEmail = req.headers['x-user-email'] as string;
+  
+  if (userEmail && SEEDBRINGER_EMAILS.includes(userEmail)) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Forbidden: Seedbringer access required' });
+  }
+}
+
+function requireCouncil(req: Request, res: Response, next: NextFunction): void {
+  // INSECURE: Header-based auth for scaffolding only
+  const userEmail = req.headers['x-user-email'] as string;
+  
+  if (userEmail && COUNCIL_EMAILS.includes(userEmail)) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Forbidden: Council access required' });
+  }
+}
+
+// Health check endpoint
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'sentimento-live'
   });
 });
 
-// Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+// ALO-001 Protected Routes
+
+/**
+ * GET /sfi - Seedbringer access only
+ * Seed Foundational Integrity endpoint
+ */
+app.get('/sfi', requireSeedbringer, (_req: Request, res: Response) => {
+  res.json({
+    message: 'Seed Foundational Integrity',
+    allowedEmails: SEEDBRINGER_EMAILS,
+    timestamp: new Date().toISOString()
+  });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
+/**
+ * GET /mcl/live - Seedbringer access only
+ * Mission Critical Live endpoint
+ */
+app.get('/mcl/live', requireSeedbringer, (_req: Request, res: Response) => {
+  res.json({
+    message: 'Mission Critical Live',
+    hopeRatio: sentimentoHub.getHopeRatio(),
+    timestamp: new Date().toISOString()
+  });
 });
+
+/**
+ * POST /allocations - Seedbringer access only
+ * Resource allocations endpoint
+ */
+app.post('/allocations', requireSeedbringer, (req: Request, res: Response) => {
+  const { allocations } = req.body;
+  
+  res.json({
+    message: 'Allocations received',
+    allocations,
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * GET /kpi/hope-ratio - Council readable
+ * Returns the current hope ratio from Seed-003 metrics
+ */
+app.get('/kpi/hope-ratio', requireCouncil, (_req: Request, res: Response) => {
+  const hopeRatio = sentimentoHub.getHopeRatio();
+  
+  res.json({
+    hopeRatio,
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * POST /ingest/sentimento - Unauthenticated scaffold for this PR
+ * Accepts Sentimento events and broadcasts them via WebSocket
+ */
+app.post('/ingest/sentimento', (req: Request, res: Response): void => {
+  const { composites } = req.body;
+  
+  // Validate input
+  if (!composites || typeof composites.hope !== 'number' || typeof composites.sorrow !== 'number') {
+    res.status(400).json({ 
+      error: 'Invalid input: composites.hope and composites.sorrow are required numbers' 
+    });
+    return;
+  }
+
+  // Validate ranges
+  if (composites.hope < 0 || composites.hope > 1 || composites.sorrow < 0 || composites.sorrow > 1) {
+    res.status(400).json({ 
+      error: 'Invalid input: hope and sorrow must be between 0 and 1' 
+    });
+    return;
+  }
+
+  // Create event
+  const event: Omit<SentimentoLiveEvent, 'sequence'> = {
+    timestamp: new Date().toISOString(),
+    composites: {
+      hope: composites.hope,
+      sorrow: composites.sorrow
+    }
+  };
+
+  // Broadcast to WebSocket clients
+  sentimentoHub.broadcast(event);
+
+  res.json({
+    message: 'Event broadcasted',
+    timestamp: event.timestamp
+  });
+});
+
+// Attach WebSocket hub to server
+sentimentoHub.attach(server);
 
 // Start server
-const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`CORS origin: ${config.corsAllowOrigin}`);
-  console.log(`Google Client ID: ${config.googleClientId ? 'Configured' : 'NOT CONFIGURED'}`);
-  console.log(`Seedbringer emails: ${config.seedbringerEmails.join(', ')}`);
-  console.log(`Council emails: ${config.councilEmails.join(', ')}`);
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`[Server] Listening on port ${PORT}`);
+  console.log(`[Server] WebSocket endpoint: ws://localhost:${PORT}/api/v2/sentimento/live`);
+  console.log('[Server] ALO-001 Allowlists:');
+  console.log('  Seedbringer:', SEEDBRINGER_EMAILS);
+  console.log('  Council:', COUNCIL_EMAILS);
 });
 
-export default app;
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('[Server] SIGTERM received, shutting down gracefully');
+  sentimentoHub.close();
+  server.close(() => {
+    console.log('[Server] Server closed');
+    process.exit(0);
+  });
+});

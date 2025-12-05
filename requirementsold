@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pydantic
+cryptography
+python-dotenv
+requests
+loguru
+httpx
+plotly
+numpy
+gunicorn
+# Add internal modules or replace with local paths if needed:
+# -e ./euystacio_core
+# -e ./euystacio_audit_log
+# -e ./euystacio_response

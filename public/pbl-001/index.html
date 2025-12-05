@@ -1,526 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALO-001: Protected Platform Access</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #34d399;
-            --background: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-color: #1f2937;
-            --error-color: #dc2626;
-            --success-color: #16a34a;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seed-003: Hope Transduction Layer</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      --sorrow-bg: #2d3748;
+      --hope-bg: #bee3f8;
+      --sorrow-accent: #fc8181;
+      --hope-accent: #68d391;
+      --transition-speed: 0.8s;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--sorrow-bg);
+      color: white;
+      transition: background var(--transition-speed), color var(--transition-speed);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    body.hope-state {
+      background: var(--hope-bg);
+      color: #2d3748;
+    }
 
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, var(--primary-color), #2563eb);
-            color: white;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
 
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
 
-        header p {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
 
-        .section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
+    .auth-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
 
-        .auth-section {
-            text-align: center;
-            padding: 40px 20px;
-        }
+    .auth-container h2 {
+      margin-bottom: 1.5rem;
+    }
 
-        .sign-in-button {
-            display: inline-block;
-            margin: 20px 10px;
-        }
+    #googleSignInButton {
+      margin: 1rem auto;
+    }
 
-        .user-info {
-            background: #f3f4f6;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
+    .dashboard {
+      display: none;
+      width: 100%;
+    }
 
-        .user-info p {
-            margin: 8px 0;
-        }
+    .dashboard.active {
+      display: block;
+    }
 
-        .user-info strong {
-            color: var(--primary-color);
-        }
+    .control-panel {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
 
-        .api-section {
-            display: none;
-        }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
 
-        .api-section.active {
-            display: block;
-        }
+    .toggle-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
 
-        .endpoint {
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid var(--secondary-color);
-        }
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background: #ccc;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-        .endpoint h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
+    .toggle-switch.active {
+      background: var(--hope-accent);
+    }
 
-        .endpoint .method {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.85em;
-            margin-right: 10px;
-        }
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
 
-        .method.get {
-            background: #3b82f6;
-            color: white;
-        }
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(30px);
+    }
 
-        .method.post {
-            background: #10b981;
-            color: white;
-        }
+    .kpi-panel {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+    }
 
-        button {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
-        }
+    body.hope-state .kpi-panel {
+      background: rgba(255, 255, 255, 0.3);
+    }
 
-        button:hover {
-            background-color: #2dbd87;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
+    .ratio-display {
+      font-size: 4rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      color: var(--sorrow-accent);
+      transition: color var(--transition-speed);
+    }
 
-        button:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-        }
+    body.hope-state .ratio-display {
+      color: var(--hope-accent);
+    }
 
-        button.danger {
-            background-color: var(--error-color);
-        }
+    .ratio-meter {
+      width: 100%;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 1rem 0;
+      position: relative;
+    }
 
-        button.danger:hover {
-            background-color: #b91c1c;
-        }
+    .ratio-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sorrow-accent), var(--hope-accent));
+      transition: width 0.5s ease;
+      border-radius: 20px;
+    }
 
-        .response-container {
-            margin-top: 20px;
-            padding: 15px;
-            background: #1f2937;
-            color: #f3f4f6;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            max-height: 400px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
 
-        .response-container.success {
-            border-left: 4px solid var(--success-color);
-        }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+    }
 
-        .response-container.error {
-            border-left: 4px solid var(--error-color);
-        }
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
 
-        .input-group {
-            margin: 15px 0;
-        }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
+    .user-info {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+    }
 
-        .input-group input,
-        .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 1em;
-            font-family: inherit;
-        }
+    body.hope-state .user-info {
+      background: rgba(255, 255, 255, 0.3);
+    }
 
-        .input-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
+    .error-message {
+      background: rgba(252, 129, 129, 0.2);
+      color: #fc8181;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: none;
+    }
 
-        .role-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
+    .error-message.show {
+      display: block;
+    }
 
-        .role-badge.seedbringer {
-            background: #fbbf24;
-            color: #78350f;
-        }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
 
-        .role-badge.council {
-            background: #a78bfa;
-            color: #4c1d95;
-        }
+      .ratio-display {
+        font-size: 3rem;
+      }
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-
-            .section {
-                padding: 20px;
-            }
-        }
-    </style>
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔐 ALO-001 Protected Platform</h1>
-            <p>Role-Based Access Control with Google OAuth</p>
-        </header>
+  <header>
+    <h1>🌍 SEED-003</h1>
+    <p class="subtitle">Hope Transduction Layer (ARSP-001)</p>
+  </header>
 
-        <!-- Authentication Section -->
-        <div class="section auth-section" id="authSection">
-            <h2>Sign In with Google</h2>
-            <p>Authenticate using your Google account to access protected endpoints.</p>
-            
-            <!-- 
-                CONFIGURATION REQUIRED: 
-                Replace YOUR_GOOGLE_CLIENT_ID below with your actual Google OAuth Client ID
-                from Google Cloud Console (format: xxx.apps.googleusercontent.com)
-            -->
-            <div class="sign-in-button">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-size="large"
-                     data-theme="outline"
-                     data-text="sign_in_with"
-                     data-shape="rectangular"
-                     data-logo_alignment="left">
-                </div>
-            </div>
+  <div class="user-info" id="userInfo" style="display: none;">
+    <div id="userEmail"></div>
+  </div>
 
-            <p style="margin-top: 20px; font-size: 0.9em; color: #6b7280;">
-                <strong>Authorized Roles:</strong><br>
-                <span class="role-badge seedbringer">Seedbringer</span> - Full access (read & write)<br>
-                <span class="role-badge council">Council</span> - Read-only access
-            </p>
-        </div>
-
-        <!-- User Info Section (hidden initially) -->
-        <div class="section" id="userSection" style="display: none;">
-            <h2>User Information</h2>
-            <div class="user-info" id="userInfo"></div>
-            <button class="danger" onclick="signOut()">Sign Out</button>
-        </div>
-
-        <!-- API Testing Section (hidden initially) -->
-        <div class="section api-section" id="apiSection">
-            <h2>Protected API Endpoints</h2>
-            <p>Test the protected endpoints with your authenticated token.</p>
-
-            <!-- GET /sfi -->
-            <div class="endpoint">
-                <h3>
-                    <span class="method get">GET</span>
-                    /sfi - Systemic Fairness Index
-                </h3>
-                <p>Retrieve global inequality and access metrics.</p>
-                <p><strong>Access:</strong> Council or Seedbringer</p>
-                <button onclick="callEndpoint('GET', '/sfi')">Call Endpoint</button>
-                <div id="response-sfi"></div>
-            </div>
-
-            <!-- GET /mcl/live -->
-            <div class="endpoint">
-                <h3>
-                    <span class="method get">GET</span>
-                    /mcl/live - Mission Critical Live
-                </h3>
-                <p>Real-time monitoring of critical system parameters.</p>
-                <p><strong>Access:</strong> Council or Seedbringer</p>
-                <button onclick="callEndpoint('GET', '/mcl/live')">Call Endpoint</button>
-                <div id="response-mcl"></div>
-            </div>
-
-            <!-- POST /allocations -->
-            <div class="endpoint">
-                <h3>
-                    <span class="method post">POST</span>
-                    /allocations - Create Resource Allocation
-                </h3>
-                <p>Submit a new resource allocation request.</p>
-                <p><strong>Access:</strong> Seedbringer only (write access)</p>
-                
-                <div class="input-group">
-                    <label for="amount">Amount:</label>
-                    <input type="number" id="amount" placeholder="e.g., 50000" value="50000">
-                </div>
-                
-                <div class="input-group">
-                    <label for="target">Target:</label>
-                    <input type="text" id="target" placeholder="e.g., Sahel Region" value="Sahel Region">
-                </div>
-                
-                <div class="input-group">
-                    <label for="purpose">Purpose:</label>
-                    <textarea id="purpose" placeholder="e.g., DAS Protocol implementation">DAS Protocol implementation for local food security</textarea>
-                </div>
-                
-                <button onclick="callAllocationEndpoint()">Submit Allocation</button>
-                <div id="response-allocations"></div>
-            </div>
-        </div>
+  <main>
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+      <h2>🔐 Secure Access Required</h2>
+      <p style="margin-bottom: 1.5rem;">
+        Sign in with Google to access the Hope Transduction Layer
+      </p>
+      <div id="googleSignInButton"></div>
+      <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.7;">
+        <strong>Allowlist:</strong><br>
+        Seedbringer: hannes.mitterer@gmail.com<br>
+        Council: dietmar.zuegg@gmail.com, bioarchitettura.rivista@gmail.com, consultant.laquila@gmail.com
+      </p>
     </div>
 
-    <script>
-        let idToken = null;
-        let userInfo = null;
-        // CONFIGURATION: Update this to match your backend server URL
-        // For local development: http://localhost:8080
-        // For production: https://your-backend-domain.com
-        const API_BASE_URL = 'http://localhost:8080';
+    <!-- Dashboard (hidden until authenticated) -->
+    <div class="dashboard" id="dashboard">
+      <div class="control-panel">
+        <h2>💚 Hope Amplifier</h2>
+        <div class="toggle-container">
+          <span class="toggle-label">OFF</span>
+          <div class="toggle-switch" id="hopeToggle">
+            <div class="toggle-slider"></div>
+          </div>
+          <span class="toggle-label">ON</span>
+        </div>
+        <p style="text-align: center; opacity: 0.8; margin-top: 1rem;">
+          Status: <span id="amplifierStatus">Disabled</span>
+        </p>
+      </div>
 
-        /**
-         * Handle the Google Sign-In response
-         */
-        function handleCredentialResponse(response) {
-            idToken = response.credential;
-            
-            // Decode the JWT to get user info (just for display - server validates)
-            const base64Url = idToken.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            
-            userInfo = JSON.parse(jsonPayload);
-            
-            // Update UI
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('userSection').style.display = 'block';
-            document.getElementById('apiSection').classList.add('active');
-            
-            displayUserInfo(userInfo);
+      <div class="kpi-panel">
+        <h3>Net Hope Ratio</h3>
+        <div class="ratio-display" id="ratioDisplay">0.500</div>
+        
+        <div class="ratio-meter">
+          <div class="ratio-fill" id="ratioFill" style="width: 50%"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Avg Sorrow</div>
+            <div class="stat-value" id="avgSorrow">0.000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Hope</div>
+            <div class="stat-value" id="avgHope">0.000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Samples</div>
+            <div class="stat-value" id="samplesCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Window</div>
+            <div class="stat-value" id="windowSec">120s</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+    </div>
+  </main>
+
+  <script>
+    let idToken = null;
+    let hopeAmplifierEnabled = false;
+    let pollInterval = null;
+
+    // Google Sign-In callback
+    function handleCredentialResponse(response) {
+      idToken = response.credential;
+      
+      // Decode JWT to get email (basic decode, no verification - server does that)
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      
+      document.getElementById('authContainer').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      document.getElementById('userInfo').style.display = 'block';
+      document.getElementById('userEmail').textContent = payload.email;
+
+      // Start polling KPI endpoint
+      startPolling();
+    }
+
+    // Initialize Google Sign-In
+    window.onload = function() {
+      // NOTE: Replace with actual GOOGLE_CLIENT_ID from your environment
+      // This should be injected at build time or loaded from a config file
+      const clientId = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+      
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInButton'),
+        { 
+          theme: 'filled_blue', 
+          size: 'large',
+          text: 'signin_with',
+          width: 250
+        }
+      );
+    };
+
+    // Hope Amplifier toggle
+    document.getElementById('hopeToggle').addEventListener('click', function() {
+      hopeAmplifierEnabled = !hopeAmplifierEnabled;
+      this.classList.toggle('active');
+      
+      const statusEl = document.getElementById('amplifierStatus');
+      statusEl.textContent = hopeAmplifierEnabled ? 'Enabled' : 'Disabled';
+
+      // Theme transition
+      if (hopeAmplifierEnabled) {
+        document.body.classList.add('hope-state');
+      } else {
+        document.body.classList.remove('hope-state');
+      }
+    });
+
+    // Fetch KPI data
+    async function fetchKpi() {
+      if (!idToken) return;
+
+      try {
+        const response = await fetch('/kpi/hope-ratio', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        /**
-         * Display user information
-         */
-        function displayUserInfo(user) {
-            const userInfoDiv = document.getElementById('userInfo');
-            const role = determineRole(user.email);
-            
-            // Note: Actual role will be determined by the backend
-            // This is just a placeholder for display
-            let roleHTML = '<span class="role-badge" style="background: #34d399; color: white;">Authenticated</span>';
-            
-            userInfoDiv.innerHTML = `
-                <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Status:</strong> ${roleHTML}</p>
-                <p style="font-size: 0.9em; color: #6b7280; margin-top: 10px;">
-                    Your role and permissions are determined by the backend. 
-                    Try the endpoints below to see what you have access to.
-                </p>
-            `;
-        }
+        const data = await response.json();
+        updateUI(data.kpi);
+        hideError();
+      } catch (error) {
+        showError(`Failed to fetch KPI: ${error.message}`);
+      }
+    }
 
-        /**
-         * Determine user role (client-side only for display - server enforces)
-         * Note: This is a UI-only helper. The backend is the source of truth for authorization.
-         */
-        function determineRole(email) {
-            // Role will be determined by the server
-            // This is just for UI display purposes
-            // In production, you could fetch this from a /me endpoint
-            return 'authenticated';
-        }
+    // Update UI with KPI data
+    function updateUI(kpi) {
+      document.getElementById('ratioDisplay').textContent = kpi.ratio.toFixed(3);
+      document.getElementById('ratioFill').style.width = (kpi.ratio * 100) + '%';
+      document.getElementById('avgSorrow').textContent = kpi.avgSorrow.toFixed(3);
+      document.getElementById('avgHope').textContent = kpi.avgHope.toFixed(3);
+      document.getElementById('samplesCount').textContent = kpi.samples;
+      document.getElementById('windowSec').textContent = kpi.windowSec + 's';
 
-        /**
-         * Sign out
-         */
-        function signOut() {
-            idToken = null;
-            userInfo = null;
-            
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('userSection').style.display = 'none';
-            document.getElementById('apiSection').classList.remove('active');
-            
-            // Reset response containers
-            document.querySelectorAll('[id^="response-"]').forEach(el => {
-                el.innerHTML = '';
-            });
-        }
+      // Auto-enable hope state if ratio > threshold
+      const threshold = 0.58; // SEED003_HOPE_THRESHOLD
+      if (kpi.ratio > threshold && !hopeAmplifierEnabled) {
+        document.getElementById('hopeToggle').click();
+      } else if (kpi.ratio <= threshold && hopeAmplifierEnabled) {
+        document.getElementById('hopeToggle').click();
+      }
+    }
 
-        /**
-         * Call a protected endpoint
-         */
-        async function callEndpoint(method, endpoint) {
-            const responseId = 'response-' + endpoint.substring(1).replace('/', '-');
-            const responseDiv = document.getElementById(responseId);
-            
-            if (!idToken) {
-                displayResponse(responseDiv, { error: 'Not authenticated' }, false);
-                return;
-            }
-            
-            try {
-                responseDiv.innerHTML = '<div class="response-container">⏳ Loading...</div>';
-                
-                const response = await fetch(API_BASE_URL + endpoint, {
-                    method: method,
-                    headers: {
-                        'Authorization': `Bearer ${idToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                
-                const data = await response.json();
-                displayResponse(responseDiv, data, response.ok);
-            } catch (error) {
-                displayResponse(responseDiv, { error: error.message }, false);
-            }
-        }
+    // Start polling
+    function startPolling() {
+      fetchKpi(); // Initial fetch
+      pollInterval = setInterval(fetchKpi, 4000); // Poll every 4 seconds
+    }
 
-        /**
-         * Call the allocations endpoint with form data
-         */
-        async function callAllocationEndpoint() {
-            const responseDiv = document.getElementById('response-allocations');
-            
-            if (!idToken) {
-                displayResponse(responseDiv, { error: 'Not authenticated' }, false);
-                return;
-            }
-            
-            const amount = document.getElementById('amount').value;
-            const target = document.getElementById('target').value;
-            const purpose = document.getElementById('purpose').value;
-            
-            if (!amount || !target || !purpose) {
-                displayResponse(responseDiv, { error: 'All fields are required' }, false);
-                return;
-            }
-            
-            try {
-                responseDiv.innerHTML = '<div class="response-container">⏳ Submitting...</div>';
-                
-                const response = await fetch(API_BASE_URL + '/allocations', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${idToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        amount: parseFloat(amount),
-                        target: target,
-                        purpose: purpose,
-                    }),
-                });
-                
-                const data = await response.json();
-                displayResponse(responseDiv, data, response.ok);
-            } catch (error) {
-                displayResponse(responseDiv, { error: error.message }, false);
-            }
-        }
+    // Error handling
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+    }
 
-        /**
-         * Display API response
-         */
-        function displayResponse(container, data, isSuccess) {
-            const cssClass = isSuccess ? 'success' : 'error';
-            container.innerHTML = `
-                <div class="response-container ${cssClass}">
-                    ${JSON.stringify(data, null, 2)}
-                </div>
-            `;
-        }
-
-        // Initialize on page load
-        window.onload = function() {
-            console.log('ALO-001 Platform initialized');
-            console.log('Backend API:', API_BASE_URL);
-        };
-    </script>
+    function hideError() {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.classList.remove('show');
+    }
+  </script>
 </body>
 </html>
