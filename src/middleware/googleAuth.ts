@@ -65,12 +65,13 @@ function getUserRole(email: string): Role | null {
  * Middleware to authenticate Google ID token and enforce role-based access
  */
 export function requireAuth(allowedRoles: Role[]) {
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       // Extract token from Authorization header
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+        res.status(401).json({ error: 'Missing or invalid Authorization header' });
+        return;
       }
 
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
@@ -78,22 +79,25 @@ export function requireAuth(allowedRoles: Role[]) {
       // Verify the token
       const user = await verifyGoogleToken(token);
       if (!user) {
-        return res.status(401).json({ error: 'Invalid or expired token' });
+        res.status(401).json({ error: 'Invalid or expired token' });
+        return;
       }
 
       // Check if user has a recognized role
       const role = getUserRole(user.email);
       if (!role) {
-        return res.status(403).json({ error: 'User not authorized for this platform' });
+        res.status(403).json({ error: 'User not authorized for this platform' });
+        return;
       }
 
       // Check if user's role is allowed for this endpoint
       if (!allowedRoles.includes(role)) {
-        return res.status(403).json({ 
+        res.status(403).json({ 
           error: 'Insufficient permissions',
           requiredRoles: allowedRoles,
           userRole: role,
         });
+        return;
       }
 
       // Attach user info to request
@@ -106,7 +110,7 @@ export function requireAuth(allowedRoles: Role[]) {
       next();
     } catch (error) {
       console.error('Authentication error:', error);
-      return res.status(500).json({ error: 'Authentication failed' });
+      res.status(500).json({ error: 'Authentication failed' });
     }
   };
 }
