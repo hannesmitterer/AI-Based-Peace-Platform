@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import * as dotenv from 'dotenv';
 import { SentimentoWSHub } from './ws/sentimento';
 import { SentimentoLiveEvent } from './types/sentimento';
+import { getRollingKpi, pushSample } from './kpi/hope';
 
 // Load environment variables
 dotenv.config();
@@ -129,10 +130,10 @@ app.post('/allocations', requireSeedbringer, (req: Request, res: Response) => {
  * Returns the current hope ratio from Seed-003 metrics
  */
 app.get('/kpi/hope-ratio', requireCouncil, (_req: Request, res: Response) => {
-  const hopeRatio = sentimentoHub.getHopeRatio();
+  const kpi = getRollingKpi();
   
   res.json({
-    hopeRatio,
+    kpi,
     timestamp: new Date().toISOString()
   });
 });
@@ -169,6 +170,9 @@ app.post('/ingest/sentimento', (req: Request, res: Response): void => {
     }
   };
 
+  // Push sample to Seed-003 KPI tracking
+  pushSample(composites.sorrow, composites.hope);
+
   // Broadcast to WebSocket clients
   sentimentoHub.broadcast(event);
 
@@ -189,6 +193,8 @@ server.listen(PORT, () => {
   console.log('[Server] ALO-001 Allowlists:');
   console.log('  Seedbringer:', SEEDBRINGER_EMAILS);
   console.log('  Council:', COUNCIL_EMAILS);
+  console.warn('\n⚠️  [SECURITY WARNING] Header-based authentication is INSECURE and for scaffolding only.');
+  console.warn('    Replace with proper Google OAuth token validation before production deployment.\n');
 });
 
 // Graceful shutdown
