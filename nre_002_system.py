@@ -11,7 +11,7 @@ Protocol: NRE-002
 import json
 import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
 from pathlib import Path
@@ -115,7 +115,7 @@ class ContentArchive:
             "content": content,
             "metadata": metadata,
             "hash": content_hash,
-            "timestamp": datetime.utcnow().isoformat() + 'Z',
+            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z',
             "immutable": True
         }
         
@@ -191,7 +191,7 @@ class ContentArchive:
             "action": action,
             "content_id": content_id,
             "hash": content_hash,
-            "timestamp": datetime.utcnow().isoformat() + 'Z'
+            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z'
         }
         self.change_log.append(log_entry)
 
@@ -228,7 +228,7 @@ class ContentStratification:
             "stratification_level": level.value,
             "curation_rationale": rationale,
             "curator": curator,
-            "date": datetime.utcnow().isoformat() + 'Z',
+            "date": datetime.now(timezone.utc).isoformat() + 'Z',
             "review_status": "approved",
             "appeal_available": True,
             "complete_version_link": f"/archive/{content_id}/level/3"
@@ -411,7 +411,7 @@ class UserAccessControl:
         self.user_preferences[user_id] = {
             "default_level": default_level.value,
             "show_warnings": show_warnings,
-            "updated": datetime.utcnow().isoformat() + 'Z'
+            "updated": datetime.now(timezone.utc).isoformat() + 'Z'
         }
         logger.info(f"User preferences updated: {user_id}")
     
@@ -435,7 +435,7 @@ class UserAccessControl:
             "content_id": content_id,
             "level": level.value,
             "action": action,
-            "timestamp": datetime.utcnow().isoformat() + 'Z'
+            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z'
         }
         self.access_log.append(log_entry)
     
@@ -574,7 +574,7 @@ class NRE002System:
             "warning": warning,
             "level": requested_level.value,
             "reason": reason
-        }, "Access granted"
+        }, reason  # Return the reason as the message
     
     def generate_transparency_report(self) -> Dict[str, Any]:
         """Generate NRE-002 transparency report.
@@ -585,7 +585,7 @@ class NRE002System:
         return {
             "protocol": "NRE-002",
             "version": self.config.config.get("version"),
-            "report_date": datetime.utcnow().isoformat() + 'Z',
+            "report_date": datetime.now(timezone.utc).isoformat() + 'Z',
             "curation_decisions": self.stratification.get_transparency_report(),
             "access_metrics": self.access_control.get_access_metrics(),
             "archive_integrity": {
