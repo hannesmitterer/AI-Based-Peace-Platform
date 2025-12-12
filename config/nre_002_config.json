@@ -1,0 +1,263 @@
+{
+  "protocol": "NRE-002",
+  "version": "1.0.0",
+  "status": "active",
+  "last_updated": "2025-12-12T00:00:00Z",
+  
+  "anti_censorship": {
+    "enabled": true,
+    "permanent_blocking_prohibited": true,
+    "algorithmic_access_control_prohibited": true,
+    "centralized_censorship_prohibited": true,
+    "user_override_always_available": true,
+    "enforcement_level": "strict"
+  },
+  
+  "archive_system": {
+    "immutable_storage": {
+      "enabled": true,
+      "hash_algorithm": "SHA-256",
+      "version_control": true,
+      "read_only_mode": true,
+      "cryptographic_timestamping": true
+    },
+    "redundant_storage": {
+      "enabled": true,
+      "minimum_replicas": 3,
+      "storage_providers": [
+        "primary_archive",
+        "university_archive",
+        "ngo_archive",
+        "decentralized_network"
+      ]
+    },
+    "change_logging": {
+      "enabled": true,
+      "audit_trail": true,
+      "cryptographic_signing": true,
+      "public_accessibility": true
+    }
+  },
+  
+  "content_stratification": {
+    "enabled": true,
+    "mode": "curation",
+    "filtering_prohibited": true,
+    "levels": {
+      "level_1_foundation": {
+        "description": "Basic historical facts and overview",
+        "audience": "general",
+        "age_appropriate": true,
+        "essential_understanding": true
+      },
+      "level_2_detailed": {
+        "description": "Comprehensive historical analysis",
+        "audience": "academic",
+        "primary_sources_excerpts": true,
+        "detailed_context": true
+      },
+      "level_3_complete": {
+        "description": "Unredacted primary sources",
+        "audience": "research",
+        "complete_documentation": true,
+        "unrestricted_access": true
+      }
+    },
+    "stratification_criteria": {
+      "educational_appropriateness": true,
+      "contextual_complexity": true,
+      "psychological_intensity": true,
+      "research_depth": true
+    }
+  },
+  
+  "content_warnings": {
+    "enabled": true,
+    "blocking_disabled": true,
+    "warning_types": [
+      "graphic_content",
+      "violence",
+      "trauma_sensitive",
+      "emotionally_intense",
+      "historical_atrocity"
+    ],
+    "warning_format": {
+      "specific_description": true,
+      "educational_purpose": true,
+      "access_options": [
+        "view_content",
+        "alternative_summary",
+        "skip_section",
+        "scholarly_analysis"
+      ]
+    },
+    "acknowledgment_required": true,
+    "bypass_always_available": true
+  },
+  
+  "user_control": {
+    "always_override_option": {
+      "enabled": true,
+      "level_3_access": "unconditional",
+      "warning_bypass": "after_acknowledgment",
+      "download_complete_archives": true
+    },
+    "zero_obligation_principle": {
+      "enabled": true,
+      "forced_viewing_prohibited": true,
+      "completion_not_required": true,
+      "engagement_voluntary": true
+    },
+    "user_preferences": {
+      "default_stratification_level": 1,
+      "content_warning_preferences": "show_all",
+      "auto_proceed": false,
+      "remember_choices": true
+    }
+  },
+  
+  "transparency_protocols": {
+    "filter_disclosure": {
+      "enabled": true,
+      "curation_rationale_required": true,
+      "public_documentation": true,
+      "appeal_process_available": true,
+      "complete_audit_trail": true
+    },
+    "reporting": {
+      "quarterly_reports": true,
+      "annual_external_audit": true,
+      "public_comment_periods": true,
+      "transparency_log_public": true
+    },
+    "transparency_report_fields": [
+      "content_id",
+      "stratification_level",
+      "curation_rationale",
+      "curator",
+      "date",
+      "review_status",
+      "appeal_available",
+      "complete_version_link"
+    ]
+  },
+  
+  "governance": {
+    "independent_historical_curatorium": {
+      "enabled": true,
+      "composition": {
+        "historians": 3,
+        "psychologists": 2,
+        "pedagogical_experts": 2,
+        "community_representatives": true,
+        "victim_advocacy_groups": true
+      },
+      "responsibilities": [
+        "review_stratification_decisions",
+        "ensure_educational_value",
+        "prevent_censorship",
+        "maintain_transparency",
+        "approve_curation_protocols"
+      ]
+    },
+    "democratic_oversight": {
+      "enabled": true,
+      "public_review_process": true,
+      "appeal_mechanism": true,
+      "community_feedback": true,
+      "external_audit_frequency": "annual"
+    }
+  },
+  
+  "adi_framework": {
+    "enabled": true,
+    "definition": "Adaptive Inspiring Synthesis from verified facts",
+    "required_elements": [
+      "verifiable_historical_facts",
+      "transparent_sources",
+      "multiple_perspectives",
+      "critical_context",
+      "complete_source_links"
+    ],
+    "prohibited_elements": [
+      "historical_sanitization",
+      "false_equivalences",
+      "propaganda",
+      "incomplete_narratives_without_access",
+      "emotional_manipulation_without_facts"
+    ],
+    "certification_required": true,
+    "curatorium_approval": true
+  },
+  
+  "immutable_ai_principles": {
+    "transparency_requirements": {
+      "open_algorithms": true,
+      "decision_logic_public": true,
+      "complete_logging": true,
+      "public_documentation": true
+    },
+    "system_level_filtering_prohibited": true,
+    "personalized_blocking_prohibited": true,
+    "invisible_filtering_prohibited": true,
+    "user_choice_override_prohibited": true,
+    "system_responsibilities": [
+      "provide_content_warnings",
+      "offer_stratification_navigation",
+      "log_all_interactions",
+      "enable_unconditional_override",
+      "report_access_restrictions"
+    ]
+  },
+  
+  "compliance_monitoring": {
+    "enabled": true,
+    "annual_audit": true,
+    "quarterly_transparency_reports": true,
+    "access_metrics_tracking": true,
+    "violation_reporting": "immediate",
+    "metrics": [
+      "stratification_distribution",
+      "user_override_frequency",
+      "appeal_rates",
+      "archive_integrity_verification",
+      "transparency_compliance"
+    ]
+  },
+  
+  "enforcement": {
+    "violation_response": [
+      "public_disclosure",
+      "curatorium_intervention",
+      "system_access_restrictions",
+      "remediation_requirements",
+      "oversight_escalation"
+    ],
+    "automated_alerts": {
+      "enabled": true,
+      "censorship_attempts": "immediate_alert",
+      "access_violations": "immediate_alert",
+      "transparency_violations": "immediate_alert"
+    }
+  },
+  
+  "living_covenant_integration": {
+    "love_first_governance": true,
+    "mission_supremacy": "education_over_censorship",
+    "trilogy_seal_oversight": true,
+    "trustless_integrity": true,
+    "natural_prosperity_alignment": true
+  },
+  
+  "metadata": {
+    "protocol_authority": [
+      "AI Collective",
+      "Seedbringer Council",
+      "Independent Historical Curatorium"
+    ],
+    "review_cycle": "annual",
+    "transparency_cycle": "quarterly",
+    "amendment_process": "consensus_required",
+    "sha256_hash": "pending_finalization"
+  }
+}
