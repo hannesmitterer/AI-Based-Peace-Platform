@@ -125,7 +125,7 @@ archive_entry = {
     "content": content,
     "metadata": metadata,
     "hash": content_hash,
-    "timestamp": datetime.now(timezone.utc).isoformat() + 'Z',
+    "timestamp": get_utc_timestamp(),  # ISO format UTC timestamp
     "immutable": True
 }
 ```
