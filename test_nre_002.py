@@ -566,8 +566,9 @@ class TestArchiveIntegrity:
         
         entry = archive.get_content("timestamp_001")
         assert 'timestamp' in entry
-        # Verify timestamp is ISO format with Z
-        assert entry['timestamp'].endswith('Z')
+        # Verify timestamp is ISO format (ends with +00:00 for UTC or Z)
+        timestamp = entry['timestamp']
+        assert timestamp.endswith('+00:00') or timestamp.endswith('Z')
 
 
 if __name__ == '__main__':

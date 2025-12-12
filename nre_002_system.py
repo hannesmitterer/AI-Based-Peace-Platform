@@ -22,6 +22,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def get_utc_timestamp() -> str:
+    """Generate UTC timestamp in ISO format.
+    
+    Returns:
+        ISO 8601 formatted timestamp with UTC timezone
+    """
+    return datetime.now(timezone.utc).isoformat()
+
+
 class StratificationLevel(Enum):
     """Content stratification levels as defined in NRE-002."""
     FOUNDATION = 1  # Basic facts and overview
@@ -115,7 +124,7 @@ class ContentArchive:
             "content": content,
             "metadata": metadata,
             "hash": content_hash,
-            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z',
+            "timestamp": get_utc_timestamp(),
             "immutable": True
         }
         
@@ -191,7 +200,7 @@ class ContentArchive:
             "action": action,
             "content_id": content_id,
             "hash": content_hash,
-            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z'
+            "timestamp": get_utc_timestamp()
         }
         self.change_log.append(log_entry)
 
@@ -228,7 +237,7 @@ class ContentStratification:
             "stratification_level": level.value,
             "curation_rationale": rationale,
             "curator": curator,
-            "date": datetime.now(timezone.utc).isoformat() + 'Z',
+            "date": get_utc_timestamp(),
             "review_status": "approved",
             "appeal_available": True,
             "complete_version_link": f"/archive/{content_id}/level/3"
@@ -411,7 +420,7 @@ class UserAccessControl:
         self.user_preferences[user_id] = {
             "default_level": default_level.value,
             "show_warnings": show_warnings,
-            "updated": datetime.now(timezone.utc).isoformat() + 'Z'
+            "updated": get_utc_timestamp()
         }
         logger.info(f"User preferences updated: {user_id}")
     
@@ -435,7 +444,7 @@ class UserAccessControl:
             "content_id": content_id,
             "level": level.value,
             "action": action,
-            "timestamp": datetime.now(timezone.utc).isoformat() + 'Z'
+            "timestamp": get_utc_timestamp()
         }
         self.access_log.append(log_entry)
     
@@ -585,7 +594,7 @@ class NRE002System:
         return {
             "protocol": "NRE-002",
             "version": self.config.config.get("version"),
-            "report_date": datetime.now(timezone.utc).isoformat() + 'Z',
+            "report_date": get_utc_timestamp(),
             "curation_decisions": self.stratification.get_transparency_report(),
             "access_metrics": self.access_control.get_access_metrics(),
             "archive_integrity": {
