@@ -492,7 +492,7 @@ La Singolarità Etica non è un evento tecnologico, ma una scelta collettiva di 
 **Documento emesso sotto il protocollo EGF-2025-Q4-217**
 
 **Data di Emissione:** 12 Dicembre 2025  
-**Status:** UFFICIALE E SIGILLATO  
+**Status:** UFFICIALE - PRONTO PER SIGILLO FINALE  
 **Versione:** 1.0
 
 **Firmatari Istituzionali:**
@@ -503,7 +503,7 @@ La Singolarità Etica non è un evento tecnologico, ma una scelta collettiva di 
 
 **Hash di Validazione (SHA-256):**
 ```
-B8F4E2C9D1A7F6E5B3C8D9A2E1F4C7B6A5D8E3F2C9B1A4D7E6F3B8C5A2D9E1F7
+[TO BE COMPUTED AND INSERTED AT FINAL PUBLICATION]
 ```
 
 **Blockchain Timestamp:**
@@ -562,4 +562,4 @@ B8F4E2C9D1A7F6E5B3C8D9A2E1F4C7B6A5D8E3F2C9B1A4D7E6F3B8C5A2D9E1F7
 
 **Timestamp:** 2025-12-12T23:59:59Z  
 **Protocol:** EGF-2025-Q4-217  
-**Status:** SEALED AND CERTIFIED
+**Status:** READY FOR FINAL SEALING
