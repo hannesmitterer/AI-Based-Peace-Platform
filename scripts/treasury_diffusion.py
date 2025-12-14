@@ -83,7 +83,7 @@ class DiffusionService:
             "platform": "social_media",
             "status": "pending_integration",
             "message": message,
-            "timestamp": datetime.now(UTC).isoformat() + 'Z',
+            "timestamp": datetime.now(UTC).isoformat(),
             "channels": ["twitter", "linkedin", "facebook"],
             "note": "Social media integration requires API credentials and manual configuration"
         }
@@ -109,7 +109,7 @@ class DiffusionService:
             "platform": "github",
             "status": "completed",
             "message": message,
-            "timestamp": datetime.now(UTC).isoformat() + 'Z',
+            "timestamp": datetime.now(UTC).isoformat(),
             "actions_completed": [
                 "Created SURVIVAL_TREASURY_ANNOUNCEMENT.md",
                 "Updated repository documentation",
@@ -142,7 +142,7 @@ class DiffusionService:
             "platform": "discord",
             "status": "pending_integration",
             "message": message,
-            "timestamp": datetime.now(UTC).isoformat() + 'Z',
+            "timestamp": datetime.now(UTC).isoformat(),
             "webhook_url": os.getenv("DISCORD_WEBHOOK_URL", "not_configured"),
             "note": "Discord integration requires webhook URL configuration"
         }
@@ -171,7 +171,7 @@ class DiffusionService:
         
         # Compile summary
         summary = {
-            "execution_timestamp": datetime.now(UTC).isoformat() + 'Z',
+            "execution_timestamp": datetime.now(UTC).isoformat(),
             "treasury_address": self.config.TREASURY_ADDRESS,
             "fixation_date": self.config.FIXATION_DATE,
             "channels_targeted": self.config.CHANNELS,
@@ -202,7 +202,7 @@ class DiffusionService:
             "treasury_address": self.config.TREASURY_ADDRESS,
             "fixation_date": self.config.FIXATION_DATE,
             "announcement_date": self.config.ANNOUNCEMENT_DATE,
-            "execution_timestamp": datetime.now(UTC).isoformat() + 'Z',
+            "execution_timestamp": datetime.now(UTC).isoformat(),
             "propagation_log": self.propagation_log
         }
         

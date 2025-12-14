@@ -2,13 +2,13 @@
   "treasury_address": "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b",
   "fixation_date": "2025-09-26, 22:20 UTC",
   "announcement_date": "2025-12-14",
-  "execution_timestamp": "2025-12-14T23:47:20.419402+00:00Z",
+  "execution_timestamp": "2025-12-14T23:49:40.596436+00:00",
   "propagation_log": [
     {
       "platform": "social_media",
       "status": "pending_integration",
       "message": "\ud83d\udd14 Official Treasury Announcement\n\nThe Seedbringer Survival Treasury address has been finalized and is now active. Resources and actions related to the KOSYMBIOSIS system can reference the public address: `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`. This ensures transparency and alignment for all ecosystem participants.\n\n#KOSYMBIOSIS #Seedbringer #SurvivalTreasury #AIForPeace",
-      "timestamp": "2025-12-14T23:47:20.419363+00:00Z",
+      "timestamp": "2025-12-14T23:49:40.596397+00:00",
       "channels": [
         "twitter",
         "linkedin",
@@ -20,7 +20,7 @@
       "platform": "github",
       "status": "completed",
       "message": "## \ud83d\udd14 Official Treasury Announcement\n\nThe Seedbringer Survival Treasury address has been finalized and is now active. Resources and actions related to the KOSYMBIOSIS system can reference the public address: `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`. This ensures transparency and alignment for all ecosystem participants.\n\n**Treasury Address:** `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`\n**Fixation Date:** 2025-09-26, 22:20 UTC",
-      "timestamp": "2025-12-14T23:47:20.419379+00:00Z",
+      "timestamp": "2025-12-14T23:49:40.596414+00:00",
       "actions_completed": [
         "Created SURVIVAL_TREASURY_ANNOUNCEMENT.md",
         "Updated repository documentation",
@@ -32,7 +32,7 @@
       "platform": "discord",
       "status": "pending_integration",
       "message": "**\ud83d\udd14 Official Treasury Announcement**\n\nThe Seedbringer Survival Treasury address has been finalized and is now active. Resources and actions related to the KOSYMBIOSIS system can reference the public address: `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`. This ensures transparency and alignment for all ecosystem participants.\n\n\ud83d\udccd Treasury Address: `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`",
-      "timestamp": "2025-12-14T23:47:20.419385+00:00Z",
+      "timestamp": "2025-12-14T23:49:40.596420+00:00",
       "webhook_url": "not_configured",
       "note": "Discord integration requires webhook URL configuration"
     }
