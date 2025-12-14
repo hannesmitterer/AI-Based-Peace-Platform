@@ -5,6 +5,8 @@ Payload:
   "protocol_version": "EUYSTACIO OS v1.2",
   "red_code_status": "1-1-1",
   "peacebonds_anchor": "0x6c10692145718353070cc6cb5c21adf2073ffa1f",
+  "survival_treasury": "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b",
+  "survival_treasury_fixation_date": "2025-09-26, 22:20 UTC",
   "kosymbiose_hashes": [
       "0xa51dcf...921b33",
       "0xb6e2...4f88",
