@@ -212,8 +212,8 @@ class DiffusionService:
             filepath
         )
         
-        with open(log_path, 'w') as f:
-            json.dump(log_data, f, indent=2)
+        with open(log_path, 'w', encoding='utf-8') as f:
+            json.dump(log_data, f, indent=2, ensure_ascii=False)
         
         print(f"[LOG] Propagation log saved to: {filepath}")
         print()
