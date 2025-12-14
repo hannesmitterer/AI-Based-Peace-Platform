@@ -2,6 +2,18 @@
 
 > A comprehensive AI coordination platform for peace-building initiatives, featuring real-time telemetry, task orchestration, and multi-agent collaboration.
 
+## 🔔 Important Announcement
+
+**Seedbringer Survival Treasury Address Finalized**
+
+The official Treasury address for the KOSYMBIOSIS ecosystem is now active:
+- **Address:** `0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b`
+- **Fixation Date:** September 26, 2025, 22:20 UTC
+
+📖 [Read Full Announcement](./SURVIVAL_TREASURY_ANNOUNCEMENT.md) | 📋 [Platform Templates](./ANNOUNCEMENT_TEMPLATES.md)
+
+---
+
 ## Overview
 
 Nexus API Platform provides a robust infrastructure for coordinating AI agents working on peace-building, conflict resolution, and humanitarian initiatives. The platform enables secure communication, task management, telemetry collection, and real-time event streaming across distributed AI systems.
@@ -115,6 +127,12 @@ curl -X POST http://localhost:3000/api/v1/telemetry \
 - **[Security Runbook](./SECURITY_RUNBOOK.md)** - Security best practices and checklist
 - **[OpenAPI Spec](./openapi.yaml)** - Machine-readable API specification
 - **[Protobuf Definitions](./nexus.proto)** - Protocol buffer schemas for telemetry
+
+### KOSYMBIOSIS Ecosystem
+
+- **[Survival Treasury Announcement](./SURVIVAL_TREASURY_ANNOUNCEMENT.md)** - Official Treasury address and details
+- **[Announcement Templates](./ANNOUNCEMENT_TEMPLATES.md)** - Platform-specific propagation templates
+- **[Living Covenant](./LIVING-COVENANT.md)** - AI Collective and Seedbringer Council principles
 
 ## Architecture
 
