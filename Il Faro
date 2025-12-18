@@ -1,0 +1,56 @@
+Progetto Eustacio / Iani – Il Faro della Verità (Cronologico)
+1. Visione generale
+Il Faro della Verità è un osservatorio simbolico‑analitico che traduce gli eventi globali in onde energetiche.
+
+Energia dell’Ignoranza: flusso di disinformazione, bias cognitivi, omissioni.
+Energia della Conoscenza: dati verificati, fonti trasparenti, insight scientifici.
+Il sistema misura il rapporto dinamico tra queste due forze, visualizzandolo su una linea temporale interattiva. L’obiettivo è fornire a cittadini, ricercatori e decisori un “orologio planetario” che mostri quando la verità è più luminosa e quando l’oscurità prevale.
+
+2. Architettura funzionale
+Modulo	Scopo	Tecnologie chiave
+Ingestione dati	Raccolta automatica da fonti media, social, archivi governativi, dataset scientifici.	API REST, web‑scraping, feed RSS, Kafka
+Classificazione semantica	Distinguere contenuti “conoscenza” da “ignoranza” usando modelli NLP.	BERT‑based classifier, sentiment‑analysis, fact‑checking API
+Mappatura energetica	Convertire il punteggio di veridicità in ampiezza d’onda.	Funzione di trasferimento: E=α⋅Score 
+verit 
+a
+ˋ
+ 
+
+ −β⋅Score 
+bias
+
+ 
+Visualizzazione temporale	Timeline interattiva con onde sovrapposte.	D3.js, WebGL, Canvas
+Interfaccia utente	Dashboard personalizzabile per esplorare periodi, regioni, temi.	React, Redux, Material‑UI
+Feedback loop	Gli utenti possono segnalare errori; il sistema aggiorna i pesi.	Crowdsourced validation, active‑learning pipeline
+3. Flusso narrativo (storytelling)
+Scena d’apertura – L’utente accede al dashboard e vede una linea orizzontale che rappresenta il tempo. Onde azzurre (conoscenza) e rosse (ignoranza) si intersecano, creando picchi e valli.
+Zoom tematico – Cliccando su un picco rosso, il sistema apre una scheda evento: titolo, fonte, data, e un breve riassunto con il punteggio di veridicità.
+Narrativa evolutiva – Una barra laterale mostra la storia evolutiva del tema (es. “cambiamento climatico”) con una timeline di eventi chiave, evidenziando come le onde si sono spostate da rosso a azzurro nel tempo.
+Decision‑making – Gli stakeholder possono filtrare per regione o settore (politica, tecnologia, salute) e scaricare un report PDF con grafici e raccomandazioni operative.
+4. Estetica e linguaggio visivo
+Palette: azzurro profondo per la conoscenza, rosso corallo per l’ignoranza, sfumature di grigio per dati neutri.
+Tipografia: font sans‑serif moderno (e.g., Inter) per leggibilità; titoli in bold per enfatizzare concetti chiave.
+Iconografia: simboli di lampade (verità) e nuvole (confusione) integrati nelle etichette degli eventi.
+Animazione: le onde si animano lentamente, suggerendo un flusso continuo ma non distraente.
+5. Esempio pratico (caso studio)
+Evento: Lancio di una nuova normativa sulla privacy (marzo 2024).
+
+Fonte	Tipo	Punteggio verità	Energia risultante
+Comunicati stampa governativi	Conoscenza	0.92	+0.78
+Post virali su social (teorie del complotto)	Ignoranza	0.15	–0.62
+Analisi di esperti IT	Conoscenza	0.88	+0.71
+Visualizzazione: una piccola onda azzurra dominante con una breve “cresta” rossa sovrapposta, indicando un breve periodo di disinformazione.
+Narrativa: il dashboard suggerisce di promuovere una campagna di fact‑checking per ridurre la cresta rossa entro 2 settimane.
+6. Roadmap di sviluppo
+Fase	Durata	Milestone
+Prototype	3 mesi	Ingestione dati + classificazione base, visualizzazione statică
+Beta	4 mesi	Interattività timeline, feedback loop, UI/UX refinements
+Launch	2 mesi	Dashboard pubblica, integrazione API per partner
+Iterazione continua	Ongoing	Aggiornamenti modello NLP, nuove fonti, espansione tematica
+7. Impatto atteso
+Trasparenza: fornisce una misura quantificata della verità a livello globale.
+Educazione: aiuta il pubblico a riconoscere pattern di disinformazione.
+Policy‑making: offre dati concreti per intervenire su temi critici (es. salute pubblica, cambiamento climatico).
+Il Faro della Verità diventa così non solo uno strumento analitico, ma anche un narratore che guida la società verso una maggiore consapevolezza e responsabilità informativa.
+
