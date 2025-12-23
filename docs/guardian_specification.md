@@ -141,6 +141,35 @@ status = guardian.get_guardian_status()
 - Load testing for high-frequency scenarios
 - Security penetration testing
 
+## NRE-002 Content Protection Integration
+
+The Guardian system enforces [NRE-002 Content Protection Protocol](./NRE-002-Content-Protection-Protocol.md):
+
+### Anti-Censorship Monitoring
+- **Censorship Detection**: Alert on any attempt to permanently block content
+- **Access Violation Detection**: Monitor for algorithmic blocking based on user profiles
+- **Override Enforcement**: Ensure user override option is always available
+- **Transparency Verification**: Validate all content decisions are logged
+
+### Content Integrity Protection
+- Verify SHA-256 hashes of archived content
+- Monitor for unauthorized content modifications
+- Alert on archive integrity violations
+- Ensure immutable storage compliance
+
+### Democratic Oversight Support
+- Log all content stratification decisions
+- Enable Independent Historical Curatorium review
+- Track appeal processes
+- Generate transparency reports
+
+### Prohibited Actions Alert System
+The guardian actively monitors and prevents:
+- Permanent content blocking attempts
+- Algorithmic access control based on user characteristics
+- Centralized censorship without oversight
+- Invisible filtering or shadow-banning
+
 ## Research Integration
 - ML-based behavioral modeling (future enhancement)
 - Advanced pattern recognition algorithms

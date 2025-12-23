@@ -236,6 +236,21 @@ validate_input_integrity() → log_event("input_validated", ...)
 - Error rates and patterns
 - Resource utilization
 
+## NRE-002 Integration
+
+### Content Protection Protocol
+The core system integrates with [NRE-002 Content Protection Protocol](./NRE-002-Content-Protection-Protocol.md) to ensure:
+- **Anti-Censorship Compliance**: No algorithmic blocking of content access
+- **Archive Integrity**: Cryptographic protection using SHA-256 hashing
+- **Transparency**: All content decisions logged and auditable
+- **User Control**: Always-override option for complete content access
+
+### Content Stratification Support
+- Content organized in educational levels (Foundation, Detailed, Complete)
+- Curation-based approach, filtering prohibited
+- User preferences respected with zero-obligation principle
+- Democratic oversight through Independent Historical Curatorium
+
 ## Future Enhancements
 - **Advanced Cryptography**: Quantum-resistant algorithms
 - **Distributed State**: Multi-node state synchronization
