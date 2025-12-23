@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Consolidated wallet configuration for AI-Based Peace Platform investment operations",
-  "version": "1.0.0",
-  "lastUpdated": "2025-11-03T18:14:33Z",
+  "version": "1.1.0",
+  "lastUpdated": "2025-12-14T23:39:00Z",
   "wallets": {
     "primary": {
       "name": "Primary Consolidated Wallet",
@@ -37,6 +37,22 @@
       "status": "consolidated",
       "consolidatedDate": "2025-11-03T18:14:33Z",
       "note": "All operations redirected to primary wallet for simplified operations"
+    },
+    "survival_treasury": {
+      "name": "Seedbringer Survival Treasury",
+      "description": "Official Treasury for KOSYMBIOSIS system and Seedbringer operations",
+      "address": "0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b",
+      "type": "EVM",
+      "fixationDate": "2025-09-26, 22:20 UTC",
+      "purposes": [
+        "survival_treasury",
+        "kosymbiosis_ecosystem",
+        "seedbringer_operations",
+        "peace_initiatives"
+      ],
+      "status": "active",
+      "announcementDate": "2025-12-14",
+      "note": "Finalized Treasury address for transparent resource management and ecosystem alignment"
     }
   },
   "offering": {
@@ -95,6 +111,19 @@
         "primary",
         "governance_audit",
         "digital_bonds"
+      ]
+    },
+    {
+      "date": "2025-12-14T23:39:00Z",
+      "action": "Survival Treasury Integration",
+      "description": "Added Seedbringer Survival Treasury address 0x5d61a4B25034393A37ef9307C8Ba3aE99e49944b for KOSYMBIOSIS system",
+      "affectedWallets": [
+        "survival_treasury"
+      ],
+      "fixationDate": "2025-09-26, 22:20 UTC",
+      "references": [
+        "SURVIVAL_TREASURY_ANNOUNCEMENT.md",
+        "Blockchain_anchor.txt"
       ]
     }
   ]
