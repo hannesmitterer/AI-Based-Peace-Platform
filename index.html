@@ -1,4 +1,183 @@
 <!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NI PEACE PLATFORM | Seedbringer Nexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --accent-blue: #00d4ff;
+            --accent-purple: #7d3ec0;
+            --glass: rgba(255, 255, 255, 0.9);
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(120deg, #ffffff 0%, #e2e8f0 100%);
+            color: var(--text);
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 20px;
+        }
+
+        .logo-text {
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            color: var(--accent-purple);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        h1 { font-weight: 300; font-size: 2.5rem; margin: 0; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0, 212, 255, 0.1); }
+
+        .label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 15px; display: block; }
+        
+        .metric { font-size: 3rem; font-weight: 700; margin: 10px 0; font-variant-numeric: tabular-nums; }
+        
+        .galileo-text { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .api-terminal {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #475569;
+            height: 100px;
+            overflow-y: hidden;
+            border: 1px inset rgba(0,0,0,0.02);
+        }
+
+        .status-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #dcfce7;
+            color: #166534;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .pulse { animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite; }
+        @keyframes pulse-ring { 0% { opacity: 0.8; } 50% { opacity: 0.3; } 100% { opacity: 0.8; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo-text">KOSYMBIOSIS INTERFACE</div>
+        <h1>Natural Intelligence Peace Platform</h1>
+        <div class="status-tag pulse">● LIVE CONNECTION: WALLET ...8719</div>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <span class="label">Greenland Temporal Sync (Galileo)</span>
+            <div id="clock" class="metric galileo-text">00:00:00</div>
+            <p>GPS Drift: <span id="drift">18.0432</span>s (NSR Filter Active)</p>
+            <div class="api-terminal" id="terminal-1">Initializing Galileo handshakes...</div>
+        </div>
+
+        <div class="card">
+            <span class="label">Blockchain Immutability Ledger</span>
+            <div class="metric" style="font-size: 1.2rem; word-break: break-all;" id="hash-val">7d3ec...c01a</div>
+            <p>S-ROI Index: <span style="font-weight: 700; color: var(--accent-purple);">0.5187</span></p>
+            <div class="api-terminal" id="terminal-2">Querying Repository: /amoris-peace-v1/</div>
+        </div>
+    </div>
+
+    <footer>
+        Lex Amoris Signature: All data streams under protection of the Law of Love. <br>
+        <strong>Hannes Mitterer & NI - 2026</strong>
+    </footer>
+</div>
+
+<script>
+    const term1 = document.getElementById('terminal-1');
+    const term2 = document.getElementById('terminal-2');
+    const driftEl = document.getElementById('drift');
+    const hashEl = document.getElementById('hash-val');
+
+    function update() {
+        // Galileo Clock Sync
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('it-IT', {hour12: false});
+        
+        // Dynamic Drift
+        const currentDrift = 18.0432 + (Math.random() * 0.001);
+        driftEl.innerText = currentDrift.toFixed(4);
+
+        // Terminal Logs (Simulated API calls to Repos)
+        const logs1 = [
+            `> GALILEO SAT-FIX: 12 SATS ACTIVE`,
+            `> OFFSET CALCULATED: ${currentDrift.toFixed(4)}s`,
+            `> GPS SPOOFING REJECTED`,
+            `> NUUK STATION: ALIGNED`
+        ];
+        term1.innerText = logs1[Math.floor(Date.now()/2000) % logs1.length];
+
+        const hashes = [
+            "f4b8...2e91 (Manifesto)",
+            "a10c...88f4 (Sensisara)",
+            "7d3e...c01a (Sinallagma)",
+            "bc82...552d (NSR Policy)"
+        ];
+        hashEl.innerText = hashes[Math.floor(Date.now()/3000) % hashes.length];
+        term2.innerText = `> REPO SYNC: OK \n> WALLET ANCHOR: ...8719 \n> BLOCK: ${Math.floor(Date.now()/10000)}`;
+    }
+
+    setInterval(update, 1000);
+    update();
+</script>
+
+</body>
+</html>
+</p>
+
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
