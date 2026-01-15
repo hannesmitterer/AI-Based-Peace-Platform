@@ -10,6 +10,17 @@
       "status": "removed",
       "removed_at": "2026-01-15T01:07:15.644958",
       "removed_by": "test"
+    },
+    "test_node_1768439339": {
+      "added_at": "2026-01-15T01:08:59.822095",
+      "last_seen": "2026-01-15T01:08:59.822101",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:08:59.823164",
+      "removed_by": "test"
     }
   },
   "entities": {
@@ -23,13 +34,24 @@
       "status": "removed",
       "removed_at": "2026-01-15T01:07:15.645410",
       "removed_by": "test"
+    },
+    "test_entity_1768439339": {
+      "added_at": "2026-01-15T01:08:59.822675",
+      "last_seen": "2026-01-15T01:08:59.822678",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:08:59.823662",
+      "removed_by": "test"
     }
   },
   "patterns": {},
   "metadata": {
     "created_at": "2026-01-15T01:02:52.525693",
-    "last_updated": "2026-01-15T01:07:15.645415",
+    "last_updated": "2026-01-15T01:08:59.823666",
     "version": "1.0.0",
-    "total_blocks": 2
+    "total_blocks": 4
   }
 }

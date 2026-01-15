@@ -84,6 +84,26 @@ class PermanentBlacklist:
             try:
                 with open(self.blacklist_file, 'r') as f:
                     loaded_data = json.load(f)
+                    
+                    # Validate loaded data structure
+                    if not isinstance(loaded_data, dict):
+                        raise ValueError("Invalid blacklist format: not a dictionary")
+                    
+                    # Validate required keys exist
+                    for key in ['nodes', 'entities', 'patterns', 'metadata']:
+                        if key not in loaded_data:
+                            loaded_data[key] = self.blacklist_data[key]
+                    
+                    # Validate data types
+                    if not isinstance(loaded_data['nodes'], dict):
+                        loaded_data['nodes'] = {}
+                    if not isinstance(loaded_data['entities'], dict):
+                        loaded_data['entities'] = {}
+                    if not isinstance(loaded_data['patterns'], dict):
+                        loaded_data['patterns'] = {}
+                    if not isinstance(loaded_data['metadata'], dict):
+                        loaded_data['metadata'] = self.blacklist_data['metadata']
+                    
                     # Merge with default structure to handle version upgrades
                     self.blacklist_data.update(loaded_data)
                     
@@ -137,9 +157,19 @@ class PermanentBlacklist:
     
     def _rebuild_cache(self):
         """Rebuild in-memory cache for fast lookups"""
-        self._node_cache = set(self.blacklist_data.get('nodes', {}).keys())
-        self._entity_cache = set(self.blacklist_data.get('entities', {}).keys())
-        self._pattern_cache = set(self.blacklist_data.get('patterns', {}).keys())
+        # Only include active items in cache
+        self._node_cache = set(
+            node_id for node_id, data in self.blacklist_data.get('nodes', {}).items()
+            if data.get('status') == 'active'
+        )
+        self._entity_cache = set(
+            entity_id for entity_id, data in self.blacklist_data.get('entities', {}).items()
+            if data.get('status') == 'active'
+        )
+        self._pattern_cache = set(
+            pattern_hash for pattern_hash, data in self.blacklist_data.get('patterns', {}).items()
+            if data.get('status') == 'active'
+        )
     
     def add_node(self, node_id: str, reason: str, severity: str = "high", 
                  metadata: Dict[str, Any] = None) -> bool:
@@ -223,7 +253,8 @@ class PermanentBlacklist:
                     metadata: Dict[str, Any] = None) -> bool:
         """Add suspicious pattern to permanent blacklist"""
         with self.blacklist_lock:
-            pattern_hash = hashlib.md5(pattern.encode()).hexdigest()
+            # Use SHA-256 instead of MD5 for security
+            pattern_hash = hashlib.sha256(pattern.encode()).hexdigest()
             
             if pattern_hash in self.blacklist_data['patterns']:
                 # Update existing entry
@@ -269,15 +300,24 @@ class PermanentBlacklist:
     
     def is_pattern_blocked(self, content: str) -> bool:
         """Check if content matches any blocked pattern"""
-        # Check against all patterns
-        for pattern_hash in self._pattern_cache:
+        # Get snapshot of patterns to avoid lock during iteration
+        patterns_snapshot = []
+        pattern_hashes = list(self._pattern_cache)
+        
+        for pattern_hash in pattern_hashes:
             pattern_entry = self.blacklist_data['patterns'].get(pattern_hash, {})
             pattern = pattern_entry.get('pattern', '')
-            if pattern and pattern.lower() in content.lower():
-                # Update last seen
+            if pattern:
+                patterns_snapshot.append((pattern_hash, pattern, pattern_entry))
+        
+        # Check against all patterns without holding lock
+        for pattern_hash, pattern, pattern_entry in patterns_snapshot:
+            if pattern.lower() in content.lower():
+                # Update last seen with lock (quick operation)
                 with self.blacklist_lock:
-                    pattern_entry['last_seen'] = datetime.utcnow().isoformat()
-                    pattern_entry['occurrences'] += 1
+                    if pattern_hash in self.blacklist_data['patterns']:
+                        self.blacklist_data['patterns'][pattern_hash]['last_seen'] = datetime.utcnow().isoformat()
+                        self.blacklist_data['patterns'][pattern_hash]['occurrences'] += 1
                 return True
         return False
     

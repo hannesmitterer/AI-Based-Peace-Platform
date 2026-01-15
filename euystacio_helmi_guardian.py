@@ -450,11 +450,14 @@ class EuystacioHelmiGuardian:
                 node_id = input_data.get('node_id') or input_data.get('source_ip')
                 entity_id = input_data.get('entity_id')
                 
+                # Check if reasons list is not empty before accessing
+                reason = blacklist_check['reasons'][0] if blacklist_check['reasons'] else 'Blacklist violation'
+                
                 if node_id:
-                    add_node_to_blacklist(node_id, f"Repeated blacklist violation: {blacklist_check['reasons'][0]}", 
+                    add_node_to_blacklist(node_id, f"Repeated blacklist violation: {reason}", 
                                          severity=blacklist_check['severity'])
                 if entity_id:
-                    add_entity_to_blacklist(entity_id, f"Repeated blacklist violation: {blacklist_check['reasons'][0]}", 
+                    add_entity_to_blacklist(entity_id, f"Repeated blacklist violation: {reason}", 
                                            severity=blacklist_check['severity'])
             
             return False
