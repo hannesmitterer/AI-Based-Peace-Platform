@@ -9,6 +9,7 @@ Packets are validated based on their rhythmic signature, independent of IP origi
 import hashlib
 import time
 import json
+import math
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -26,7 +27,7 @@ class RhythmSignature:
         """Check if signature is within valid parameters"""
         return (0.1 <= self.frequency <= 1000.0 and 
                 0.0 <= self.amplitude <= 1.0 and
-                0.0 <= self.phase <= 6.28318)  # 2*pi
+                0.0 <= self.phase <= 2 * math.pi)
 
 
 class RhythmValidator:

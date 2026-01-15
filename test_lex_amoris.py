@@ -4,6 +4,7 @@ Demonstrates all four strategic enhancements.
 """
 
 import json
+import traceback
 from datetime import datetime
 
 from lex_amoris_integration import LexAmorisSecurityPlatform
@@ -228,7 +229,6 @@ def main():
         
     except Exception as e:
         print(f"\n✗ TEST FAILED: {str(e)}")
-        import traceback
         traceback.print_exc()
 
 

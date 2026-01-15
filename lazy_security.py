@@ -269,7 +269,10 @@ class LazySecurity:
                                 "timestamp": datetime.utcnow().isoformat() + "Z"
                             }
                     except Exception as e:
-                        # Protection module error, log but continue
+                        # Log protection module error but continue processing
+                        # This prevents a single module failure from blocking all traffic
+                        import logging
+                        logging.warning(f"Protection module {protection_name} failed: {str(e)}")
                         pass
         
         return {

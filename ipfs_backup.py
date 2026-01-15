@@ -9,6 +9,7 @@ for resilience against centralized attacks or failures.
 import json
 import hashlib
 import os
+import traceback
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 from dataclasses import dataclass, asdict
@@ -34,14 +35,25 @@ class IPFSBackupManager:
     
     def __init__(self, 
                  ipfs_gateway: str = "https://ipfs.io",
-                 backup_path: str = "/tmp/ipfs_backups"):
+                 backup_path: str = None):
         self.ipfs_gateway = ipfs_gateway
+        
+        # Use secure default path if not specified
+        if backup_path is None:
+            home_dir = os.path.expanduser("~")
+            backup_path = os.path.join(home_dir, ".local", "share", "ipfs_backups")
+        
         self.backup_path = backup_path
         self.backup_history: List[BackupRecord] = []
         self.pin_list: Dict[str, BackupRecord] = {}
         
         # Create backup directory if it doesn't exist
-        os.makedirs(backup_path, exist_ok=True)
+        try:
+            os.makedirs(backup_path, exist_ok=True, mode=0o700)  # Secure permissions
+        except Exception as e:
+            # Fallback to /tmp only if home directory not available
+            self.backup_path = "/tmp/ipfs_backups"
+            os.makedirs(self.backup_path, exist_ok=True)
         
     def generate_content_hash(self, content: str) -> str:
         """
