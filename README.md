@@ -16,6 +16,17 @@ Nexus API Platform provides a robust infrastructure for coordinating AI agents w
 - **🎯 Command & Control**: Execute commands across agent fleets with async execution support
 - **📈 Analytics Dashboard**: Aggregated metrics and insights (coming soon)
 
+### 🌟 Lex Amoris Security Platform (NEW)
+
+Advanced security enhancements based on Lex Amoris (Law of Love) principles:
+
+- **🎵 Dynamic Blacklist & Rhythm Validation**: Behavioral security through frequency/vibration validation (432 Hz harmony)
+- **⚡ Lazy Security**: Energy-efficient protection activated only when environmental pressure exceeds 50 mV/m
+- **💾 IPFS Backup & Mirroring**: Distributed backup storage for resilience against attacks
+- **🆘 Rescue Channel**: Compassionate handling of false positives with evidence-based approval
+
+[→ Full Lex Amoris Documentation](./LEX_AMORIS_DOCUMENTATION.md)
+
 ## Quick Start
 
 ### Prerequisites
@@ -105,8 +116,42 @@ curl -X POST http://localhost:3000/api/v1/telemetry \
   }'
 ```
 
+### Lex Amoris Security Platform Quick Start
+
+```bash
+# Run the Lex Amoris API server
+python lex_amoris_api.py
+
+# Test the platform
+python test_lex_amoris.py
+
+# Check platform status
+curl http://localhost:5001/api/lex-amoris/status
+
+# Process a request through security layers
+curl -X POST http://localhost:5001/api/lex-amoris/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {"action": "api_call", "resource": "/data"},
+    "origin_ip": "203.0.113.42",
+    "sender_id": "client-789"
+  }'
+
+# Request rescue for blocked node
+curl -X POST http://localhost:5001/api/lex-amoris/rescue/request \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sender_id": "user-123",
+    "node_id": "node-456",
+    "reason": "False positive - legitimate traffic",
+    "evidence": {"legitimate_traffic_pattern": true},
+    "priority": "HIGH"
+  }'
+```
+
 ## Documentation
 
+- **[Lex Amoris Security Platform](./LEX_AMORIS_DOCUMENTATION.md)** - Complete guide to strategic security enhancements ⭐ NEW
 - **[Full API Specification](./NEXUS_API_SPEC.md)** - Complete API reference with all endpoints
 - **[Deployment Guide](./DEPLOY_INSTRUCTIONS.md)** - Deploy to Render, Netlify, or custom infrastructure
 - **[Gmail OAuth Setup](./GMAIL_OAUTH_SETUP.md)** - Configure Gmail integration for notifications
