@@ -9,6 +9,11 @@ httpx
 plotly
 numpy
 gunicorn
+flask
+flask-cors
+# Required for api/app.py forecasting functionality
+prophet
+pandas
 # Add internal modules or replace with local paths if needed:
 # -e ./euystacio_core
 # -e ./euystacio_audit_log
