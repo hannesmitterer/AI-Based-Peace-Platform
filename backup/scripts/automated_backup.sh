@@ -5,8 +5,9 @@
 set -e
 
 LOG_FILE="/var/log/backup/automated_backup.log"
-BACKUP_MANAGER="/home/runner/work/AI-Based-Peace-Platform/AI-Based-Peace-Platform/backup/ipfs_backup_manager.py"
-BACKUP_CONFIG="/etc/backup/backup_config.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_MANAGER="$SCRIPT_DIR/../ipfs_backup_manager.py"
+BACKUP_CONFIG="${BACKUP_CONFIG:-/etc/backup/backup_config.json}"
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"

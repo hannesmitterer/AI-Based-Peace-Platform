@@ -42,12 +42,15 @@ EOF
     # Wait for Tor to establish connection
     sleep 5
     
+    # Backup existing iptables rules
+    log "Backing up existing iptables rules..."
+    iptables-save > /tmp/iptables.backup
+    
     # Configure iptables to route traffic through Tor
     log "Configuring iptables for Tor routing..."
     
-    # Flush existing rules
-    iptables -F
-    iptables -t nat -F
+    # Create new nat chain for Tor
+    iptables -t nat -N TOR || true
     
     # Allow established connections
     iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -56,10 +59,13 @@ EOF
     iptables -A INPUT -i lo -j ACCEPT
     
     # Redirect DNS to Tor
-    iptables -t nat -A OUTPUT -p udp --dport 53 -j REDIRECT --to-ports 53
+    iptables -t nat -A TOR -p udp --dport 53 -j REDIRECT --to-ports 53
     
-    # Redirect TCP traffic to Tor
-    iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports 9040
+    # Redirect TCP traffic to Tor (transparent proxy port)
+    iptables -t nat -A TOR -p tcp --syn -j REDIRECT --to-ports 9040
+    
+    # Apply TOR chain to OUTPUT
+    iptables -t nat -A OUTPUT -j TOR
     
     # Save iptables rules
     iptables-save > /etc/iptables/rules.v4
@@ -78,14 +84,16 @@ EOF
 deactivate_tor() {
     log "Deactivating Tor routing..."
     
-    # Flush iptables rules
-    iptables -F
-    iptables -t nat -F
-    
-    # Restore default policies
-    iptables -P INPUT ACCEPT
-    iptables -P FORWARD ACCEPT
-    iptables -P OUTPUT ACCEPT
+    # Restore iptables rules from backup
+    if [ -f /tmp/iptables.backup ]; then
+        log "Restoring iptables rules from backup..."
+        iptables-restore < /tmp/iptables.backup
+    else
+        # Fallback: remove Tor chain
+        iptables -t nat -D OUTPUT -j TOR 2>/dev/null || true
+        iptables -t nat -F TOR 2>/dev/null || true
+        iptables -t nat -X TOR 2>/dev/null || true
+    fi
     
     # Stop Tor service
     systemctl stop tor

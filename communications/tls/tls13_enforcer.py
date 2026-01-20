@@ -126,20 +126,24 @@ def disable_unencrypted_endpoints():
     
     try:
         # Close HTTP port if running
-        logger.info("Closing HTTP ports...")
+        logger.info("Blocking HTTP ports...")
         
         # Block HTTP traffic via iptables
-        subprocess.run([
+        result = subprocess.run([
             'iptables', '-A', 'INPUT', '-p', 'tcp', '--dport', '80', '-j', 'DROP'
-        ], check=False)
+        ], capture_output=True, text=True)
         
-        subprocess.run([
+        if result.returncode != 0:
+            logger.error(f"Failed to block HTTP port 80: {result.stderr}")
+        
+        result = subprocess.run([
             'iptables', '-A', 'INPUT', '-p', 'tcp', '--dport', '8080', '-j', 'DROP'
-        ], check=False)
+        ], capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            logger.error(f"Failed to block HTTP port 8080: {result.stderr}")
         
         logger.info("✓ HTTP ports blocked")
-        
-        # Ensure HTTPS redirect
         logger.info("✓ Unencrypted endpoints disabled")
         
     except Exception as e:

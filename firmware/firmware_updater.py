@@ -221,7 +221,7 @@ class FirmwareUpdateManager:
         except Exception as e:
             logger.error(f"Update failed: {e}")
             logger.error("Rolling back...")
-            self.rollback()
+            self.rollback(backup_file)
             return False
     
     def verify_installation(self) -> bool:

@@ -68,12 +68,13 @@ deactivate_vpn() {
     
     if [ "$VPN_TYPE" = "wireguard" ]; then
         wg-quick down $VPN_CONFIG || true
+        # Restore default routing for WireGuard
+        ip route del default dev wg0 2>/dev/null || true
     else
         systemctl stop openvpn@$VPN_CONFIG || true
+        # Restore default routing for OpenVPN
+        ip route del default dev tun0 2>/dev/null || true
     fi
-    
-    # Restore default routing
-    ip route del default via tun0 2>/dev/null || true
     
     log "VPN routing deactivated"
 }

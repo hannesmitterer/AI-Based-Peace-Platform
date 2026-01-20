@@ -83,10 +83,10 @@ class ForensicResponse:
             subprocess.run(['systemctl', 'start', 'tor'], check=False)
             time.sleep(2)
             
-            # Configure iptables to route through Tor
+            # Configure iptables to route through Tor transparent proxy (port 9040)
             commands = [
-                ['iptables', '-t', 'nat', '-A', 'OUTPUT', '-p', 'tcp', '--dport', '80', '-j', 'REDIRECT', '--to-ports', '9050'],
-                ['iptables', '-t', 'nat', '-A', 'OUTPUT', '-p', 'tcp', '--dport', '443', '-j', 'REDIRECT', '--to-ports', '9050'],
+                ['iptables', '-t', 'nat', '-A', 'OUTPUT', '-p', 'tcp', '--dport', '80', '-j', 'REDIRECT', '--to-ports', '9040'],
+                ['iptables', '-t', 'nat', '-A', 'OUTPUT', '-p', 'tcp', '--dport', '443', '-j', 'REDIRECT', '--to-ports', '9040'],
             ]
             
             for cmd in commands:
@@ -238,7 +238,7 @@ class LogWatcher:
                         # Update position
                         self.file_positions[log_path] = f.tell()
                 
-                time.sleep(1)  # Check logs every second
+                time.sleep(1)  # Check logs every second (consider using inotify for production)
                 
             except KeyboardInterrupt:
                 logger.info("Forensic log watcher stopped by user")
