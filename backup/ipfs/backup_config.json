@@ -1,0 +1,65 @@
+{
+  "backup_schedule": "daily",
+  "backup_time": "02:00",
+  "retention_days": 30,
+  "encryption": {
+    "enabled": true,
+    "gpg_key_id": "backup-key",
+    "algorithm": "AES256"
+  },
+  "ipfs": {
+    "enabled": true,
+    "api_endpoint": "/ip4/127.0.0.1/tcp/5001",
+    "pin_backups": true,
+    "replicate_to_peers": true
+  },
+  "backup_sets": [
+    {
+      "name": "system_config",
+      "description": "System configuration files",
+      "paths": [
+        "/etc",
+        "/opt/config"
+      ],
+      "exclude": [
+        "*.tmp",
+        "*.cache"
+      ]
+    },
+    {
+      "name": "application_data",
+      "description": "Application data and databases",
+      "paths": [
+        "/opt/data",
+        "/var/lib/app"
+      ],
+      "exclude": [
+        "*.log"
+      ]
+    },
+    {
+      "name": "security_logs",
+      "description": "Security and audit logs",
+      "paths": [
+        "/var/log/security",
+        "/var/log/audit"
+      ],
+      "exclude": []
+    }
+  ],
+  "notifications": {
+    "email": {
+      "enabled": false,
+      "recipients": ["admin@example.com"]
+    },
+    "slack": {
+      "enabled": false,
+      "webhook_url": ""
+    }
+  },
+  "verification": {
+    "enabled": true,
+    "check_after_backup": true,
+    "periodic_check_days": 7
+  }
+}
