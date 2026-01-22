@@ -168,3 +168,32 @@ yarn.lock
 # TypeScript
 dist/
 *.tsbuildinfo
+
+# Security and Monitoring Data
+/opt/backups/
+/opt/ipfs/
+/var/log/backup/
+/var/log/firmware/
+/var/log/security/
+/var/log/tls/
+grafana-storage/
+loki-storage/
+prometheus-storage/
+
+# Certificates and Keys (DO NOT COMMIT)
+*.pem
+*.key
+*.crt
+*.gpg
+!*example*.pem
+!*example*.key
+!*example*.crt
+
+# Backup files
+*.tar.gz
+*.backup
+backup_index.json
+
+# Firmware files
+firmware/backups/
+firmware/*.tar.gz

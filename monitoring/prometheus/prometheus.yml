@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'decentralized-peace-platform'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'nodes'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(node_.*|up)'
+        action: keep
+
+  - job_name: 'security'
+    static_configs:
+      - targets: ['security-exporter:9101']
+    scrape_interval: 5s
+
+  - job_name: 'api'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: '/metrics'
