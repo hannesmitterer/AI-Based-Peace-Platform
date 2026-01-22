@@ -1,0 +1,28 @@
+{
+  "enable_tor": true,
+  "enable_vpn": true,
+  "vpn_config": "default",
+  "threat_thresholds": {
+    "brute_force": 5,
+    "port_scan": 3,
+    "intrusion_attempt": 1,
+    "suspicious_login": 3,
+    "malware_detection": 1,
+    "ddos_attack": 1
+  },
+  "alert_channels": {
+    "email": true,
+    "slack": false,
+    "pagerduty": false
+  },
+  "auto_response": {
+    "enable_ip_blocking": true,
+    "enable_tor_routing": true,
+    "enable_vpn_routing": true
+  },
+  "log_paths": [
+    "/var/log/auth.log",
+    "/var/log/security/intrusion.log",
+    "/var/log/syslog"
+  ]
+}
