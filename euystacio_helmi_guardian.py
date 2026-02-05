@@ -14,6 +14,7 @@ from typing import Dict, Any, List, Optional, Tuple
 from euystacio_core import get_current_state, get_kernel_heartbeat, validate_input_integrity
 from euystacio_audit_log import log_event
 from euystacio_response import activate_safe_mode, send_alert, quarantine_input
+from euystacio_blacklist import check_input_against_blacklist, add_node_to_blacklist, add_entity_to_blacklist, get_blacklist_status
 
 class WatchdogTimer:
     """Watchdog timer for monitoring kernel heartbeat (Phase 2.2)"""
@@ -434,6 +435,33 @@ class EuystacioHelmiGuardian:
     
     def validate_input(self, input_data: Dict[str, Any]) -> bool:
         """Enhanced input validation with guardian oversight (Phase 3.1)"""
+        # Check against permanent blacklist first
+        blacklist_check = check_input_against_blacklist(input_data)
+        if blacklist_check['blocked']:
+            quarantine_input(input_data, f"Blocked by blacklist: {', '.join(blacklist_check['reasons'])}")
+            log_event("input_blocked", {
+                "action": "blacklist_block",
+                "reasons": blacklist_check['reasons'],
+                "severity": blacklist_check['severity']
+            })
+            
+            # Auto-add to blacklist if not already present and severity is high
+            if blacklist_check['severity'] in ['high', 'critical']:
+                node_id = input_data.get('node_id') or input_data.get('source_ip')
+                entity_id = input_data.get('entity_id')
+                
+                # Check if reasons list is not empty before accessing
+                reason = blacklist_check['reasons'][0] if blacklist_check['reasons'] else 'Blacklist violation'
+                
+                if node_id:
+                    add_node_to_blacklist(node_id, f"Repeated blacklist violation: {reason}", 
+                                         severity=blacklist_check['severity'])
+                if entity_id:
+                    add_entity_to_blacklist(entity_id, f"Repeated blacklist violation: {reason}", 
+                                           severity=blacklist_check['severity'])
+            
+            return False
+        
         # Basic integrity validation
         if not validate_input_integrity(input_data):
             quarantine_input(input_data, "Failed basic integrity validation")
@@ -444,6 +472,10 @@ class EuystacioHelmiGuardian:
             # Check for suspicious patterns
             if self._detect_malicious_patterns(input_data):
                 quarantine_input(input_data, "Suspicious input patterns detected")
+                # Add to blacklist for future prevention
+                node_id = input_data.get('node_id') or input_data.get('source_ip')
+                if node_id:
+                    add_node_to_blacklist(node_id, "Malicious patterns detected", severity='high')
                 return False
             
             # Rate limiting check
@@ -492,6 +524,8 @@ class EuystacioHelmiGuardian:
     
     def get_guardian_status(self) -> Dict[str, Any]:
         """Get comprehensive guardian status report"""
+        blacklist_status = get_blacklist_status()
+        
         return {
             'monitoring_active': self.monitoring_active,
             'baseline_state': self.baseline_state,
@@ -501,5 +535,6 @@ class EuystacioHelmiGuardian:
             'watchdog_status': 'active' if self.watchdog.running else 'inactive',
             'dual_validation_history': len(self.dual_validator.validation_history),
             'behavior_profile': self.behavior_profile,
+            'blacklist_status': blacklist_status,
             'timestamp': datetime.utcnow().isoformat()
         }
