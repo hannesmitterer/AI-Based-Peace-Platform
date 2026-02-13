@@ -10,7 +10,7 @@ import time
 import random
 from typing import Dict, Any, List, Optional, Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 
 
@@ -87,13 +87,17 @@ class LazySecurity:
         Perform environmental electromagnetic pressure scan.
         In production, this would interface with actual sensors.
         
+        WARNING: This implementation uses random simulation for development/testing only.
+        Replace with actual environmental sensor integration before production deployment.
+        
         Args:
             location: Scan location identifier
             
         Returns:
             EnvironmentalScan object with results
         """
-        # Simulate sensor reading (in production, read from actual sensors)
+        # DEVELOPMENT ONLY: Simulate sensor reading
+        # TODO: In production, replace with actual sensor interface
         # Use time-based variation for realistic simulation
         base_pressure = 30.0
         variation = random.uniform(-20.0, 40.0)
@@ -273,7 +277,6 @@ class LazySecurity:
                         # This prevents a single module failure from blocking all traffic
                         import logging
                         logging.warning(f"Protection module {protection_name} failed: {str(e)}")
-                        pass
         
         return {
             "allowed": True,

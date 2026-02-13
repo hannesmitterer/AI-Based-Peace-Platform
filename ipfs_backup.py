@@ -9,10 +9,10 @@ for resilience against centralized attacks or failures.
 import json
 import hashlib
 import os
-import traceback
+import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 
 
 @dataclass
@@ -52,6 +52,10 @@ class IPFSBackupManager:
             os.makedirs(backup_path, exist_ok=True, mode=0o700)  # Secure permissions
         except Exception as e:
             # Fallback to /tmp only if home directory not available
+            logging.warning(
+                f"Failed to create secure backup directory at {backup_path}: {str(e)}. "
+                f"Falling back to /tmp/ipfs_backups - this is INSECURE for production use!"
+            )
             self.backup_path = "/tmp/ipfs_backups"
             os.makedirs(self.backup_path, exist_ok=True)
         
@@ -97,8 +101,18 @@ class IPFSBackupManager:
         
         # Save to local backup (in production, would pin to IPFS)
         backup_file = os.path.join(self.backup_path, f"pr_{pr_number}_{content_hash[:16]}.json")
-        with open(backup_file, 'w') as f:
-            f.write(content)
+        
+        # Handle potential race conditions with atomic write
+        temp_file = backup_file + ".tmp"
+        try:
+            with open(temp_file, 'w') as f:
+                f.write(content)
+            os.replace(temp_file, backup_file)  # Atomic operation on most filesystems
+        except Exception as e:
+            # Clean up temp file if it exists
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+            raise
         
         # Create backup record
         record = BackupRecord(
@@ -320,18 +334,23 @@ class IPFSBackupManager:
         Create complete mirror of all critical configurations.
         This should be called periodically to ensure full protection.
         
+        NOTE: This implementation creates PLACEHOLDER/EXAMPLE data for demonstration.
+        In production, this should be replaced with actual PR data from the repository.
+        The hardcoded loop (range(1, 6)) generates sample PRs, not real repository PRs.
+        
         Returns:
             Dictionary of backup records by type
         """
         mirrors = {}
         
-        # Mirror PR configurations (simulated)
+        # Mirror PR configurations (PLACEHOLDER - replace with actual PR data in production)
         for pr_num in range(1, 6):  # Example: mirror last 5 PRs
             pr_data = {
                 "number": pr_num,
                 "title": f"PR #{pr_num}",
                 "state": "open",
-                "created_at": datetime.utcnow().isoformat() + "Z"
+                "created_at": datetime.utcnow().isoformat() + "Z",
+                "note": "This is placeholder data for demonstration purposes"
             }
             mirrors[f"pr_{pr_num}"] = self.backup_pr_configuration(pr_data, pr_num)
         

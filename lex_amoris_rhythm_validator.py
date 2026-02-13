@@ -7,7 +7,6 @@ Packets are validated based on their rhythmic signature, independent of IP origi
 """
 
 import hashlib
-import time
 import json
 import math
 from typing import Dict, Any, Optional, List
@@ -62,6 +61,7 @@ class RhythmValidator:
         phase_seed = int(packet_hash[32:48], 16)
         
         # Normalize to valid ranges
+        # Frequency variation: ±10% of base frequency (1000/10000 = 0.1 or 10%)
         frequency = self.base_frequency * (1 + (frequency_seed % 1000) / 10000.0)
         amplitude = (amplitude_seed % 1000) / 1000.0
         phase = (phase_seed % 628) / 100.0  # 0 to 2*pi

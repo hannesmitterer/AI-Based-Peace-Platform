@@ -9,16 +9,17 @@ Combines:
 4. Rescue channel for false positive handling
 """
 
+import os
+import threading
 from typing import Dict, Any, Optional
 from datetime import datetime
 
 from lex_amoris_rhythm_validator import RhythmValidator
-from lazy_security import LazySecurity, SecurityLevel
+from lazy_security import LazySecurity
 from ipfs_backup import IPFSBackupManager
 from lex_amoris_rescue_channel import (
     LexAmorisRescueChannel, 
-    RescuePriority,
-    RescueMessageType
+    RescuePriority
 )
 
 
@@ -32,7 +33,12 @@ class LexAmorisSecurityPlatform:
                  rhythm_base_frequency: float = 432.0,
                  lazy_activation_threshold: float = 50.0,
                  ipfs_gateway: str = "https://ipfs.io",
-                 backup_path: str = "/tmp/ipfs_backups"):
+                 backup_path: str = None):
+        
+        # Use secure default path if not specified
+        if backup_path is None:
+            home_dir = os.path.expanduser("~")
+            backup_path = os.path.join(home_dir, ".local", "share", "ipfs_backups")
         
         # Initialize components
         self.rhythm_validator = RhythmValidator(base_frequency=rhythm_base_frequency)
@@ -264,11 +270,15 @@ class LexAmorisSecurityPlatform:
 
 # Singleton instance for easy access
 _platform_instance: Optional[LexAmorisSecurityPlatform] = None
+_platform_lock = threading.Lock()
 
 
 def get_platform() -> LexAmorisSecurityPlatform:
-    """Get singleton platform instance"""
+    """Get singleton platform instance (thread-safe)"""
     global _platform_instance
     if _platform_instance is None:
-        _platform_instance = LexAmorisSecurityPlatform()
+        with _platform_lock:
+            # Double-checked locking pattern
+            if _platform_instance is None:
+                _platform_instance = LexAmorisSecurityPlatform()
     return _platform_instance

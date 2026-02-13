@@ -1,17 +1,45 @@
 """
 Lex Amoris API
 Flask API endpoints for Lex Amoris Security Platform.
+
+SECURITY WARNING: This API lacks authentication and authorization.
+Before deploying to production, implement proper security:
+- API key authentication or JWT tokens
+- Role-based access control (RBAC)
+- Rate limiting per authenticated user
+- Audit logging of all operations
+See documentation for security implementation guide.
 """
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import logging
 from datetime import datetime
 
 from lex_amoris_integration import get_platform
 
 app = Flask(__name__)
-CORS(app, origins=["https://hannesmitterer.github.io", "http://localhost:3000"])
+
+# Configure CORS origins - make this environment-configurable for production
+allowed_origins_env = os.getenv("LEX_AMORIS_ALLOWED_ORIGINS")
+if allowed_origins_env:
+    cors_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+else:
+    # Default origins for development
+    cors_origins = ["https://hannesmitterer.github.io", "http://localhost:3000"]
+
+# In production, filter out localhost origins
+app_env = os.getenv("LEX_AMORIS_ENV", os.getenv("FLASK_ENV", "production")).lower()
+if app_env == "production":
+    # Remove localhost origins in production
+    cors_origins = [
+        origin for origin in cors_origins
+        if not origin.startswith("http://localhost") and not origin.startswith("https://localhost")
+    ]
+    logging.info(f"Production mode: CORS origins set to {cors_origins}")
+
+CORS(app, origins=cors_origins)
 
 
 @app.route('/api/lex-amoris/status', methods=['GET'])
@@ -22,7 +50,13 @@ def get_platform_status():
         status = platform.get_platform_status()
         return jsonify(status), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Log full error details server-side
+        logging.error(f"Error getting platform status: {str(e)}", exc_info=True)
+        # Return generic error to client
+        return jsonify({
+            "error": "Internal server error",
+            "message": "Failed to retrieve platform status"
+        }), 500
 
 
 @app.route('/api/lex-amoris/process', methods=['POST'])
@@ -154,11 +188,26 @@ def list_backups():
     
     Query params:
     - type: Filter by backup type (optional)
-    - limit: Max results (default 50)
+    - limit: Max results (default 50, range 1-1000)
     """
     try:
         backup_type = request.args.get('type')
-        limit = int(request.args.get('limit', 50))
+        limit_param = request.args.get('limit', '50')
+        
+        # Validate limit parameter
+        try:
+            limit = int(limit_param)
+        except ValueError:
+            return jsonify({
+                "error": "Invalid 'limit' parameter",
+                "message": "The 'limit' parameter must be an integer between 1 and 1000"
+            }), 400
+        
+        if limit < 1 or limit > 1000:
+            return jsonify({
+                "error": "Parameter out of range",
+                "message": "The 'limit' parameter must be between 1 and 1000"
+            }), 400
         
         platform = get_platform()
         backups = platform.ipfs_backup.list_backups(
@@ -171,7 +220,11 @@ def list_backups():
             "count": len(backups)
         }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error(f"Error listing backups: {str(e)}", exc_info=True)
+        return jsonify({
+            "error": "Internal server error",
+            "message": "Failed to list backups"
+        }), 500
 
 
 @app.route('/api/lex-amoris/rescue/request', methods=['POST'])

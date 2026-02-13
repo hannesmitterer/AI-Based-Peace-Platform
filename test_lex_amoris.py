@@ -3,7 +3,6 @@ Test suite for Lex Amoris Security Platform
 Demonstrates all four strategic enhancements.
 """
 
-import json
 import traceback
 from datetime import datetime
 

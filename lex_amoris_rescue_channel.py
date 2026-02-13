@@ -9,7 +9,7 @@ edge cases where legitimate traffic is temporarily blocked.
 import json
 import hashlib
 import time
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
@@ -205,9 +205,31 @@ class LexAmorisRescueChannel:
         Returns:
             RescueResponse with decision
         """
-        # Note: In production, signature validation would be more strict
-        # For this implementation, we trust the signature was generated correctly
-        # and focus on the evidence evaluation
+        # TODO: Implement actual signature validation before production deployment
+        # The Lex Amoris signature should be validated against the message data
+        # to prevent unauthorized rescue requests. Currently accepting all requests
+        # for development/testing purposes only.
+        
+        # For production, uncomment and implement:
+        # message_data = {
+        #     "message_id": message.message_id,
+        #     "message_type": message.message_type.value,
+        #     "sender_id": message.sender_id,
+        #     "node_id": message.node_id,
+        #     "reason": message.reason,
+        #     "timestamp": message.timestamp.isoformat() + "Z"
+        # }
+        # if not self.validate_lex_amoris_signature(message_data, message.lex_amoris_signature):
+        #     response = RescueResponse(
+        #         message_id=message.message_id,
+        #         approved=False,
+        #         reason="Invalid Lex Amoris signature - security validation failed",
+        #         actions_taken=[],
+        #         timestamp=datetime.utcnow()
+        #     )
+        #     self.responses[message.message_id] = response
+        #     self.total_denied += 1
+        #     return response
         
         # Check false positive history
         fp_count = self.false_positive_history.get(message.node_id, 0)
