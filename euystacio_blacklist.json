@@ -1,0 +1,158 @@
+{
+  "nodes": {
+    "test_node_1768439235": {
+      "added_at": "2026-01-15T01:07:15.644036",
+      "last_seen": "2026-01-15T01:07:15.644043",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:07:15.644958",
+      "removed_by": "test"
+    },
+    "test_node_1768439339": {
+      "added_at": "2026-01-15T01:08:59.822095",
+      "last_seen": "2026-01-15T01:08:59.822101",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:08:59.823164",
+      "removed_by": "test"
+    },
+    "192.168.1.100": {
+      "added_at": "2026-01-15T01:11:42.357455",
+      "last_seen": "2026-01-15T01:11:42.357461",
+      "reason": "Multiple failed login attempts detected",
+      "severity": "high",
+      "metadata": {
+        "failed_attempts": 15,
+        "attack_type": "brute_force"
+      },
+      "occurrences": 1,
+      "status": "active"
+    },
+    "10.0.0.5": {
+      "added_at": "2026-01-15T01:11:42.358057",
+      "last_seen": "2026-01-15T01:11:42.358061",
+      "reason": "Port scanning activity detected",
+      "severity": "critical",
+      "metadata": {
+        "scanned_ports": [
+          22,
+          80,
+          443,
+          3306
+        ]
+      },
+      "occurrences": 1,
+      "status": "active"
+    },
+    "192.168.1.50": {
+      "added_at": "2026-01-15T01:11:44.865372",
+      "last_seen": "2026-01-15T01:11:44.865386",
+      "reason": "Test for removal demo",
+      "severity": "low",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:11:44.866529",
+      "removed_by": "demo_admin"
+    }
+  },
+  "entities": {
+    "test_entity_1768439235": {
+      "added_at": "2026-01-15T01:07:15.644520",
+      "last_seen": "2026-01-15T01:07:15.644523",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:07:15.645410",
+      "removed_by": "test"
+    },
+    "test_entity_1768439339": {
+      "added_at": "2026-01-15T01:08:59.822675",
+      "last_seen": "2026-01-15T01:08:59.822678",
+      "reason": "Test reason",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "removed",
+      "removed_at": "2026-01-15T01:08:59.823662",
+      "removed_by": "test"
+    },
+    "malicious_user_123": {
+      "added_at": "2026-01-15T01:11:42.358636",
+      "last_seen": "2026-01-15T01:11:42.358641",
+      "reason": "Attempted SQL injection",
+      "severity": "critical",
+      "metadata": {
+        "injection_type": "sql"
+      },
+      "occurrences": 1,
+      "status": "active"
+    },
+    "bot_crawler_456": {
+      "added_at": "2026-01-15T01:11:42.359253",
+      "last_seen": "2026-01-15T01:11:42.359257",
+      "reason": "Aggressive scraping behavior",
+      "severity": "medium",
+      "metadata": {
+        "requests_per_minute": 500
+      },
+      "occurrences": 1,
+      "status": "active"
+    }
+  },
+  "patterns": {
+    "5b63e5b2097fc6906601e85e381d998a7db971aca73c9213dc2b107ccab734d4": {
+      "pattern": "<script>",
+      "added_at": "2026-01-15T01:11:42.860103",
+      "reason": "XSS injection attempt",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 3,
+      "status": "active",
+      "last_seen": "2026-01-15T01:11:43.364229"
+    },
+    "71d50c9b52763c85f18ac6b086e9d9b98c0d1edab6f777e22ceb96364e9d8d61": {
+      "pattern": "'; DROP TABLE",
+      "added_at": "2026-01-15T01:11:42.860979",
+      "reason": "SQL injection attempt",
+      "severity": "critical",
+      "metadata": {},
+      "occurrences": 2,
+      "status": "active",
+      "last_seen": "2026-01-15T01:11:42.862994"
+    },
+    "a475ee49c7acce90b0c9124fcaaf388999e9ef2c94d490d52a855d24c2d97deb": {
+      "pattern": "eval(",
+      "added_at": "2026-01-15T01:11:42.861584",
+      "reason": "Code execution attempt",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 1,
+      "status": "active"
+    },
+    "08e6c32321cfd1e75ec447eea11be4a5b195dbbc4101f37bcb383ee0b59b6a6b": {
+      "pattern": "../../../",
+      "added_at": "2026-01-15T01:11:42.862150",
+      "reason": "Path traversal attempt",
+      "severity": "high",
+      "metadata": {},
+      "occurrences": 2,
+      "status": "active",
+      "last_seen": "2026-01-15T01:11:42.863181"
+    }
+  },
+  "metadata": {
+    "created_at": "2026-01-15T01:02:52.525693",
+    "last_updated": "2026-01-15T01:11:44.866538",
+    "version": "1.0.0",
+    "total_blocks": 13
+  }
+}
